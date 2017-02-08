@@ -5,9 +5,16 @@
 
 ---
 
-Build and edit with:
+Build with:
 
 ```
 gradle assemble
-java -jar build/lib/Monoglot.jar
+```
+
+The jar will be at `build/lib/Monoglot.jar`.
+
+Build and run with:
+
+```
+gradle run
 ```
