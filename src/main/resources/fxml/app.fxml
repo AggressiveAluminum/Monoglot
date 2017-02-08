@@ -1,0 +1,29 @@
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
+            minWidth="600" minHeight="400">
+    <top>
+        <MenuBar>
+
+        </MenuBar>
+        <AnchorPane>
+            <Label text="%placeholder.short"/>
+        </AnchorPane>
+    </top>
+    <left>
+        <VBox maxWidth="200">
+            <Label text="%placeholder.short" wrapText="true"/>
+            <Label text="%placeholder.medium" wrapText="true"/>
+        </VBox>
+    </left>
+    <center>
+        <VBox>
+            <Button fx:id="button" text="%placeholder.button" onAction="#incrementCounter"/>
+        </VBox>
+    </center>
+    <bottom>
+        <AnchorPane>
+            <Label fx:id="counter" AnchorPane.leftAnchor="50"/>
+        </AnchorPane>
+    </bottom>
+</BorderPane>
