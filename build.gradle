@@ -1,6 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.jfoenix:jfoenix:1.1.0'
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 mainClassName = 'aa.monoglot.Main'

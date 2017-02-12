@@ -1,29 +1,31 @@
-<?import javafx.scene.control.*?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="600" minHeight="400">
-    <top>
-        <MenuBar>
-
-        </MenuBar>
-        <AnchorPane>
-            <Label text="%placeholder.short"/>
-        </AnchorPane>
-    </top>
-    <left>
-        <VBox maxWidth="200">
-            <Label text="%placeholder.short" wrapText="true"/>
-            <Label text="%placeholder.medium" wrapText="true"/>
-        </VBox>
-    </left>
-    <center>
-        <VBox>
-            <Button fx:id="button" text="%placeholder.button" onAction="#incrementCounter"/>
-        </VBox>
-    </center>
-    <bottom>
-        <AnchorPane>
-            <Label fx:id="counter" AnchorPane.leftAnchor="50"/>
-        </AnchorPane>
-    </bottom>
-</BorderPane>
+<?import java.net.URL?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
+            minWidth="600" minHeight="400" fx:id="rootPane">
+    <stylesheets>
+        <URL value="@app.css"/>
+        <!-- don't change these if your IDE complains, just make sure your libraries are set up right -->
+        <!--<URL value="@/resources/css/jfoenix-fonts.css"/>-->
+        <!--<URL value="@/resources/css/jfoenix-design.css"/>-->
+    </stylesheets>
+    <!-- Navigation -->
+    <HBox id="navigation-bar" fx:id="navigationBar"
+          AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <JFXComboBox fx:id="tabSelector"/>
+        <Label text="%placeholder.short"/>
+    </HBox>
+    <!-- Content -->
+    <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="30">
+        <tabs>
+            <fx:include fx:id="lexiconTab" source="main/lexicon.fxml"/>
+        </tabs>
+    </TabPane>
+    <!-- Status bar -->
+    <AnchorPane id="status-bar" fx:id="statusBar"
+                AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <Label fx:id="counter" AnchorPane.leftAnchor="50"/>
+    </AnchorPane>
+</AnchorPane>

@@ -1,0 +1,30 @@
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<Tab xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
+    <BorderPane>
+        <padding><Insets top="0" bottom="15" left="0" right="0"/></padding>
+        <left>
+            <VBox id="search-section" maxWidth="200" minWidth="200" prefWidth="200" fillWidth="true" spacing="5">
+                <TextField fx:id="searchField"/>
+                <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
+                <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
+                <TextField fx:id="tagField"/>
+                <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
+                    <JFXListView fx:id="searchResults"/>
+                </ScrollPane>
+            </VBox>
+        </left>
+        <center>
+            <VBox>
+                <JFXButton fx:id="button" text="%placeholder.button" onAction="#incrementCounter"/>
+            </VBox>
+        </center>
+    </BorderPane>
+</Tab>
