@@ -11,18 +11,21 @@
         <!--<URL value="@/resources/css/jfoenix-fonts.css"/>-->
         <!--<URL value="@/resources/css/jfoenix-design.css"/>-->
     </stylesheets>
-    <!-- Navigation -->
-    <HBox id="navigation-bar" fx:id="navigationBar"
-          AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <JFXComboBox fx:id="tabSelector"/>
-        <Label text="%placeholder.short"/>
-    </HBox>
     <!-- Content -->
-    <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="30">
+    <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <tabs>
             <fx:include fx:id="lexiconTab" source="main/lexicon.fxml"/>
         </tabs>
     </TabPane>
+    <!-- Navigation -->
+    <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <left>
+            <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
+        </left>
+        <right>
+            <Label text="%placeholder.short" AnchorPane.rightAnchor="0" BorderPane.alignment="CENTER_RIGHT"/>
+        </right>
+    </BorderPane>
     <!-- Status bar -->
     <AnchorPane id="status-bar" fx:id="statusBar"
                 AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">

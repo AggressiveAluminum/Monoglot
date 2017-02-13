@@ -3,6 +3,7 @@ package aa.monoglot.ui.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 
 import java.util.ResourceBundle;
 
@@ -14,6 +15,9 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     @FXML
     private ResourceBundle resources;
 
+    @FXML
+    private VBox searchSection;
+
     //TODO: change this to HeadWord, modify toString to return proper result.
     public ListView<String> searchResults;
 
@@ -23,9 +27,7 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     protected void postInitialize(){
-        parentController
-                .counter
-                .setText(Integer.toString(parentController.count));
+        parentController.counter.setText(Integer.toString(parentController.count));
     }
 
     @FXML
