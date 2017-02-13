@@ -1,31 +1,45 @@
 <?import com.jfoenix.controls.JFXComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.net.URL?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="600" minHeight="400" fx:id="rootPane">
-    <stylesheets>
-        <URL value="@app.css"/>
-        <!-- don't change these if your IDE complains, just make sure your libraries are set up right -->
-        <!--<URL value="@/resources/css/jfoenix-fonts.css"/>-->
-        <!--<URL value="@/resources/css/jfoenix-design.css"/>-->
-    </stylesheets>
+            minWidth="600" minHeight="400" fx:id="rootPane" stylesheets="@app.css">
+    <!-- Menu -->
+    <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <Menu text="%menu.file">
+            <MenuItem text="%menu.file.newProject"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
+        </Menu>
+        <Menu text="%menu.edit" fx:id="editMenu">
+            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N"/>
+        </Menu>
+        <Menu text="%menu.help">
+            <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
+        </Menu>
+    </MenuBar>
+
     <!-- Content -->
     <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <tabs>
+            <fx:include fx:id="projectTab" source="main/project.fxml"/>
             <fx:include fx:id="lexiconTab" source="main/lexicon.fxml"/>
         </tabs>
     </TabPane>
+
     <!-- Navigation -->
     <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <top/>
         <left>
-            <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
+            <JFXComboBox fx:id="tabSelector" onAction="#changeActiveTab"
+                      AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
         </left>
         <right>
             <Label text="%placeholder.short" AnchorPane.rightAnchor="0" BorderPane.alignment="CENTER_RIGHT"/>
         </right>
     </BorderPane>
+
     <!-- Status bar -->
     <AnchorPane id="status-bar" fx:id="statusBar"
                 AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">

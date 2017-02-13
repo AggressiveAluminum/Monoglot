@@ -1,0 +1,15 @@
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<Tab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.SettingsController">
+    <AnchorPane>
+        <VBox>
+            <TextField promptText="%prompt.settings.projectName"/>
+        </VBox>
+        <HBox AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" spacing="5">
+            <JFXButton text="%dialog.cancel" styleClass="cancel-button" onAction="#cancelChanges"/>
+            <JFXButton text="%dialog.save" styleClass="save-button" onAction="#saveChanges"/>
+        </HBox>
+    </AnchorPane>
+</Tab>

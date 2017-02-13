@@ -1,5 +1,5 @@
 #navigation-bar {
-    -fx-padding: 5px 0 5px 10px;
+    -fx-padding: 5px 10px;
     -fx-effect: dropshadow(three-pass-box, black, 3, 0, 0, 0);
 }
 
@@ -24,3 +24,19 @@
 
 .content-tabs {-fx-tab-max-height: 0;}
 .content-tabs .tab-header-area {visibility: hidden;}
+
+.cancel-button {
+    -fx-font-size: 14px;
+    -jfx-button-type: RAISED;
+    -fx-background-color: rgb(214,50,40);
+    -fx-text-fill: WHITE;
+    -fx-pref-width: 80px;
+}
+
+.save-button {
+    -fx-font-size: 14px;
+    -jfx-button-type: RAISED;
+    -fx-background-color: rgb(40,100,214);
+    -fx-text-fill: WHITE;
+    -fx-pref-width: 80px;
+}
