@@ -39,10 +39,10 @@
         </GridPane>
     </center>
     <right>
-        <VBox style="-fx-font-style: italic; -fx-text-fill: #444444;">
+        <VBox>
             <padding><Insets left="40"/></padding>
-            <Label text="&lt;created>"/>
-            <Label text="&lt;modified>"/>
+            <Label text="&lt;created>" style="-fx-font-style: italic; -fx-text-fill: #444444;"/>
+            <Label text="&lt;modified>" style="-fx-font-style: italic; -fx-text-fill: #444444;"/>
         </VBox>
     </right>
 </BorderPane>
