@@ -1,10 +1,9 @@
-<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
-    <SplitPane dividerPositions="0">
+    <SplitPane dividerPositions="1">
         <VBox id="search-section" fx:id="searchSection">
             <TextField fx:id="searchField"/>
             <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
@@ -15,7 +14,7 @@
             </ScrollPane>
         </VBox>
         <VBox>
-            <JFXButton fx:id="button" text="%placeholder.button" onAction="#incrementCounter"/>
+            <fx:include source="/fxml/component/headword.fxml"/>
         </VBox>
     </SplitPane>
 </Tab>

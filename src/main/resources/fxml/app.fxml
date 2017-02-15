@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="600" minHeight="400" fx:id="rootPane" stylesheets="@app.css">
+            minWidth="720" minHeight="400" fx:id="rootPane" stylesheets="@app.css">
     <!-- Menu -->
     <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <Menu text="%menu.file">
