@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500">
+    <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
+    <center>
+        <GridPane vgap="10" hgap="10">
+            <columnConstraints>
+                <ColumnConstraints minWidth="10" maxWidth="10"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints valignment="BOTTOM"/>
+                <RowConstraints valignment="BOTTOM"/>
+                <RowConstraints valignment="BOTTOM"/>
+            </rowConstraints>
+            <!-- Col 0-->
+            <JFXTextField promptText="headword" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"
+                style="-fx-font-weight: bold; -fx-font-size: 18px;"/>
+            <Label prefWidth="10"/> <!-- padding -->
+            <!-- Col 1-->
+            <JFXTextField promptText="romanization" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <padding><Insets left="10"/></padding>
+            </JFXTextField>
+            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <padding><Insets left="10"/></padding>
+            </JFXTextField>
+            <!-- Col 2 -->
+            <JFXTextField promptText="pronunciation" style="-fx-font-style: italic"
+                          GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.valignment="BOTTOM"/>
+            <ComboBox promptText="type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <ComboBox promptText="cat." GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+            <TextField promptText="tags" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2"/>
+        </GridPane>
+    </center>
+    <right>
+        <VBox style="-fx-font-style: italic; -fx-text-fill: #444444;">
+            <padding><Insets left="40"/></padding>
+            <Label text="&lt;created>"/>
+            <Label text="&lt;modified>"/>
+        </VBox>
+    </right>
+</BorderPane>

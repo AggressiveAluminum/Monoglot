@@ -48,13 +48,16 @@ public class MonoglotController {
 
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
-        tabSelector.getSelectionModel().select(0);
+        tabSelector.getSelectionModel().select(1);
+        tabs.getSelectionModel().select(1);
 
-        Platform.runLater(()->{
-            rootPane.setTopAnchor(navigationBar, menuBar.getHeight());
-            rootPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
-            rootPane.setBottomAnchor(tabs, statusBar.getHeight());
-        });
+        Platform.runLater(this::postInit);
+    }
+
+    private void postInit(){
+        rootPane.setTopAnchor(navigationBar, menuBar.getHeight());
+        rootPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
+        rootPane.setBottomAnchor(tabs, statusBar.getHeight());
     }
 
     public void changeActiveTab(ActionEvent event) {
@@ -70,7 +73,6 @@ public class MonoglotController {
 
     public void openAboutDialog(ActionEvent event) {
         try {
-            System.out.println("Hello, suckers!");
             AboutDialog dialog = new AboutDialog(resources);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(rootPane.getScene().getWindow());
