@@ -3,6 +3,12 @@
     -fx-effect: dropshadow(three-pass-box, black, 3, 0, 0, 0);
 }
 
+#historyBackButton, #historyForeButton {
+    -fx-font-size: 14px;
+    -fx-background-color: #e3e3e3;
+    -fx-pref-width: 30px;
+}
+
 #search-section {
     -fx-padding: 10px;
     -fx-border-color: black;

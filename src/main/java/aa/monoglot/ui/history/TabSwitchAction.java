@@ -32,8 +32,4 @@ class TabSwitchAction implements HistoryAction {
         tabSelector.getSelectionModel().select(from);
         tabs.getSelectionModel().select(from);
     }
-
-    public boolean matchTS(int to, int from){
-        return to == to && from == from;
-    }
 }

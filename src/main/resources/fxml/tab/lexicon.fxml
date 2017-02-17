@@ -2,13 +2,18 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.CheckComboBox?>
+<?import javafx.scene.layout.HBox?>
 <Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
     <SplitPane dividerPositions="1">
         <VBox id="search-section" fx:id="searchSection">
             <TextField fx:id="searchField"/>
             <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
             <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
-            <TextField fx:id="tagField"/>
+            <HBox spacing="3">
+                <Label text="%prompt.search.tags" alignment="CENTER_LEFT"/>
+                <CheckComboBox fx:id="tagField" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+            </HBox>
             <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
                 <JFXListView fx:id="searchResults"/>
             </ScrollPane>

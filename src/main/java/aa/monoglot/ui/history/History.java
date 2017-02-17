@@ -3,7 +3,7 @@ package aa.monoglot.ui.history;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
 
 /**
  * Tracks UI navigation history.
@@ -12,8 +12,9 @@ import java.util.Stack;
  * @date 2/15/2017
  */
 public class History {
-    private final Stack<HistoryAction> history = new Stack<>();
-    private final Stack<HistoryAction> future = new Stack<>();
+    private static final int MAX_HISTORY = 32;
+    private final ArrayDeque<HistoryAction> history = new ArrayDeque<>();
+    private final ArrayDeque<HistoryAction> future = new ArrayDeque<>();
     private final BooleanProperty hasNoHistory = new SimpleBooleanProperty(true);
     private final BooleanProperty hasNoFuture = new SimpleBooleanProperty(true);
 
@@ -44,6 +45,8 @@ public class History {
      */
     public void addAndDo(HistoryAction action){
         history.push(action);
+        if(history.size() > MAX_HISTORY)
+            history.removeLast();
         future.clear(); // wipe out forward history
 
         hasNoHistory.set(false);
@@ -60,6 +63,7 @@ public class History {
             return;
         HistoryAction action = history.pop();
         future.push(action);
+        // don't need to check max, history + future will never be > MAX_HISTORY,
 
         hasNoHistory.set(history.isEmpty());
         hasNoFuture.set(false);
@@ -75,28 +79,11 @@ public class History {
             return;
         HistoryAction action = future.pop();
         history.push(action);
+        // don't need to check max, history + future will never be > MAX_HISTORY,
 
         hasNoHistory.set(false);
         hasNoFuture.set(future.isEmpty());
 
         action.doAction();
-    }
-
-    /**
-     * Matches a tab switch in the Future.
-     */
-    public boolean matchFTS(int to, int from) {
-        if(!hasFuture())
-            return false;
-        return future.peek().matchTS(to, from);
-    }
-
-    /**
-     * Matches a tab switch in the History;
-     */
-    public boolean matchPTS(int to, int from) {
-        if(!hasHistory())
-            return false;
-        return history.peek().matchTS(to,from);
     }
 }

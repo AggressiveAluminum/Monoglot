@@ -7,9 +7,4 @@ package aa.monoglot.ui.history;
 interface HistoryAction {
     void doAction();
     void undoAction();
-
-    /**
-     * Checks if this action is a tab switch from tab[from] to tab[to].
-     */
-    boolean matchTS(int to, int from);
 }

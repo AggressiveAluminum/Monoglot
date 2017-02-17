@@ -1,6 +1,9 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.SegmentedButton?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
             minWidth="720" minHeight="400" fx:id="rootPane" stylesheets="@app.css">
     <!-- Menu -->
@@ -23,8 +26,8 @@
     <!-- Content -->
     <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <tabs>
-            <fx:include fx:id="projectTab" source="main/project.fxml"/>
-            <fx:include fx:id="lexiconTab" source="main/lexicon.fxml"/>
+            <fx:include fx:id="projectTab" source="tab/project.fxml"/>
+            <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
         </tabs>
     </TabPane>
 
@@ -36,9 +39,17 @@
                       AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
         </left>
         <right>
-            <HBox BorderPane.alignment="CENTER_RIGHT">
-                <Button fx:id="historyBackButton" text="&lt;" onAction="#historyBack"/>
-                <Button fx:id="historyForeButton" text="&gt;" onAction="#historyForward"/>
+            <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">
+                <JFXButton fx:id="historyBackButton" id="historyBackButton" onAction="#historyBack">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi-arrow-left"/>
+                    </graphic>
+                </JFXButton>
+                <JFXButton fx:id="historyForeButton" id="historyBackButton" onAction="#historyForward">
+                    <graphic>
+                        <FontIcon iconLiteral="mdi-arrow-right"/>
+                    </graphic>
+                </JFXButton>
             </HBox>
         </right>
     </BorderPane>
