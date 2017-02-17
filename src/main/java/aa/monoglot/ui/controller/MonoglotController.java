@@ -8,10 +8,12 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 
+import javax.swing.*;
 import java.util.ResourceBundle;
 
 /**
@@ -24,6 +26,7 @@ public class MonoglotController {
 
     // === HISTORY ===
     private History history = new History();
+    private boolean manualSwitchRequested = false;
     private TabSwitchActionFactory tabSwitchActionFactory;
 
     // === ELEMENTS ===
@@ -71,28 +74,36 @@ public class MonoglotController {
         rootPane.setBottomAnchor(tabs, statusBar.getHeight());
     }
 
+    // == TAB SWITCH ==
+    @FXML
+    private void changeActiveTabManualRequest(MouseEvent event){
+        manualSwitchRequested = true;
+    }
+
     public void changeActiveTab(ActionEvent event) {
         int from = selected;
         selected = tabSelector.getSelectionModel().getSelectedIndex();
 
         if(from == selected)
             return;
-        if(history.matchFTS(selected, from) || history.matchPTS(from, selected))
-            return;
-
-        history.addAndDo(tabSwitchActionFactory.getTabSwitchAction(from, selected));
+        if(manualSwitchRequested)
+            history.addAndDo(tabSwitchActionFactory.getTabSwitchAction(from, selected));
     }
 
+    // == HISTORY ==
     @FXML
     private void historyForward(){
+        manualSwitchRequested = false;
         history.forward();
     }
 
     @FXML
     private void historyBack(){
+        manualSwitchRequested = false;
         history.back();
     }
 
+    // == MENU ACTIONS ==
     public void quitApplication(ActionEvent event) {
         Platform.exit();
     }
