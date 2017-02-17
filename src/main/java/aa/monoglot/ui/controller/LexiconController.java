@@ -26,12 +26,5 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
         searchResults.getItems().addAll(resources.getString("placeholder.long").split("\\s+"));
     }
 
-    protected void postInitialize(){
-        parentController.counter.setText(Integer.toString(parentController.count));
-    }
-
-    @FXML
-    private void incrementCounter(ActionEvent event) {
-        parentController.counter.setText(Integer.toString(++parentController.count));
-    }
+    protected void postInitialize(){}
 }

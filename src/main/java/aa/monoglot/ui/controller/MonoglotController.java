@@ -2,6 +2,8 @@ package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
 import aa.monoglot.ui.dialog.AboutDialog;
+import aa.monoglot.ui.history.History;
+import aa.monoglot.ui.history.TabSwitchActionFactory;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,6 +22,11 @@ public class MonoglotController {
     @FXML
     private ResourceBundle resources;
 
+    // === HISTORY ===
+    private History history = new History();
+    private TabSwitchActionFactory tabSwitchActionFactory;
+
+    // === ELEMENTS ===
     public MenuBar menuBar;
 
     public TabPane tabs;
@@ -27,11 +34,10 @@ public class MonoglotController {
     public AnchorPane statusBar;
     public AnchorPane rootPane;
 
-    @FXML
-    Label counter;
-    int count = 0;
+    public Button historyBackButton, historyForeButton;
 
     public ComboBox tabSelector;
+    private int selected = 1; // Lexicon tab is #1, Project Settings is #0.
 
     // === TABS ===
     public Tab lexiconTab;
@@ -48,8 +54,13 @@ public class MonoglotController {
 
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
-        tabSelector.getSelectionModel().select(1);
-        tabs.getSelectionModel().select(1);
+        tabSelector.getSelectionModel().select(selected);
+        tabs.getSelectionModel().select(selected);
+
+        tabSwitchActionFactory = new TabSwitchActionFactory(tabSelector, tabs);
+
+        historyBackButton.disableProperty().bind(history.hasNoHistoryProperty());
+        historyForeButton.disableProperty().bind(history.hasNoFutureProperty());
 
         Platform.runLater(this::postInit);
     }
@@ -61,7 +72,25 @@ public class MonoglotController {
     }
 
     public void changeActiveTab(ActionEvent event) {
-        tabs.getSelectionModel().select(tabSelector.getSelectionModel().getSelectedIndex());
+        int from = selected;
+        selected = tabSelector.getSelectionModel().getSelectedIndex();
+
+        if(from == selected)
+            return;
+        if(history.matchFTS(selected, from) || history.matchPTS(from, selected))
+            return;
+
+        history.addAndDo(tabSwitchActionFactory.getTabSwitchAction(from, selected));
+    }
+
+    @FXML
+    private void historyForward(){
+        history.forward();
+    }
+
+    @FXML
+    private void historyBack(){
+        history.back();
     }
 
     public void quitApplication(ActionEvent event) {
@@ -69,6 +98,7 @@ public class MonoglotController {
     }
 
     public void openSettingsDialog(ActionEvent event) {
+        //TODO
     }
 
     public void openAboutDialog(ActionEvent event) {
@@ -76,8 +106,7 @@ public class MonoglotController {
             AboutDialog dialog = new AboutDialog(resources);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(rootPane.getScene().getWindow());
-            //dialog.showAndWait();
-            throw new Exception();
+            dialog.showAndWait();
         } catch(Exception e){
             Monoglot.getMonoglot().showError(e);
         }

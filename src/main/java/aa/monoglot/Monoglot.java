@@ -24,6 +24,7 @@ public class Monoglot extends Application {
     public Stage window;
     public ResourceBundle bundle;
     public MonoglotController mainController;
+
     private static Monoglot monoglot;
 
     public void start(Stage primaryStage){

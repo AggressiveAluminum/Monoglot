@@ -36,7 +36,10 @@
                       AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
         </left>
         <right>
-            <Label text="%placeholder.short" AnchorPane.rightAnchor="0" BorderPane.alignment="CENTER_RIGHT"/>
+            <HBox BorderPane.alignment="CENTER_RIGHT">
+                <Button fx:id="historyBackButton" text="&lt;" onAction="#historyBack"/>
+                <Button fx:id="historyForeButton" text="&gt;" onAction="#historyForward"/>
+            </HBox>
         </right>
     </BorderPane>
 
