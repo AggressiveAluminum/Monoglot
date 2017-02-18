@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 <Tab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.SettingsController">
     <AnchorPane>
+        <!--<padding><Insets top="10" bottom="10" left="10" right="10"/></padding>-->
         <VBox>
             <TextField promptText="%prompt.settings.projectName"/>
         </VBox>

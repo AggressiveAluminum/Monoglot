@@ -25,6 +25,8 @@ public class Monoglot extends Application {
     public ResourceBundle bundle;
     public MonoglotController mainController;
 
+    public Project project = new Project();
+
     private static Monoglot monoglot;
 
     public void start(Stage primaryStage){
@@ -64,6 +66,13 @@ public class Monoglot extends Application {
             );
         } catch(Exception e){
             // fail silently, this part isn't vital.
+        }
+
+        try {
+            //TODO: get temp working directory
+            //project.setWorkingDirectory();
+        } catch (Exception e){
+
         }
 
         window.show();
