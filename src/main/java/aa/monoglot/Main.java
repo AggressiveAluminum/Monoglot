@@ -10,9 +10,8 @@ import javafx.application.Application;
 public class Main {
     public static void main(String[] args) throws java.io.IOException {
         //Application.launch(Monoglot.class, args);
-        String path = "/Users/Darren/Desktop/";
-        String name = "temp.mglt";
+        String path = "/Users/Darren/Desktop/temp.mglt";
         String tempLoc = "/Users/Darren/Desktop/temp";
-        SaveLoad.Save(path, name, tempLoc);
+        SaveLoad.Save(path, tempLoc);
     }
 }

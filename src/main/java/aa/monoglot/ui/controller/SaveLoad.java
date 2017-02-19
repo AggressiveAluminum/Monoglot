@@ -8,13 +8,14 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Darren on 2/18/17.
+ * Save and Load functions, for saving and loading user projects.
  */
 public class SaveLoad {
 
-    static public void Save(String savePath, String fileName, String tempLoc) throws java.io.IOException {
+    static public void Save(String savePath, String tempLoc) throws java.io.IOException {
 
         //Creates zip file a location specified (savePath) and names it (fileName)
-        File f = new File(savePath + fileName);
+        File f = new File(savePath);
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(f));
 
         File d = new File(tempLoc);
