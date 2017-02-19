@@ -1,5 +1,6 @@
 package aa.monoglot;
 
+import aa.monoglot.db.Database;
 import aa.monoglot.ui.controller.MonoglotController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -26,6 +27,8 @@ public class Monoglot extends Application {
     public MonoglotController mainController;
 
     public Project project = new Project();
+
+    public Database database; // or project, keep a reference somewhere
 
     private static Monoglot monoglot;
 
