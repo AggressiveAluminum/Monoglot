@@ -1,9 +1,8 @@
 package aa.monoglot.ui.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -37,7 +36,29 @@ public class SaveLoad {
         out.close();
     }
 
-    static public void Load(String projPath, String openLoc) {
-
+    static public void Load(String projPath, String openPath) throws java.io.IOException {
+        FileInputStream fis = new FileInputStream(projPath);
+        ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis));
+        ZipEntry zEntry = zipIs.getNextEntry();
+        try {
+            while(zEntry != null) {
+                byte[] tmp = new byte[4 * 1024];
+                FileOutputStream fos = new FileOutputStream(openPath + zEntry.getName());
+                int size = 0;
+                while ((size = zipIs.read(tmp)) != -1) {
+                    fos.write(tmp, 0, size);
+                }
+                fos.flush();
+                fos.close();
+                zEntry = zipIs.getNextEntry();
+            }
+            zipIs.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

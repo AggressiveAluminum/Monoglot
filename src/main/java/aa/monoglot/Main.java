@@ -13,5 +13,8 @@ public class Main {
         String path = "/Users/Darren/Desktop/temp.mglt";
         String tempLoc = "/Users/Darren/Desktop/temp";
         SaveLoad.Save(path, tempLoc);
+
+        String openPath = "/Users/Darren/Desktop/save/";
+        SaveLoad.Load(path, openPath);
     }
 }
