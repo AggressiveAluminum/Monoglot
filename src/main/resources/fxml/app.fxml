@@ -41,12 +41,12 @@
             <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">
                 <JFXButton fx:id="historyBackButton" id="historyBackButton" onAction="#historyBack">
                     <graphic>
-                        <FontIcon iconLiteral="mdi-arrow-left"/>
+                        <FontIcon iconLiteral="gmi-keyboard-arrow-left"/>
                     </graphic>
                 </JFXButton>
                 <JFXButton fx:id="historyForeButton" id="historyBackButton" onAction="#historyForward">
                     <graphic>
-                        <FontIcon iconLiteral="mdi-arrow-right"/>
+                        <FontIcon iconLiteral="gmi-keyboard-arrow-right"/>
                     </graphic>
                 </JFXButton>
             </HBox>
