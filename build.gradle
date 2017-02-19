@@ -1,3 +1,7 @@
+plugins {
+    id "edu.sc.seis.macAppBundle" version "2.1.6"
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
 
@@ -12,6 +16,7 @@ dependencies {
     compile 'org.kordamp.ikonli:ikonli-javafx:1.9.0'
     compile 'org.kordamp.ikonli:ikonli-materialdesign-pack:1.9.0'
     compile 'com.h2database:h2:1.4.193'
+    compile 'com.h2database:h2:1.4.193'
 }
 
 sourceCompatibility = 1.8
@@ -25,4 +30,9 @@ jar {
                 'Main-Class': 'aa.monoglot.Main'
         )
     }
+}
+
+macAppBundle {
+    icon = "images/logo.icns"
+    bundleJRE = false
 }
