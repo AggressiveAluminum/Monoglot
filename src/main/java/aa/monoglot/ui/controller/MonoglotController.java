@@ -3,10 +3,12 @@ package aa.monoglot.ui.controller;
 import aa.monoglot.Monoglot;
 import aa.monoglot.Project;
 import aa.monoglot.ui.dialog.AboutDialog;
+import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -128,23 +130,23 @@ public class MonoglotController {
     }
 
     // == MENU ACTIONS ==
-    public void quitApplication(ActionEvent event) {
+    public void quitApplication(Event event) {
         if(closeProjectImpl())
             Platform.exit();
+        else event.consume();
     }
 
     @FXML private void closeProject(ActionEvent e){
-        closeProjectImpl();
-        setProjectControlsEnabled(false);
+        if(closeProjectImpl())
+            setProjectControlsEnabled(false);
     }
+
     private boolean closeProjectImpl() {
         if(Monoglot.getMonoglot().getProject() != null && Monoglot.getMonoglot().getProject().hasUnsavedChanges()) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.initOwner(Monoglot.getMonoglot().window);
-            confirm.setHeaderText(resources.getString("dialog.saveOnExit.text"));
-            confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-
-            Optional<ButtonType> result = confirm.showAndWait();
+            Optional<ButtonType> result = new YesNoCancelAlert(
+                    Monoglot.getMonoglot().window,
+                    resources.getString("dialog.saveOnExit.text")
+                ).showAndWait();
             if(result.isPresent()){
                 if(result.get() == ButtonType.YES)
                     saveProject(null);
@@ -152,6 +154,7 @@ public class MonoglotController {
                     return false;
             }
         }
+        Monoglot.getMonoglot().closeProject();
         return true;
     }
 

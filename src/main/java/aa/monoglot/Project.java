@@ -56,4 +56,8 @@ public class Project {
     public boolean hasUnsavedChanges() {
         return true;//TODO
     }
+
+    public void close() {
+        //TODO
+    }
 }

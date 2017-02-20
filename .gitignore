@@ -143,6 +143,7 @@ hs_err_pid*
 *.iws
 
 ## Plugin-specific files:
+.idea/statistic.xml
 
 # IntelliJ
 /out/

@@ -1,5 +1,5 @@
 <?import com.jfoenix.controls.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.CheckComboBox?>
@@ -23,26 +23,22 @@
                     <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
                     <center>
                         <GridPane vgap="10" hgap="10">
+                            <padding><Insets bottom="5"/></padding>
                             <columnConstraints>
                                 <ColumnConstraints minWidth="10" maxWidth="10"/>
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints valignment="BOTTOM"/>
-                                <RowConstraints valignment="BOTTOM"/>
-                                <RowConstraints valignment="BOTTOM"/>
                             </rowConstraints>
-                            <!-- Row 0-->
 
-                            <JFXTextField promptText="%prompt.lex.headword" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"
-                                          style="-fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <!-- Row 0-->
+                            <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text"
+                                          GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
                             <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic"
-                                          GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.valignment="BOTTOM"/>
-                            <Label prefWidth="10"/><!-- padding -->
+                                          GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
                             <!-- Row 1-->
-                            <JFXTextField promptText="%promp.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                <padding><Insets left="10"/></padding>
-                            </JFXTextField>
+                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                             <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
 
@@ -63,13 +59,21 @@
                 </BorderPane>
             </top>
             <center>
-                <VBox fx:id="definitionSection">
-                    <!-- TODO -->
-                </VBox>
+                <Accordion expandedPane="$lexiconDefinitionsPane">
+                    <panes>
+                        <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
+                            <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
+                                <style>-fx-background-color:transparent;</style>
+                                <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
+                                
+                                <VBox maxHeight="700" minHeight="700">
+                                    <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
+                                </VBox>
+                            </ScrollPane>
+                        </TitledPane>
+                    </panes>
+                </Accordion>
             </center>
-            <bottom>
-                <!-- TODO: save controls -->
-            </bottom>
         </BorderPane>
     </SplitPane>
 </Tab>

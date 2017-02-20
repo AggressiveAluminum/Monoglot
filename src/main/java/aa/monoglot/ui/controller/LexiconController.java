@@ -1,9 +1,7 @@
 package aa.monoglot.ui.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
@@ -28,6 +26,7 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
 
     @FXML private BorderPane wordSection;
     //public Headword activeWord;
+    @FXML private TitledPane lexiconDefinitionsPane;
 
     @FXML private void initialize(){
         searchResults.getItems().addAll(resources.getString("placeholder.long").split("\\s+"));

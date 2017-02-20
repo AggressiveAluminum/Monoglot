@@ -73,6 +73,8 @@ public class Monoglot extends Application {
 
         //TODO: open last project?
 
+        Platform.setImplicitExit(false);
+        window.setOnCloseRequest(mainController::quitApplication);
         window.show();
     }
 
@@ -99,7 +101,8 @@ public class Monoglot extends Application {
             text = bundle.getString("dialog.error.normal.text");
         }
 
-        error.initOwner(window);
+        /*if(isFatal != null)
+            error.initOwner(window);*/
         error.setTitle(title);
         error.setHeaderText(header);
         error.setContentText(text);
@@ -117,7 +120,6 @@ public class Monoglot extends Application {
     public static Monoglot getMonoglot() {
         return monoglot;
     }
-
     public Project getProject() {
         return project;
     }
@@ -128,5 +130,12 @@ public class Monoglot extends Application {
 
     public void openProject(File path) throws FileNotFoundException {
         project = new Project(path);
+    }
+
+    public void closeProject() {
+        if(project != null) {
+            project.close();
+            project = null;
+        }
     }
 }

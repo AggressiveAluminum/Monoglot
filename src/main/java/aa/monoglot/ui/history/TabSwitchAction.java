@@ -22,13 +22,11 @@ class TabSwitchAction implements HistoryAction {
     }
 
     public void doAction(){
-        System.err.printf("[DO] Going from tab[%d] to tab[%d]\n", from, to);
         tabSelector.getSelectionModel().select(to);
         tabs.getSelectionModel().select(to);
     }
 
     public void undoAction(){
-        System.err.printf("[UNDO] Going from tab[%d] to tab[%d]\n", to, from);
         tabSelector.getSelectionModel().select(from);
         tabs.getSelectionModel().select(from);
     }

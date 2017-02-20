@@ -47,7 +47,17 @@
     -fx-pref-width: 80px;
 }
 
+.colored-button {
+    -fx-background-color: rgb(40,100,214);
+    -fx-text-fill: WHITE;
+}
+
 .grey-italics {
     -fx-font-style: italic;
     -fx-text-fill: #444444;
+}
+
+.large-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
 }
