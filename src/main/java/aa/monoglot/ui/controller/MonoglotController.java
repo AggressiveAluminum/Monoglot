@@ -1,6 +1,7 @@
 package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
+import aa.monoglot.Project;
 import aa.monoglot.ui.dialog.AboutDialog;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
@@ -11,8 +12,15 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -20,6 +28,8 @@ import java.util.ResourceBundle;
  * @date 2/8/2017
  */
 public class MonoglotController {
+    private List<FileChooser.ExtensionFilter> mgltExtensionFilter;
+
     @FXML
     private ResourceBundle resources;
 
@@ -30,6 +40,11 @@ public class MonoglotController {
 
     // === ELEMENTS ===
     public MenuBar menuBar;
+    @FXML private MenuItem saveProjectItem;
+    @FXML private MenuItem saveProjectAsItem;
+    @FXML private MenuItem closeProjectItem;
+
+    @FXML private Menu editMenu;
 
     public TabPane tabs;
     public BorderPane navigationBar;
@@ -48,16 +63,24 @@ public class MonoglotController {
     public Tab projectTab;
     public SettingsController projectTabController;
 
+    public Tab emptyTab;
+
     // === INIT ===
     @FXML
     private void initialize(){
+        mgltExtensionFilter = Arrays.asList(
+                new FileChooser.ExtensionFilter(resources.getString("app.fileTypeDescription"), ".mglt", ".monoglot")
+        );
+
         lexiconTabController.registerMaster(this);
         projectTabController.registerMaster(this);
 
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
+
+        tabSelector.getItems().remove(tabSelector.getItems().size() - 1);
         tabSelector.getSelectionModel().select(selected);
-        tabs.getSelectionModel().select(selected);
+        tabs.getSelectionModel().select(emptyTab);
 
         tabSwitchActionFactory = new TabSwitchActionFactory(tabSelector, tabs);
 
@@ -71,6 +94,8 @@ public class MonoglotController {
         rootPane.setTopAnchor(navigationBar, menuBar.getHeight());
         rootPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
         rootPane.setBottomAnchor(tabs, statusBar.getHeight());
+
+        setProjectControlsEnabled(false);
     }
 
     // == TAB SWITCH ==
@@ -104,7 +129,30 @@ public class MonoglotController {
 
     // == MENU ACTIONS ==
     public void quitApplication(ActionEvent event) {
-        Platform.exit();
+        if(closeProjectImpl())
+            Platform.exit();
+    }
+
+    @FXML private void closeProject(ActionEvent e){
+        closeProjectImpl();
+        setProjectControlsEnabled(false);
+    }
+    private boolean closeProjectImpl() {
+        if(Monoglot.getMonoglot().getProject() != null && Monoglot.getMonoglot().getProject().hasUnsavedChanges()) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.initOwner(Monoglot.getMonoglot().window);
+            confirm.setHeaderText(resources.getString("dialog.saveOnExit.text"));
+            confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if(result.isPresent()){
+                if(result.get() == ButtonType.YES)
+                    saveProject(null);
+                else if(result.get() == ButtonType.CANCEL)
+                    return false;
+            }
+        }
+        return true;
     }
 
     public void openSettingsDialog(ActionEvent event) {
@@ -120,5 +168,80 @@ public class MonoglotController {
         } catch(Exception e){
             Monoglot.getMonoglot().showError(e);
         }
+    }
+
+    public void setProjectControlsEnabled(boolean onOff) {
+        history.clear();
+        manualSwitchRequested = false;
+
+        tabSelector.setDisable(!onOff);
+        editMenu.setDisable(!onOff);
+        saveProjectItem.setDisable(!onOff);
+        saveProjectAsItem.setDisable(!onOff);
+        closeProjectItem.setDisable(!onOff);
+
+        if(!onOff) {
+            lexiconTabController.clearInfo();
+            projectTabController.clearInfo();
+            tabs.getSelectionModel().select(emptyTab);
+        } else {
+            tabs.getSelectionModel().select(selected = 1);
+            tabSelector.getSelectionModel().select(selected);
+        }
+    }
+
+    public void newProject(ActionEvent event) {
+        Monoglot.getMonoglot().newProject();
+        setProjectControlsEnabled(true);
+    }
+
+    public void openProject(ActionEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().addAll(mgltExtensionFilter);
+        chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
+        File file = chooser.showOpenDialog(Monoglot.getMonoglot().window);
+
+        if(file != null){
+            try {
+                Monoglot.getMonoglot().openProject(file);
+                setProjectControlsEnabled(true);
+            } catch(FileNotFoundException e){
+                //TODO
+            }
+        }
+    }
+
+    public void saveProject(ActionEvent event) {
+        Project project = Monoglot.getMonoglot().getProject();
+        if(project == null)
+            return;
+        if(!project.hasSavePath()){
+            FileChooser chooser = new FileChooser();
+            chooser.getExtensionFilters().addAll(mgltExtensionFilter);
+            chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
+            File file = chooser.showSaveDialog(Monoglot.getMonoglot().window);
+            if(file != null)
+                project.setSaveFile(file);
+        }
+        if(project.hasSavePath())
+            project.save();
+        //TODO
+    }
+
+    public void saveProjectAs(ActionEvent event) {
+        Project project = Monoglot.getMonoglot().getProject();
+        if(project == null)
+            return;
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().addAll(mgltExtensionFilter);
+        chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
+        File file = chooser.showSaveDialog(Monoglot.getMonoglot().window);
+        if(file != null){
+            project.setSaveFile(file);
+            project.save();
+        } else {
+            //TODO?
+        }
+        //TODO
     }
 }

@@ -13,4 +13,10 @@ public abstract class AbstractChildController<P> {
     }
 
     protected abstract void postInitialize();
+
+    /**
+     * Clears project-specific information out of this tab
+     * to prevent outdated information when switching projects.
+     */
+    protected abstract void clearInfo();
 }

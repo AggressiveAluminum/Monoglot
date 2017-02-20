@@ -1,25 +1,75 @@
-<?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.CheckComboBox?>
-<?import javafx.scene.layout.HBox?>
 <Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
     <SplitPane dividerPositions="1">
         <VBox id="search-section" fx:id="searchSection">
-            <TextField fx:id="searchField"/>
+            <JFXTextField fx:id="searchField" promptText="%prompt.search.search"/>
             <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
             <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
             <HBox spacing="3">
-                <Label text="%prompt.search.tags" alignment="CENTER_LEFT"/>
-                <CheckComboBox fx:id="tagField" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                <Label text="%prompt.search.tags" maxHeight="Infinity"/>
+                <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             </HBox>
             <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
                 <JFXListView fx:id="searchResults"/>
             </ScrollPane>
         </VBox>
-        <VBox>
-            <fx:include source="/fxml/component/headword.fxml"/>
-        </VBox>
+        <BorderPane>
+            <top>
+                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection">
+                    <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
+                    <center>
+                        <GridPane vgap="10" hgap="10">
+                            <columnConstraints>
+                                <ColumnConstraints minWidth="10" maxWidth="10"/>
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints valignment="BOTTOM"/>
+                                <RowConstraints valignment="BOTTOM"/>
+                                <RowConstraints valignment="BOTTOM"/>
+                            </rowConstraints>
+                            <!-- Row 0-->
+
+                            <JFXTextField promptText="%prompt.lex.headword" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"
+                                          style="-fx-font-weight: bold; -fx-font-size: 18px;"/>
+                            <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic"
+                                          GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.valignment="BOTTOM"/>
+                            <Label prefWidth="10"/><!-- padding -->
+
+                            <!-- Row 1-->
+                            <JFXTextField promptText="%promp.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <padding><Insets left="10"/></padding>
+                            </JFXTextField>
+                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                            <!-- Row 2 -->
+                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                <padding><Insets left="10"/></padding>
+                            </JFXTextField>
+                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity"/>
+                        </GridPane>
+                    </center>
+                    <right>
+                        <VBox>
+                            <padding><Insets left="40"/></padding>
+                            <Label text="&lt;created>" styleClass="grey-italics"/>
+                            <Label text="&lt;modified>" styleClass="grey-italics"/>
+                        </VBox>
+                    </right>
+                </BorderPane>
+            </top>
+            <center>
+                <VBox fx:id="definitionSection">
+                    <!-- TODO -->
+                </VBox>
+            </center>
+            <bottom>
+                <!-- TODO: save controls -->
+            </bottom>
+        </BorderPane>
     </SplitPane>
 </Tab>

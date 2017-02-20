@@ -1,6 +1,6 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
-    id "edu.sc.seis.macAppBundle" version "2.1.6"
+    id 'edu.sc.seis.macAppBundle' version '2.1.6'
 }
 
 apply plugin: 'java'

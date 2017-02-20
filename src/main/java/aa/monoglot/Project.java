@@ -11,8 +11,16 @@ import java.nio.file.NotDirectoryException;
 public class Project {
     //private Database database;
     private File workingDirectory;
+    private File saveFile;
 
     public Project(){
+        //TODO
+    }
+
+    public Project(File path) throws FileNotFoundException {
+        if(!path.exists() || !path.isFile())
+            throw new FileNotFoundException(path.getAbsolutePath());
+        saveFile = path;
         //TODO
     }
 
@@ -31,5 +39,21 @@ public class Project {
             throw new NotDirectoryException(workingDirectory.getAbsolutePath());
 
         this.workingDirectory = workingDirectory;
+    }
+
+    public void setSaveFile(File file){
+        //TODO
+    }
+
+    public void save(){
+        //TODO
+    }
+
+    public boolean hasSavePath(){
+        return saveFile != null;
+    }
+
+    public boolean hasUnsavedChanges() {
+        return true;//TODO
     }
 }

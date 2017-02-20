@@ -1,6 +1,5 @@
 package aa.monoglot;
 
-import aa.monoglot.db.Database;
 import aa.monoglot.ui.controller.MonoglotController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -12,9 +11,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -25,10 +25,9 @@ public class Monoglot extends Application {
     public Stage window;
     public ResourceBundle bundle;
     public MonoglotController mainController;
+    public List<Image> icons = new ArrayList<>();
 
-    public Project project = new Project();
-
-    public Database database; // or project, keep a reference somewhere
+    private Project project;
 
     private static Monoglot monoglot;
 
@@ -58,25 +57,21 @@ public class Monoglot extends Application {
             Platform.exit();
         }
 
-        try {
-            InputStream image = getClass().getClassLoader().getResourceAsStream("images/logo.png");
-            primaryStage.getIcons().addAll(
-                    new Image(image),
-                    new Image(image, 128, 128, true, true),
-                    new Image(image, 64, 64, true, true),
-                    new Image(image, 32, 32, true, true),
-                    new Image(image, 16, 16, true, true)
+        try(InputStream image = getClass().getClassLoader().getResourceAsStream("images/logo.png");
+            InputStream largeIcon = getClass().getClassLoader().getResourceAsStream("images/logo-large.png")){
+            Collections.addAll(icons, new Image(largeIcon),
+                new Image(image),
+                new Image(image, 128, 128, true, true),
+                new Image(image, 64, 64, true, true),
+                new Image(image, 32, 32, true, true),
+                new Image(image, 16, 16, true, true)
             );
+            primaryStage.getIcons().addAll(icons);
         } catch(Exception e){
             // fail silently, this part isn't vital.
         }
 
-        try {
-            //TODO: get temp working directory
-            //project.setWorkingDirectory();
-        } catch (Exception e){
-
-        }
+        //TODO: open last project?
 
         window.show();
     }
@@ -104,6 +99,7 @@ public class Monoglot extends Application {
             text = bundle.getString("dialog.error.normal.text");
         }
 
+        error.initOwner(window);
         error.setTitle(title);
         error.setHeaderText(header);
         error.setContentText(text);
@@ -120,5 +116,17 @@ public class Monoglot extends Application {
 
     public static Monoglot getMonoglot() {
         return monoglot;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void newProject(){
+        project = new Project();
+    }
+
+    public void openProject(File path) throws FileNotFoundException {
+        project = new Project(path);
     }
 }

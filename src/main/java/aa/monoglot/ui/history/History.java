@@ -86,4 +86,12 @@ public class History {
 
         action.doAction();
     }
+
+    public void clear() {
+        history.clear();
+        future.clear();
+
+        hasNoHistory.set(true);
+        hasNoFuture.set(true);
+    }
 }

@@ -1,0 +1,10 @@
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.Label?>
+<Tab text="M_EMPTY_TAB" xmlns:fx="http://javafx.com/fxml">
+    <BorderPane>
+        <center>
+            <Label BorderPane.alignment="CENTER" styleClass="grey-italics" text="%app.emptyTabText"/>
+        </center>
+    </BorderPane>
+</Tab>

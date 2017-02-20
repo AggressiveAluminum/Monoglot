@@ -46,3 +46,8 @@
     -fx-text-fill: WHITE;
     -fx-pref-width: 80px;
 }
+
+.grey-italics {
+    -fx-font-style: italic;
+    -fx-text-fill: #444444;
+}

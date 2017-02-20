@@ -8,7 +8,11 @@
     <!-- Menu -->
     <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
         <Menu text="%menu.file">
-            <MenuItem text="%menu.file.newProject"/>
+            <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
+            <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
+            <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S"/>
+            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" accelerator="Shortcut+Shift+S"/>
+            <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
             <SeparatorMenuItem/>
@@ -16,6 +20,7 @@
         </Menu>
         <Menu text="%menu.edit" fx:id="editMenu">
             <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N"/>
+            <MenuItem text="%menu.edit.deleteWord"/>
         </Menu>
         <Menu text="%menu.help">
             <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
@@ -27,6 +32,8 @@
         <tabs>
             <fx:include fx:id="projectTab" source="tab/project.fxml"/>
             <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+            <!-- keep this last -->
+            <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
         </tabs>
     </TabPane>
 

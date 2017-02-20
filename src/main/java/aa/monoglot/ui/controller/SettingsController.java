@@ -16,4 +16,8 @@ public class SettingsController extends AbstractChildController<MonoglotControll
 
     public void saveChanges(ActionEvent event) {
     }
+
+    protected  void clearInfo(){
+        //TODO
+    }
 }
