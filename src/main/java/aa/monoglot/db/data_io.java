@@ -52,7 +52,7 @@ public class data_io {
         conn = dbOpenConn();
     }
 
-    private ResultSet doSQLAction(String action){
+    public void doSQLAction(String action){
 
         Connection conn = dbOpenConn();
         queue.add(action);
