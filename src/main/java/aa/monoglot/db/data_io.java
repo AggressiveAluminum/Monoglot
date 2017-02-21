@@ -1,9 +1,7 @@
 package aa.monoglot.db;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayDeque;
-import java.util.Properties;
 
 /**
  * Created by Matt on 2/20/17.
@@ -43,7 +41,7 @@ public class data_io {
     }
 
     public void pauseDB(){
-        if ( conn != null{
+        if ( conn != null ){
             dbCloseConn(conn);
         }
     }
@@ -67,6 +65,6 @@ public class data_io {
         catch (SQLException e){
             e.printStackTrace();
         }
-        return results;
+      //  return results;
     }
 }
