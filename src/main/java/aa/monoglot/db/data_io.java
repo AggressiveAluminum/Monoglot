@@ -8,7 +8,6 @@ public class data_io {
     boolean paused = false;
 
     public void pauseDB(){
-
     }
 
     public void save(){
