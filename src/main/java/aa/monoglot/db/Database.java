@@ -14,7 +14,11 @@ public class Database {
         try {
             Class.forName("org.h2.Driver");
             Connection conn = DriverManager.getConnection(getConnString(Paths.get("~/Documents")));
-            //application code here
+//
+//            Statement stmt = null;
+//            String query = "create table headword()";
+//
+
             conn.close();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
