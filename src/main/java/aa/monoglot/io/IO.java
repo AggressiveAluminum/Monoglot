@@ -110,6 +110,7 @@ public class IO {
 
     /**
      * Zips and saves <code>workingDirectory</code> to <code>saveLocation</code>, overwriting if necessary.
+     * @author Darren
      * @return true if successful.
      */
     /*public static boolean save(Path workingDirectory, Path saveLocation){
@@ -148,6 +149,9 @@ public class IO {
         return true;
     }
 
+    /**
+     * @author Darren
+     */
     public static boolean load(Path file, Path workingDirectory){
         try(ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(Files.newInputStream(file)))){
             ZipEntry zEntry = zipIs.getNextEntry();
