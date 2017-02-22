@@ -1,4 +1,4 @@
-package aa.monoglot.ui.controller;
+package aa.monoglot.io;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
@@ -11,7 +11,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class SaveLoad {
 
-    static public void Save(String savePath, String tempLoc) throws java.io.IOException {
+    static public void save(String savePath, String tempLoc) throws java.io.IOException {
 
         //Creates zip file a location specified (savePath) and names it (fileName)
         File f = new File(savePath);
@@ -36,7 +36,7 @@ public class SaveLoad {
         out.close();
     }
 
-    static public void Load(String projPath, String openPath) throws java.io.IOException {
+    static public void load(String projPath, String openPath) throws java.io.IOException {
         FileInputStream fis = new FileInputStream(projPath);
         ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(fis));
         ZipEntry zEntry = zipIs.getNextEntry();
