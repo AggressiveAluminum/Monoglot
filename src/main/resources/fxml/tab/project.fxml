@@ -1,15 +1,13 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import com.jfoenix.controls.JFXTextArea?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.*?>
 <Tab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.SettingsController">
     <AnchorPane>
-        <VBox AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10">
+        <VBox AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10" spacing="10">
             <JFXTextField promptText="%prompt.settings.projectName" styleClass="large-text" fx:id="projectName"/>
-            <JFXTextArea promptText="%prompt.settings.projectNotes" fx:id="projectNotes"/>
+            <TextArea promptText="%prompt.settings.projectNotes" fx:id="projectNotes"/>
         </VBox>
         <HBox AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" spacing="5">
             <JFXButton text="%dialog.save" styleClass="save-button" onAction="#saveChanges"/>

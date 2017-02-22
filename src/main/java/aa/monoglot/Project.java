@@ -26,8 +26,7 @@ public class Project {
     private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(true);
 
     public Project() throws IOException {
-        database = new Database(workingDirectory);
-        //TODO
+        commonInit();
     }
 
     public Project(Path path) throws IOException {
@@ -36,7 +35,7 @@ public class Project {
 
     public Project(Path path, boolean isDirectory) throws IOException {
         if(isDirectory){
-            try {
+            try { // delete existing tmp dir, we don't use it.
                 Files.delete(workingDirectory);
             } catch (Exception e){/* don't care */}
             workingDirectory = path;
@@ -44,8 +43,16 @@ public class Project {
             if(!Files.exists(path) || Files.isDirectory(path))
                 throw new FileNotFoundException(path.toAbsolutePath().toString());
             saveFile = path;
+            IO.unzipToDirectory(saveFile, workingDirectory);
             hasUnsavedChanges.set(false);
         }
+
+        commonInit();
+    }
+
+    private void commonInit(){
+        database = new Database(workingDirectory);
+        System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
     }
 
     public boolean hasWorkingDirectory(){

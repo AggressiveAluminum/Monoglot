@@ -1,18 +1,11 @@
 package aa.monoglot.io;
 
-import aa.monoglot.Monoglot;
-import aa.monoglot.Project;
 import aa.monoglot.db.Database;
-import aa.monoglot.ui.controller.MonoglotController;
-import aa.monoglot.ui.dialog.ConfirmOverwriteAlert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
+import java.net.URI;
+import java.nio.file.*;
+import java.util.Collections;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -24,88 +17,29 @@ import java.util.zip.ZipOutputStream;
  * @date 2/22/2017
  */
 public class IO {
-    private static final Map<String, String> ZIP_FILE_SETTINGS;
+    private static final Map<String, String> ZIP_CREATE_MAP = Collections.singletonMap("create", "true");
+    private static final Map<String, String> ZIP_EMPTY_MAP = Collections.emptyMap();
 
-    static {
-        ZIP_FILE_SETTINGS = new HashMap<>();
-        ZIP_FILE_SETTINGS.put("create", "true");
-    }
-
-    public static void saveProject(MonoglotController controller){
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
-            return;
-        if(!project.hasSavePath()){
-            FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
-            chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
-            File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-            if(f != null) {
-                Path file = f.toPath();
-                if (Files.exists(file) && !Files.isDirectory(file) && new ConfirmOverwriteAlert(Monoglot.getMonoglot().window,
-                        controller.resources.getString("dialog.confirmOverwrite.text")).showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                    project.setSaveFile(file);
-                } else project.setSaveFile(file);
-            }
-        }
-        if(project.hasSavePath()) {
-            controller.setLocalStatus(project.save()?"app.status.saved":"app.status.saveFailed");
-        }
-    }
-
-    public static void saveProjectAs(MonoglotController controller){
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
-            return;
-        FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
-        chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
-        File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-        if(f != null) {
-            Path file = f.toPath();
-            if (Files.exists(file) && !Files.isDirectory(file) && new ConfirmOverwriteAlert(Monoglot.getMonoglot().window,
-                    controller.resources.getString("dialog.confirmOverwrite.text")).showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-                project.setSaveFile(file);
-            } else project.setSaveFile(file);
-            controller.setLocalStatus(project.save()?"app.status.saved":"app.status.saveFailed");
-        }
-    }
-
-    public static void openProject(MonoglotController controller) {
-        FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
-        chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
-        File file = chooser.showOpenDialog(Monoglot.getMonoglot().window);
-
-        if(file != null){
-            try {
-                Monoglot.getMonoglot().openProject(file.toPath());
-                controller.setProjectControlsEnabled(true);
-            } catch(IOException e){
-                //TODO: tell the user.
-            }
-        }
-    }
-
-    public static void recoverWorkingDirectory(MonoglotController controller){
-        DirectoryChooser chooser = new DirectoryChooser();
-        File file = chooser.showDialog(Monoglot.getMonoglot().window);
-        if(file != null){
-            try {
-                Monoglot.getMonoglot().recoverProject(file.toPath());
-                controller.setProjectControlsEnabled(true);
-            } catch(IOException e){
-                //TODO: tell the user.
-            }
-        }
-    }
-
-    public static void newProject(MonoglotController controller){
+    public static Path zipFolder(Path workingDirectory){
+        Path tmp;
         try {
-            Monoglot.getMonoglot().newProject();
-            controller.setProjectControlsEnabled(true);
-        } catch (IOException e){
-            //TODO: tell the user.
+            tmp = Files.createTempFile("mglt-save-", ".zip");
+            Files.deleteIfExists(tmp);
+            URI tmpURI = URI.create("jar:" + tmp.toUri());
+            try (FileSystem zip = FileSystems.newFileSystem(tmpURI, ZIP_CREATE_MAP)) {
+                Files.walkFileTree(workingDirectory, new FileTreeCopier(workingDirectory, zip.getPath("/")));
+            }
+        } catch(IOException e){
+            return null;
+        }
+        return tmp;
+    }
+
+    public static void unzipToDirectory(Path zip, Path workingDirectory) throws IOException {
+        URI zipURI = URI.create("jar:" + zip.toUri());
+        try (FileSystem zipFS = FileSystems.newFileSystem(zipURI, ZIP_EMPTY_MAP)){
+            Path root = zipFS.getPath("/");
+            Files.walkFileTree(root, new FileTreeCopier(root, workingDirectory));
         }
     }
 
@@ -116,16 +50,6 @@ public class IO {
      * @see #safeSave
      * @return true if successful.
      */
-    /*public static boolean save(Path workingDirectory, Path saveLocation){
-        try {
-            URI zipPath = URI.create("jar:file:" + saveLocation.toAbsolutePath().toString());
-            FileSystem zip = FileSystems.newFileSystem(zipPath, ZIP_FILE_SETTINGS);
-            //TODO
-        } catch(IOException e){
-            return false;
-        }
-        return true;
-    }*/
     @Deprecated
     public static boolean save(Path workingDirectory, Path saveLocation){
         try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(saveLocation.toFile()))){
@@ -157,15 +81,15 @@ public class IO {
      * @see #save
      * @return True if the save and move were successful, else false.
      */
-    @SuppressWarnings("deprecation")
     public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation){
         database.pause();
         try {
-            Path tmp = Files.createTempFile("mglt-sv", ".mglt");
-            if(save(workingDirectory, tmp)){
-               Files.move(tmp, saveLocation);
-            } else throw new IOException("Failed to save.");
-        } catch(IOException e){
+            Path tmp = zipFolder(workingDirectory);
+            if(tmp != null) {
+                Files.move(tmp, saveLocation, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.REPLACE_EXISTING);
+                Files.deleteIfExists(tmp);
+            }
+        } catch (IOException e){
             database.resume();
             return false;
         }
@@ -176,6 +100,7 @@ public class IO {
     /**
      * @author Darren
      */
+    @Deprecated
     public static boolean load(Path file, Path workingDirectory){
         try(ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(Files.newInputStream(file)))){
             ZipEntry zEntry = zipIs.getNextEntry();
@@ -198,6 +123,7 @@ public class IO {
 
     public static void nuke(Path workingDirectory) {
         try {
+            System.err.println("HAHAHAHAHAHA: " + workingDirectory.toString());
             Files.walkFileTree(workingDirectory, new DirectoryDeleter());
         } catch(Exception e){
             // hope the OS cleans it up later.

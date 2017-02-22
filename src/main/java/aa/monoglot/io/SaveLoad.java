@@ -9,6 +9,7 @@ import java.util.zip.ZipOutputStream;
  * Created by Darren on 2/18/17.
  * Save and Load functions, for saving and loading user projects.
  */
+@Deprecated
 public class SaveLoad {
 
     static public void save(String savePath, String tempLoc) throws java.io.IOException {

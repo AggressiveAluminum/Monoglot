@@ -1,10 +1,8 @@
 package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
-import aa.monoglot.Project;
 import aa.monoglot.io.IO;
 import aa.monoglot.ui.dialog.AboutDialog;
-import aa.monoglot.ui.dialog.ConfirmOverwriteAlert;
 import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
@@ -19,12 +17,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
-import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -77,7 +71,8 @@ public class MonoglotController {
     // === INIT ===
     @FXML private void initialize(){
         mgltExtensionFilter = Arrays.asList(
-                new FileChooser.ExtensionFilter(resources.getString("app.fileTypeDescription"), ".mglt", ".monoglot")
+                new FileChooser.ExtensionFilter(resources.getString("app.fileTypeDescription"), "*.mglt", "*.monoglot"),
+                new FileChooser.ExtensionFilter(resources.getString("app.allFilesTypeDescription"), "*")
         );
 
         lexiconTabController.registerMaster(this);
@@ -134,7 +129,7 @@ public class MonoglotController {
 
     // == MENU ACTIONS ==
     public void quitApplication(Event event) {
-        if(closeProjectImpl())
+        if(checkCloseCurrentProject())
             Platform.exit();
         else event.consume();
     }
@@ -197,27 +192,25 @@ public class MonoglotController {
 
     public void newProject(ActionEvent event) {
         if(checkCloseCurrentProject())
-            IO.newProject(this);
+            ETC.newProject(this);
     }
 
     public void openProject(ActionEvent event) {
         if(checkCloseCurrentProject())
-            IO.openProject(this);
+            ETC.openProject(this);
     }
 
     public void recoverWorkingDirectory(ActionEvent event) {
         if(checkCloseCurrentProject())
-            IO.recoverWorkingDirectory(this);
+            ETC.recoverWorkingDirectory(this);
     }
 
     public void saveProject(ActionEvent event) {
-        if(checkCloseCurrentProject())
-            IO.saveProject(this);
+        ETC.saveProject(this);
     }
 
     public void saveProjectAs(ActionEvent event) {
-        if(checkCloseCurrentProject())
-            IO.saveProjectAs(this);
+        ETC.saveProjectAs(this);
     }
 
     private boolean checkCloseCurrentProject(){
@@ -230,6 +223,6 @@ public class MonoglotController {
     }
 
     public void setLocalStatus(String key, Object... args){
-        status.setText(String.format(key, args));
+        status.setText(String.format(resources.getString(key), args));
     }
 }
