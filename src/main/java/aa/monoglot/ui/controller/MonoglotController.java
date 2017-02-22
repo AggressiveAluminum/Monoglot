@@ -140,8 +140,7 @@ public class MonoglotController {
     }
 
     @FXML private void closeProject(ActionEvent e){
-        if(closeProjectImpl())
-            setProjectControlsEnabled(false);
+        checkCloseCurrentProject();
     }
 
     private boolean closeProjectImpl() {
@@ -197,33 +196,37 @@ public class MonoglotController {
     }
 
     public void newProject(ActionEvent event) {
-        checkCloseCurrentProject();
-        IO.newProject(this);
+        if(checkCloseCurrentProject())
+            IO.newProject(this);
     }
 
     public void openProject(ActionEvent event) {
-        checkCloseCurrentProject();
-        IO.openProject(this);
+        if(checkCloseCurrentProject())
+            IO.openProject(this);
     }
 
     public void recoverWorkingDirectory(ActionEvent event) {
-        checkCloseCurrentProject();
-        IO.recoverWorkingDirectory(this);
+        if(checkCloseCurrentProject())
+            IO.recoverWorkingDirectory(this);
     }
 
     public void saveProject(ActionEvent event) {
-        checkCloseCurrentProject();
-        IO.saveProject(this);
+        if(checkCloseCurrentProject())
+            IO.saveProject(this);
     }
 
     public void saveProjectAs(ActionEvent event) {
-        checkCloseCurrentProject();
-        IO.saveProjectAs(this);
+        if(checkCloseCurrentProject())
+            IO.saveProjectAs(this);
     }
 
-    private void checkCloseCurrentProject(){
-        if(Monoglot.getMonoglot().getProject() != null)
-            closeProject(null);
+    private boolean checkCloseCurrentProject(){
+        if(Monoglot.getMonoglot().getProject() != null) {
+            if(closeProjectImpl())
+                setProjectControlsEnabled(false);
+            else return false;
+        }
+        return true;
     }
 
     public void setLocalStatus(String key, Object... args){
