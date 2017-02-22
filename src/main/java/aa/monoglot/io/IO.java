@@ -8,15 +8,18 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author cofl
+ * @author Darren
  * @date 2/22/2017
  */
 public class IO {
@@ -109,11 +112,56 @@ public class IO {
      * Zips and saves <code>workingDirectory</code> to <code>saveLocation</code>, overwriting if necessary.
      * @return true if successful.
      */
-    public static boolean save(Path workingDirectory, Path saveLocation){
+    /*public static boolean save(Path workingDirectory, Path saveLocation){
         try {
             URI zipPath = URI.create("jar:file:" + saveLocation.toAbsolutePath().toString());
             FileSystem zip = FileSystems.newFileSystem(zipPath, ZIP_FILE_SETTINGS);
             //TODO
+        } catch(IOException e){
+            return false;
+        }
+        return true;
+    }*/
+    public static boolean save(Path workingDirectory, Path saveLocation){
+        try {
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(saveLocation.toFile()));
+
+            File[] dirListing = workingDirectory.toFile().listFiles();
+            for (int i = 0; i < dirListing.length; i++) {
+                File input = new File(dirListing[i].getPath());
+                FileInputStream fis = new FileInputStream(input);
+                ZipEntry e = new ZipEntry(input.getName());
+                out.putNextEntry(e);
+                byte[] tmp = new byte[4 * 1024];
+                int size = 0;
+                while ((size = fis.read(tmp)) != -1) {
+                    out.write(tmp, 0, size);
+                }
+                fis.close();
+            }
+            out.closeEntry();
+            out.flush();
+            out.close();
+        } catch(IOException e){
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean load(Path file, Path workingDirectory){
+        try(ZipInputStream zipIs = new ZipInputStream(new BufferedInputStream(Files.newInputStream(file)))){
+            ZipEntry zEntry = zipIs.getNextEntry();
+            while(zEntry != null) {
+                byte[] tmp = new byte[4 * 1024];
+                OutputStream fos = Files.newOutputStream(workingDirectory.resolve(zEntry.getName()));
+                int size = 0;
+                while ((size = zipIs.read(tmp)) != -1) {
+                    fos.write(tmp, 0, size);
+                }
+                fos.flush();
+                fos.close();
+                zEntry = zipIs.getNextEntry();
+            }
         } catch(IOException e){
             return false;
         }
