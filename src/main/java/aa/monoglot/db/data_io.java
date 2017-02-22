@@ -2,6 +2,7 @@ package aa.monoglot.db;
 
 import java.sql.*;
 import java.util.ArrayDeque;
+import java.util.Properties;
 
 /**
  * Created by Matt on 2/20/17.
@@ -50,7 +51,7 @@ public class data_io {
         conn = dbOpenConn();
     }
 
-    public void doSQLAction(String action){
+    public ResultSet doSQLAction(String action){
 
         Connection conn = dbOpenConn();
         queue.add(action);
@@ -65,6 +66,6 @@ public class data_io {
         catch (SQLException e){
             e.printStackTrace();
         }
-      //  return results;
+        return results;
     }
 }
