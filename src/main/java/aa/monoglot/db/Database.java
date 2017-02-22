@@ -14,4 +14,12 @@ public class Database {
     public void close() {
         //TODO
     }
+
+    public void pause() {
+        //TODO
+    }
+
+    public void resume(){
+        //TODO
+    }
 }

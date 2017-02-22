@@ -2,6 +2,7 @@ package aa.monoglot.io;
 
 import aa.monoglot.Monoglot;
 import aa.monoglot.Project;
+import aa.monoglot.db.Database;
 import aa.monoglot.ui.controller.MonoglotController;
 import aa.monoglot.ui.dialog.ConfirmOverwriteAlert;
 import javafx.scene.control.ButtonType;
@@ -110,7 +111,9 @@ public class IO {
 
     /**
      * Zips and saves <code>workingDirectory</code> to <code>saveLocation</code>, overwriting if necessary.
+     * @deprecated Use safeSave for maximum safety.
      * @author Darren
+     * @see #safeSave
      * @return true if successful.
      */
     /*public static boolean save(Path workingDirectory, Path saveLocation){
@@ -123,6 +126,7 @@ public class IO {
         }
         return true;
     }*/
+    @Deprecated
     public static boolean save(Path workingDirectory, Path saveLocation){
         try {
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(saveLocation.toFile()));
@@ -146,6 +150,27 @@ public class IO {
         } catch(IOException e){
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Safely saves the project to a temporary file, then moves it, to prevent corruption of the existing project.
+     * @see #save
+     * @return True if the save and move were successful, else false.
+     */
+    @SuppressWarnings("deprecation")
+    public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation){
+        database.pause();
+        try {
+            Path tmp = Files.createTempFile("mglt-sv", ".mglt");
+            if(save(workingDirectory, tmp)){
+               Files.move(tmp, saveLocation);
+            } else throw new IOException("Failed to save.");
+        } catch(IOException e){
+            database.resume();
+            return false;
+        }
+        database.resume();
         return true;
     }
 

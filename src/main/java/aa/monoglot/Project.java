@@ -59,13 +59,14 @@ public class Project {
     public void setSaveFile(Path path){
         this.saveFile = path;
         hasUnsavedChanges.set(true);
-        //TODO
     }
 
     public boolean save(){
-        //TODO
-        hasUnsavedChanges.set(false);
-        return IO.save(workingDirectory, saveFile);
+        if(IO.safeSave(database, workingDirectory, saveFile)){
+            hasUnsavedChanges.set(false);
+            return true;
+        }
+        return false;
     }
 
     public boolean hasSavePath(){
