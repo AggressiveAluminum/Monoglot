@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,8 @@ public class Monoglot extends Application {
     public void start(Stage primaryStage){
         window = primaryStage;
         monoglot = this;
+
+        Thread.setDefaultUncaughtExceptionHandler(this::uncaughtExceptionHandler);
 
         try {
             bundle = ResourceBundle.getBundle("lang/lang");
@@ -78,11 +81,16 @@ public class Monoglot extends Application {
         window.show();
     }
 
+    private void uncaughtExceptionHandler(Thread thread, Throwable throwable) {
+        showError(throwable, true);
+        Platform.exit();
+    }
+
     public void showError(Exception e){
         showError(e, false);
     }
 
-    public void showError(Exception e, Boolean isFatal) {
+    public void showError(Throwable e, Boolean isFatal) {
         Alert error = new Alert(Alert.AlertType.ERROR);
 
         String title, header, text;
@@ -124,11 +132,11 @@ public class Monoglot extends Application {
         return project;
     }
 
-    public void newProject(){
+    public void newProject() throws IOException {
         project = new Project();
     }
 
-    public void openProject(File path) throws FileNotFoundException {
+    public void openProject(Path path) throws IOException {
         project = new Project(path);
     }
 
@@ -137,5 +145,9 @@ public class Monoglot extends Application {
             project.close();
             project = null;
         }
+    }
+
+    public void recoverProject(Path path) throws IOException {
+        project = new Project(path, true);
     }
 }

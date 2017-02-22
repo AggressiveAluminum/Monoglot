@@ -2,7 +2,9 @@ package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
 import aa.monoglot.Project;
+import aa.monoglot.io.IO;
 import aa.monoglot.ui.dialog.AboutDialog;
+import aa.monoglot.ui.dialog.ConfirmOverwriteAlert;
 import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
@@ -20,6 +22,9 @@ import javafx.stage.Modality;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -30,10 +35,10 @@ import java.util.ResourceBundle;
  * @date 2/8/2017
  */
 public class MonoglotController {
-    private List<FileChooser.ExtensionFilter> mgltExtensionFilter;
+    public List<FileChooser.ExtensionFilter> mgltExtensionFilter;
 
     @FXML
-    private ResourceBundle resources;
+    public ResourceBundle resources;
 
     // === HISTORY ===
     private History history = new History();
@@ -58,6 +63,8 @@ public class MonoglotController {
     public ComboBox tabSelector;
     private int selected = 1; // Lexicon tab is #1, Project Settings is #0.
 
+    @FXML private Label status;
+
     // === TABS ===
     public Tab lexiconTab;
     public LexiconController lexiconTabController;
@@ -68,8 +75,7 @@ public class MonoglotController {
     public Tab emptyTab;
 
     // === INIT ===
-    @FXML
-    private void initialize(){
+    @FXML private void initialize(){
         mgltExtensionFilter = Arrays.asList(
                 new FileChooser.ExtensionFilter(resources.getString("app.fileTypeDescription"), ".mglt", ".monoglot")
         );
@@ -101,8 +107,7 @@ public class MonoglotController {
     }
 
     // == TAB SWITCH ==
-    @FXML
-    private void changeActiveTabManualRequest(MouseEvent event){
+    @FXML private void changeActiveTabManualRequest(MouseEvent event){
         manualSwitchRequested = true;
     }
 
@@ -117,14 +122,12 @@ public class MonoglotController {
     }
 
     // == HISTORY ==
-    @FXML
-    private void historyForward(){
+    @FXML private void historyForward(){
         manualSwitchRequested = false;
         history.forward();
     }
 
-    @FXML
-    private void historyBack(){
+    @FXML private void historyBack(){
         manualSwitchRequested = false;
         history.back();
     }
@@ -194,57 +197,36 @@ public class MonoglotController {
     }
 
     public void newProject(ActionEvent event) {
-        Monoglot.getMonoglot().newProject();
-        setProjectControlsEnabled(true);
+        checkCloseCurrentProject();
+        IO.newProject(this);
     }
 
     public void openProject(ActionEvent event) {
-        FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().addAll(mgltExtensionFilter);
-        chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
-        File file = chooser.showOpenDialog(Monoglot.getMonoglot().window);
+        checkCloseCurrentProject();
+        IO.openProject(this);
+    }
 
-        if(file != null){
-            try {
-                Monoglot.getMonoglot().openProject(file);
-                setProjectControlsEnabled(true);
-            } catch(FileNotFoundException e){
-                //TODO
-            }
-        }
+    public void recoverWorkingDirectory(ActionEvent event) {
+        checkCloseCurrentProject();
+        IO.recoverWorkingDirectory(this);
     }
 
     public void saveProject(ActionEvent event) {
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
-            return;
-        if(!project.hasSavePath()){
-            FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().addAll(mgltExtensionFilter);
-            chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
-            File file = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-            if(file != null)
-                project.setSaveFile(file);
-        }
-        if(project.hasSavePath())
-            project.save();
-        //TODO
+        checkCloseCurrentProject();
+        IO.saveProject(this);
     }
 
     public void saveProjectAs(ActionEvent event) {
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
-            return;
-        FileChooser chooser = new FileChooser();
-        chooser.getExtensionFilters().addAll(mgltExtensionFilter);
-        chooser.setSelectedExtensionFilter(mgltExtensionFilter.get(0));
-        File file = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-        if(file != null){
-            project.setSaveFile(file);
-            project.save();
-        } else {
-            //TODO?
-        }
-        //TODO
+        checkCloseCurrentProject();
+        IO.saveProjectAs(this);
+    }
+
+    private void checkCloseCurrentProject(){
+        if(Monoglot.getMonoglot().getProject() != null)
+            closeProject(null);
+    }
+
+    public void setLocalStatus(String key, Object... args){
+        status.setText(String.format(key, args));
     }
 }

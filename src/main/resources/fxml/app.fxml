@@ -15,6 +15,9 @@
             <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
+            <Menu text="%menu.file.advanced">
+                <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverWorkingDirectory"/>
+            </Menu>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
         </Menu>
@@ -63,6 +66,6 @@
     <!-- Status bar -->
     <AnchorPane id="status-bar" fx:id="statusBar"
                 AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <Label fx:id="counter" AnchorPane.leftAnchor="50"/>
+        <Label fx:id="status" AnchorPane.leftAnchor="50"/>
     </AnchorPane>
 </AnchorPane>
