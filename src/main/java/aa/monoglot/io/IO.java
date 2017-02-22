@@ -128,25 +128,24 @@ public class IO {
     }*/
     @Deprecated
     public static boolean save(Path workingDirectory, Path saveLocation){
-        try {
-            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(saveLocation.toFile()));
-
+        try(ZipOutputStream out = new ZipOutputStream(new FileOutputStream(saveLocation.toFile()))){
             File[] dirListing = workingDirectory.toFile().listFiles();
-            for (int i = 0; i < dirListing.length; i++) {
-                File input = new File(dirListing[i].getPath());
-                FileInputStream fis = new FileInputStream(input);
-                ZipEntry e = new ZipEntry(input.getName());
-                out.putNextEntry(e);
-                byte[] tmp = new byte[4 * 1024];
-                int size = 0;
-                while ((size = fis.read(tmp)) != -1) {
-                    out.write(tmp, 0, size);
+            if(dirListing == null) {
+                for (int i = 0; i < dirListing.length; i++) {
+                    File input = new File(dirListing[i].getPath());
+                    try(FileInputStream fis = new FileInputStream(input)){
+                        ZipEntry e = new ZipEntry(input.getName());
+                        out.putNextEntry(e);
+                        byte[] tmp = new byte[4 * 1024];
+                        int size = 0;
+                        while ((size = fis.read(tmp)) != -1) {
+                            out.write(tmp, 0, size);
+                        }
+                    }
+                    out.closeEntry();
                 }
-                fis.close();
+                out.flush();
             }
-            out.closeEntry();
-            out.flush();
-            out.close();
         } catch(IOException e){
             return false;
         }
