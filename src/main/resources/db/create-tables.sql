@@ -5,7 +5,7 @@
 
 
 CREATE TABLE IF NOT EXISTS entry (
-  id INT PRIMARY KEY
+  id INT PRIMARY KEY,
   word VARCHAR NOT NULL,
   romanization VARCHAR,
   pronunciation VARCHAR,
