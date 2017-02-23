@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS types (
   -- should we consider making this a fixed set?
   id INT PRIMARY KEY,
   name VARCHAR NOT NULL,
-  description TEXT
+  description VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -46,14 +46,14 @@ CREATE TABLE IF NOT EXISTS categories (
   id INT PRIMARY KEY,
   name VARCHAR NOT NULL,
   parent_category INT,
-  description TEXT
+  description VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS tags (
   -- so people can say stuff like "TODO"
   id INT PRIMARY KEY,
   name VARCHAR NOT NULL,
-  description TEXT
+  description VARCHAR
 );
 
 CREATE TABLE IF NOT EXISTS rel_tag_entry (

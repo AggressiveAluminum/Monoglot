@@ -18,7 +18,7 @@ public class data_io {
         paused = false;
     }
 
-    public Connection dbOpenConn(){
+    public static Connection dbOpenConn(){
         Connection conn = null;
         try {
             Class.forName("org.h2.Driver");
@@ -55,12 +55,13 @@ public class data_io {
 
         Connection conn = dbOpenConn();
         queue.add(action);
-        String query = queue.pop().toString();
-        ResultSet results = null;
+        String code = queue.pop().toString();
+        Statement query = null;
+        ResultSet results = null
         try{
             conn.setAutoCommit(false);
-            PreparedStatement preparedQuerey = conn.prepareStatement(query);
-            results = preparedQuerey.executeQuery();
+            query = conn.createStatement();
+            query.executeUpdate(code);
 
         }
         catch (SQLException e){
