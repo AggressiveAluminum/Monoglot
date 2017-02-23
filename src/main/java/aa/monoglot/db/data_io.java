@@ -51,17 +51,21 @@ public class data_io {
         conn = dbOpenConn();
     }
 
+    public void addSQLAction(String query){
+        queue.add(query);
+    }
+
     public ResultSet doSQLAction(String action){
 
         Connection conn = dbOpenConn();
-        queue.add(action);
-        String code = queue.pop().toString();
         Statement query = null;
-        ResultSet results = null
+        ResultSet results = null;
+
         try{
+
             conn.setAutoCommit(false);
             query = conn.createStatement();
-            query.executeUpdate(code);
+            results = query.executeQuery(action);
 
         }
         catch (SQLException e){
