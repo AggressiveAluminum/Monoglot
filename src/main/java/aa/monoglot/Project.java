@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 /**
  * Entry point into project.
@@ -26,7 +27,7 @@ public class Project {
      * Creates a new project with no attached save file.
      * @throws IOException
      */
-    public Project() throws IOException {
+    public Project() throws IOException, ClassNotFoundException {
         commonInit();
     }
 
@@ -34,7 +35,7 @@ public class Project {
      * Opens an existing project from a file.
      * @throws IOException
      */
-    public Project(Path path) throws IOException {
+    public Project(Path path) throws IOException, ClassNotFoundException {
         this(path, false);
     }
 
@@ -44,7 +45,7 @@ public class Project {
      * @param isDirectory
      * @throws IOException
      */
-    public Project(Path path, boolean isDirectory) throws IOException {
+    public Project(Path path, boolean isDirectory) throws IOException, ClassNotFoundException {
         if(isDirectory){
             try { // delete existing tmp dir, we don't use it.
                 Files.delete(workingDirectory);
@@ -64,7 +65,7 @@ public class Project {
     /**
      * Common initialization for contructors.
      */
-    private void commonInit(){
+    private void commonInit() throws ClassNotFoundException {
         database = new Database(workingDirectory);
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
     }
@@ -121,7 +122,9 @@ public class Project {
      * Closes and cleans up, but does not save, the project.
      */
     public void close() {
-        database.close();
+        try {
+            database.close();
+        } catch (SQLException e){/* TODO ??? */}
         if(hasWorkingDirectory())
             IO.nuke(workingDirectory);
         workingDirectory = null;

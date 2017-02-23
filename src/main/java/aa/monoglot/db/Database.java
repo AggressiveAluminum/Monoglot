@@ -1,6 +1,7 @@
 package aa.monoglot.db;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 /**
  * @author cofl
@@ -9,12 +10,15 @@ import java.nio.file.Path;
  * TODO: integrate the changes from the DB team to work with this setup.
  */
 public class Database {
-    public Database(Path workingDirectory) {
-        //TODO
+    private final DatabaseImpl db;
+
+    public Database(Path workingDirectory) throws ClassNotFoundException {
+        db = new DatabaseImpl(workingDirectory);
     }
 
-    public void close() {
-        //TODO
+    public void close() throws SQLException {
+        //TODO: finalize
+        db.close();
     }
 
     public void pause() {
