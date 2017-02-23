@@ -1,0 +1,12 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Hyperlink?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.SimpleLinkController">
+    <Label text="%dialog.about.version"/>
+    <Label text="%dialog.about.team"/>
+    <Separator/>
+    <Label text="%dialog.about.more"/>
+    <Hyperlink text="http://github.com/AggressiveAluminum/Monoglot" onAction="#openLink"/>
+    <!--can we put our license in here, perhaps in an expanding box?-->
+</VBox>

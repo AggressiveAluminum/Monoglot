@@ -1,14 +1,45 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'edu.sc.seis.macAppBundle' version '2.1.6'
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.jfoenix:jfoenix:1.1.0'
+    compile 'com.h2database:h2:1.4.193'
+    compile 'org.controlsfx:controlsfx:8.40.12'
+    compile 'org.kordamp.ikonli:ikonli-javafx:1.9.0'
+    compile 'org.kordamp.ikonli:ikonli-material-pack:1.9.0'
+}
+
+String mcn = 'aa.monoglot.Main'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-mainClassName = 'aa.monoglot.Main'
+mainClassName = mcn
 
 jar {
     manifest {
         attributes (
-                'Main-Class': 'aa.monoglot.Main'
+                'Main-Class': mcn
         )
     }
 }
+
+shadowJar {
+    baseName = 'Monoglot'
+    mergeServiceFiles()
+}
+
+macAppBundle {
+    mainClassName = mcn
+    icon = 'src/release/logo.icns'
+}
+
+jar.doLast({shadowJar.execute()})

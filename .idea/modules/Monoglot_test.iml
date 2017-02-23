@@ -10,6 +10,12 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Monoglot_main" />
+    <orderEntry type="library" name="Gradle: com.jfoenix:jfoenix:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.h2database:h2:1.4.193" level="project" />
+    <orderEntry type="library" name="Gradle: org.controlsfx:controlsfx:8.40.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.kordamp.ikonli:ikonli-javafx:1.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.kordamp.ikonli:ikonli-material-pack:1.9.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.kordamp.ikonli:ikonli-core:1.9.0" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="Monoglot_main" />
 </module>
