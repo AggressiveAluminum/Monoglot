@@ -16,5 +16,15 @@ The jar will be at `build/lib/Monoglot.jar`.
 Build and run with:
 
 ```
-gradle run
+gradle runShadow
 ```
+
+---
+
+Build for mac with:
+
+```
+gradle createDmg
+```
+
+Then run what that spits out.
