@@ -13,13 +13,13 @@
                 <Label text="%prompt.search.tags" maxHeight="Infinity"/>
                 <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             </HBox>
-            <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
+            <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
                 <JFXListView fx:id="searchResults"/>
             </ScrollPane>
         </VBox>
         <BorderPane>
             <top>
-                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection">
+                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection" disable="true">
                     <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
                     <center>
                         <GridPane vgap="10" hgap="10">
@@ -32,28 +32,28 @@
                             </rowConstraints>
 
                             <!-- Row 0-->
-                            <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text"
+                            <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text" fx:id="headwordField"
                                           GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
-                            <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic"
+                            <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic" fx:id="pronunciationField"
                                           GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
                             <!-- Row 1-->
-                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="romanizationField"/>
+                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="typeField"/>
+                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1" fx:id="categoryField"/>
 
                             <!-- Row 2 -->
-                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="stemField">
                                 <padding><Insets left="10"/></padding>
                             </JFXTextField>
-                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity"/>
+                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity" fx:id="tagsField"/>
                         </GridPane>
                     </center>
                     <right>
                         <VBox>
                             <padding><Insets left="40"/></padding>
-                            <Label text="&lt;created>" styleClass="grey-italics"/>
-                            <Label text="&lt;modified>" styleClass="grey-italics"/>
+                            <Label text="&lt;created>" styleClass="grey-italics" fx:id="createdLabel"/>
+                            <Label text="&lt;modified>" styleClass="grey-italics" fx:id="modifiedLabel"/>
                         </VBox>
                     </right>
                 </BorderPane>

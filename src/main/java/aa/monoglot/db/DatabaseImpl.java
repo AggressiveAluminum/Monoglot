@@ -37,7 +37,9 @@ final class DatabaseImpl {
     }
 
     private Connection createConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:h2:" + workingDirectory.toString() + "/db");
+        Connection c = DriverManager.getConnection("jdbc:h2:" + workingDirectory.toString() + "/db");
+        c.setAutoCommit(false);
+        return c;
     }
 
     void close() throws SQLException {
@@ -45,5 +47,13 @@ final class DatabaseImpl {
             connection.commit();
             connection.close();
         }
+    }
+
+    void flush() throws SQLException {
+        connection.commit();
+    }
+
+    void doSQLAction(SQLAction action) throws SQLException {
+        action.execute();
     }
 }

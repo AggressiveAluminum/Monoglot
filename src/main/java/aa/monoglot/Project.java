@@ -1,15 +1,20 @@
 package aa.monoglot;
 
 import aa.monoglot.db.Database;
+import aa.monoglot.db.Headword;
+import aa.monoglot.db.SearchFilter;
 import aa.monoglot.io.IO;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 /**
  * Entry point into project.
@@ -23,6 +28,8 @@ public class Project {
     private boolean amRecoveringProject = false;
 
     private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(true);
+
+    private SearchFilter filter;
 
     /**
      * Creates a project or opens an existing project, either from a file or directory.
@@ -56,6 +63,7 @@ public class Project {
 
         database = new Database(workingDirectory);
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
+        Monoglot.getMonoglot().mainController.projectChanged();
     }
 
     /**
@@ -85,10 +93,12 @@ public class Project {
      * Writes the working directory contents to the save file.
      */
     public boolean save(){
-        if(IO.safeSave(database, workingDirectory, saveFile)){
-            hasUnsavedChanges.set(false);
-            return true;
-        }
+        try {
+            if (IO.safeSave(database, workingDirectory, saveFile)) {
+                hasUnsavedChanges.set(false);
+                return true;
+            }
+        } catch (SQLException e){/* return false; */}
         return false;
     }
 
@@ -106,6 +116,14 @@ public class Project {
         return hasUnsavedChanges.get();
     }
 
+
+    public void getDBListing(SearchFilter filter, Consumer<ObservableList<Headword>> consumer){
+        this.filter = filter;
+        this.filter.addListener(this::searchFilterChanged);
+        //TODO
+    }
+
+
     /**
      * Closes and cleans up, but does not save, the project.
      */
@@ -117,5 +135,14 @@ public class Project {
             IO.nuke(workingDirectory);
         workingDirectory = null;
         saveFile = null;
+        this.filter.removeListener(this::searchFilterChanged);
+    }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    private void searchFilterChanged(ObservableValue obs, Object oldv, Object newv){
+        //TODO
     }
 }

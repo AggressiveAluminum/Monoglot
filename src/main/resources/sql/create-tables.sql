@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS categories (
   --    `noun:G1:from greek`; name: "from greek"
   id INT PRIMARY KEY,
   name VARCHAR NOT NULL,
+  full_name VARCHAR NOT NULL,
   parent_category INT,
   description TEXT
 );

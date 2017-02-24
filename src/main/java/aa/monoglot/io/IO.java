@@ -5,6 +5,7 @@ import aa.monoglot.db.Database;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -54,18 +55,17 @@ public class IO {
      * <br/>TODO: Am I being paranoid? It may be more efficient to just write straight to the thing.
      * @return True if the save and move were successful, else false.
      */
-    public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation){
-        database.pause();
+    public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation) throws SQLException {
         try {
+            database.flush();
+
             Path tmp = zipFolder(workingDirectory);
             Files.move(tmp, saveLocation, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.REPLACE_EXISTING);
             Files.deleteIfExists(tmp);
-        } catch (IOException e){
+        } catch (SQLException | IOException e){
             // uh-oh
-            database.resume();
             return false;
         }
-        database.resume();
         return true;
     }
 

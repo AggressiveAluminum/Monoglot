@@ -19,4 +19,6 @@ abstract class AbstractChildController<P> {
      * to prevent outdated information when switching projects.
      */
     protected abstract void clearInfo();
+
+    public abstract void projectChanged();
 }

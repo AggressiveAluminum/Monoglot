@@ -226,4 +226,8 @@ public class MonoglotController {
     public void setLocalStatus(String key, Object... args){
         status.setText(String.format(resources.getString(key), args));
     }
+
+    public void projectChanged() {
+        lexiconTabController.projectChanged();
+    }
 }

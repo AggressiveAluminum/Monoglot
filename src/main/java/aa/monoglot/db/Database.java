@@ -18,15 +18,25 @@ public class Database {
     }
 
     public void close() throws SQLException {
-        //TODO: finalize
+        //TODO: ???
         db.close();
     }
 
-    public void pause() {
+    public void flush() throws SQLException {
+        db.flush();
+    }
+
+    public Headword newHeadword(String word){
+        //TODO
+        return null;
+    }
+
+    public void put(final Headword headword) throws SQLException {
         //TODO
     }
 
-    public void resume(){
+    /*public void put(final Definition definition) throws SQLException {
         //TODO
     }
+     */
 }
