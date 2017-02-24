@@ -1,7 +1,6 @@
 package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
-import aa.monoglot.db.Database;
 import aa.monoglot.db.Headword;
 import aa.monoglot.db.SearchFilter;
 import aa.monoglot.db.WordType;
@@ -13,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.CheckComboBox;
 
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 /**

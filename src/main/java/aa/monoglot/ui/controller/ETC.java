@@ -1,5 +1,6 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.ApplicationErrorCode;
 import aa.monoglot.Monoglot;
 import aa.monoglot.Project;
 import javafx.stage.DirectoryChooser;
@@ -24,7 +25,7 @@ class ETC {
                 Monoglot.getMonoglot().setProject(new Project(file.toPath()));
                 controller.setProjectControlsEnabled(true);
             } catch(ClassNotFoundException | SQLException e){
-                Monoglot.getMonoglot().showError();
+                Monoglot.getMonoglot().showError(e, ApplicationErrorCode.RECOVERABLE_ERROR);
                 //TODO: tell the user.
             } catch(IOException e){
                 //TODO: tell the user.
