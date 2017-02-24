@@ -20,52 +20,40 @@ public class Project {
     private Database database;
     private Path workingDirectory = Files.createTempDirectory("mglt");
     private Path saveFile;
+    private boolean amRecoveringProject = false;
 
     private BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(true);
 
     /**
-     * Creates a new project with no attached save file.
-     * @throws IOException
+     * Creates a project or opens an existing project, either from a file or directory.
+     * If the given path is null, a new project is created with no attached save file.
+     * If the given path is a file, the project is opened to the working directory.
+     * If the given path is a directory, recovery mode is entered: the directory is used as the
+     * working directory, and will not be cleaned up unless the project is explicitly saved.
+     *
+     * @param path Path to the project file or directory, or null for a new project.
+     * @throws FileNotFoundException if the given path is not null and does not exist.
+     * @throws IOException if file operations fail.
+     * @throws ClassNotFoundException if the database driver cannot be loaded.
+     * @throws SQLException if the database initialization fails.
      */
-    public Project() throws IOException, ClassNotFoundException {
-        commonInit();
-    }
-
-    /**
-     * Opens an existing project from a file.
-     * @throws IOException
-     */
-    public Project(Path path) throws IOException, ClassNotFoundException {
-        this(path, false);
-    }
-
-    /**
-     * Opens an existing project, either from a file or directory.
-     * @param path Path to the project file or directory.
-     * @param isDirectory
-     * @throws IOException
-     */
-    public Project(Path path, boolean isDirectory) throws IOException, ClassNotFoundException {
-        if(isDirectory){
-            try { // delete existing tmp dir, we don't use it.
-                Files.delete(workingDirectory);
-            } catch (Exception e){/* don't care */}
-            workingDirectory = path;
-        } else {
-            if(!Files.exists(path) || Files.isDirectory(path))
+    public Project(Path path) throws FileNotFoundException, IOException, ClassNotFoundException, SQLException {
+        if(path != null) {
+            if (!Files.exists(path))
                 throw new FileNotFoundException(path.toAbsolutePath().toString());
-            saveFile = path;
-            IO.unzipToDirectory(saveFile, workingDirectory);
-            hasUnsavedChanges.set(false);
+            if (Files.isDirectory(path)) {
+                try {
+                    Files.delete(workingDirectory);
+                } catch (Exception e) {/* let the OS clean up its temps later */}
+                workingDirectory = path;
+                amRecoveringProject = true;
+            } else {
+                saveFile = path;
+                IO.unzipToDirectory(saveFile, workingDirectory);
+                hasUnsavedChanges.set(false);
+            }
         }
 
-        commonInit();
-    }
-
-    /**
-     * Common initialization for contructors.
-     */
-    private void commonInit() throws ClassNotFoundException {
         database = new Database(workingDirectory);
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
     }
@@ -125,7 +113,7 @@ public class Project {
         try {
             database.close();
         } catch (SQLException e){/* TODO ??? */}
-        if(hasWorkingDirectory())
+        if(hasWorkingDirectory() && (!amRecoveringProject || !hasUnsavedChanges()))
             IO.nuke(workingDirectory);
         workingDirectory = null;
         saveFile = null;

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 /**
  * @author cofl
@@ -20,8 +21,11 @@ class ETC {
         File file = chooser.showDialog(Monoglot.getMonoglot().window);
         if(file != null){
             try {
-                Monoglot.getMonoglot().recoverProject(file.toPath());
+                Monoglot.getMonoglot().setProject(new Project(file.toPath()));
                 controller.setProjectControlsEnabled(true);
+            } catch(ClassNotFoundException | SQLException e){
+                Monoglot.getMonoglot().showError();
+                //TODO: tell the user.
             } catch(IOException e){
                 //TODO: tell the user.
             }
@@ -36,8 +40,10 @@ class ETC {
 
         if(file != null){
             try {
-                Monoglot.getMonoglot().openProject(file.toPath());
+                Monoglot.getMonoglot().setProject(new Project(file.toPath()));
                 controller.setProjectControlsEnabled(true);
+            } catch(ClassNotFoundException | SQLException e){
+                //TODO: tell the user.
             } catch(IOException e){
                 //TODO: tell the user.
             }
@@ -46,8 +52,10 @@ class ETC {
 
     static void newProject(MonoglotController controller){
         try {
-            Monoglot.getMonoglot().newProject();
+            Monoglot.getMonoglot().setProject(new Project(null));
             controller.setProjectControlsEnabled(true);
+        } catch(ClassNotFoundException | SQLException e) {
+            //TODO: tell the user.
         } catch (IOException e){
             //TODO: tell the user.
         }

@@ -1,5 +1,6 @@
 package aa.monoglot.db;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
 
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 public class Database {
     private final DatabaseImpl db;
 
-    public Database(Path workingDirectory) throws ClassNotFoundException {
+    public Database(Path workingDirectory) throws ClassNotFoundException, IOException, SQLException {
         db = new DatabaseImpl(workingDirectory);
     }
 

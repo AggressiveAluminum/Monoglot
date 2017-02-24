@@ -1,5 +1,6 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.ApplicationErrorCode;
 import aa.monoglot.Monoglot;
 import aa.monoglot.io.IO;
 import aa.monoglot.ui.dialog.AboutDialog;
@@ -166,7 +167,7 @@ public class MonoglotController {
             dialog.initOwner(rootPane.getScene().getWindow());
             dialog.showAndWait();
         } catch(Exception e){
-            Monoglot.getMonoglot().showError(e);
+            Monoglot.getMonoglot().showError(e, ApplicationErrorCode.RECOVERABLE_ERROR);
         }
     }
 
