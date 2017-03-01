@@ -19,7 +19,7 @@ public class OS {
             SETTINGS_DIRECTORY = Paths.get(System.getenv("APPDATA"), "Monoglot");
         } else if(os.contains("MAC")) {
             OS_TYPE = OSType.MACOS;
-            SETTINGS_DIRECTORY = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "monoglot");
+            SETTINGS_DIRECTORY = Paths.get( "/Library/Application Support/Monoglot");
         } else {
             OS_TYPE = OSType.OTHER;
             SETTINGS_DIRECTORY = Paths.get(System.getProperty("user.home"), ".monoglot");

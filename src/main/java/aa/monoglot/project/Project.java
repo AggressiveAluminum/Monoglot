@@ -14,7 +14,7 @@ public final class Project {
     private static Project instance;
 
     public static boolean isProjectOpen(){
-        return instance == null;
+        return instance != null;
     }
 
     public static Project getProject(){
