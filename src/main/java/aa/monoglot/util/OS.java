@@ -26,12 +26,16 @@ public class OS {
         }
     }
 
-    public static void verify() throws IOException {
-        if(!Files.exists(SETTINGS_DIRECTORY)){
-            Files.createDirectories(SETTINGS_DIRECTORY);
-        } else if(!Files.isDirectory(SETTINGS_DIRECTORY)){
-            Files.move(SETTINGS_DIRECTORY, SETTINGS_DIRECTORY.resolveSibling(".monoglot.file"));
-            Files.createDirectory(SETTINGS_DIRECTORY);
+    public static void verify(){
+        try {
+            if (!Files.exists(SETTINGS_DIRECTORY)) {
+                Files.createDirectories(SETTINGS_DIRECTORY);
+            } else if (!Files.isDirectory(SETTINGS_DIRECTORY)) {
+                Files.move(SETTINGS_DIRECTORY, SETTINGS_DIRECTORY.resolveSibling(".monoglot.file"));
+                Files.createDirectory(SETTINGS_DIRECTORY);
+            }
+        } catch(IOException e){
+            // be sure to do Files.exists whenever you use the path.
         }
     }
 }
