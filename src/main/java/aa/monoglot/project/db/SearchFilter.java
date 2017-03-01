@@ -1,17 +1,12 @@
-package aa.monoglot.db;
+package aa.monoglot.project.db;
 
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanPropertyBase;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-/**
- * @author cofl
- * @date 2/24/2017
- */
 public class SearchFilter extends BooleanPropertyBase {
     public StringProperty field;
     public ReadOnlyIntegerProperty typeIndex, categoryIndex;

@@ -1,6 +1,7 @@
 package aa.monoglot;
 
 import aa.monoglot.ui.controller.MonoglotController;
+import aa.monoglot.util.ApplicationErrorCode;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -11,9 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.sql.SQLException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,18 +32,13 @@ import java.util.ResourceBundle;
  * @author zefrof
  */
 public class Monoglot extends Application {
+    private static Monoglot monoglot;
+
     public Stage window;
     public ResourceBundle bundle;
     public MonoglotController mainController;
-    public List<Image> icons = new ArrayList<>();
+    public final List<Image> icons = new ArrayList<>();
 
-    private Project project;
-
-    private static Monoglot monoglot;
-
-    /**
-     * {@inheritDoc}
-     */
     public void start(Stage primaryStage){
         window = primaryStage;
         monoglot = this;
@@ -160,56 +156,4 @@ public class Monoglot extends Application {
     public static Monoglot getMonoglot() {
         return monoglot;
     }
-
-    /**
-     * Get the current project.
-     */
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project){
-        this.project = project;
-    }
-
-    /**
-     * Creates a new, empty project with no save file to back it up.
-     * Does not check if a project is already open.
-     *
-     * @throws IOException
-     */
-    /*public void newProject() throws IOException, SQLException, ClassNotFoundException {
-        project = new Project();
-    }*/
-
-    /**
-     * Opens a project from a file. Does not check if a project is already open.
-     * @param path The project file.
-     * @throws IOException
-     */
-    /*public void openProject(Path path) throws IOException, SQLException, ClassNotFoundException {
-        project = new Project(path);
-    }*/
-
-    /**
-     * Cleans up and disposes the current project.
-     * <br/><b>Does not check if saving needs to be done!</b>
-     */
-    public void closeProject() {
-        if(project != null) {
-            project.close();
-            project = null;
-        }
-    }
-
-    /**
-     * Opens a project from a directory, with no attached save file.
-     * This is useful if the application crashes horribly before you can save, so you can
-     * still pick up the pieces.
-     * @param path The working directory where the undead project resides.
-     * @throws IOException
-     */
-    /*public void recoverProject(Path path) throws IOException, SQLException, ClassNotFoundException {
-        project = new Project(path, true);
-    }*/
 }

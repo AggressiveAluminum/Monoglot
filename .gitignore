@@ -50,8 +50,6 @@ nbdist/
 ### Eclipse template
 
 .metadata
-bin/
-tmp/
 *.tmp
 *.bak
 *.swp
@@ -100,8 +98,6 @@ local.properties
 # Code Recommenders
 .recommenders/
 ### Java template
-*.class
-
 # BlueJ files
 *.ctxt
 
@@ -109,7 +105,6 @@ local.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 

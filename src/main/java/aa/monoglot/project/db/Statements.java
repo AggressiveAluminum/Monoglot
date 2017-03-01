@@ -1,9 +1,5 @@
-package aa.monoglot.db;
+package aa.monoglot.project.db;
 
-/**
- * @author cofl
- * @date 2/24/2017
- */
 class Statements {
     //TODO: code to get prepared statements for a connection.
 

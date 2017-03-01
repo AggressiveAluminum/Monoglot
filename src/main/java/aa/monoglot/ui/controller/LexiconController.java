@@ -1,9 +1,8 @@
 package aa.monoglot.ui.controller;
 
-import aa.monoglot.Monoglot;
-import aa.monoglot.db.Headword;
-import aa.monoglot.db.SearchFilter;
-import aa.monoglot.db.WordType;
+import aa.monoglot.project.db.Headword;
+import aa.monoglot.project.db.SearchFilter;
+import aa.monoglot.project.db.WordType;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -14,10 +13,6 @@ import org.controlsfx.control.CheckComboBox;
 
 import java.util.ResourceBundle;
 
-/**
- * @author cofl
- * @date 2/12/2017
- */
 public class LexiconController extends AbstractChildController<MonoglotController> {
     private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
     @FXML private ResourceBundle resources;
@@ -36,7 +31,7 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     public Headword activeWord;
     @FXML private TextField headwordField, pronunciationField, romanizationField, stemField;
     @FXML private ComboBox<WordType> typeField;
-    //@FXML private ComboBox<WordCategory> categoryField;
+    @FXML private ComboBox<?> categoryField;
     @FXML private CheckComboBox<?> tagsField;
     @FXML private Label createdLabel, modifiedLabel;
 
@@ -50,10 +45,6 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
 
         // == Field Change Listener ==
         // use listeners on the fields themselves to update?
-    }
-
-    public void projectChanged(){
-        Monoglot.getMonoglot().getProject().getDBListing(filter, searchResults::setItems);
     }
 
     protected void postInitialize(){}

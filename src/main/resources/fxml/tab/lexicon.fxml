@@ -5,7 +5,7 @@
 <?import org.controlsfx.control.CheckComboBox?>
 <Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
     <SplitPane dividerPositions="1">
-        <VBox id="search-section" fx:id="searchSection">
+        <VBox id="search-section">
             <JFXTextField fx:id="searchField" promptText="%prompt.search.search"/>
             <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
             <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
@@ -62,7 +62,7 @@
                 <Accordion expandedPane="$lexiconDefinitionsPane">
                     <panes>
                         <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
-                            <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
+                            <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
                                 <style>-fx-background-color:transparent;</style>
                                 <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
                                 

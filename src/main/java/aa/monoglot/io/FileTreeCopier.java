@@ -6,8 +6,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * Copies one directory tree to another.
- * @author cofl
- * @date 2/22/2017
  */
 public class FileTreeCopier implements FileVisitor<Path> {
     private final Path src, dest;

@@ -5,10 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-/**
- * @author cofl
- * @date 2/13/2017
- */
 public class SettingsController extends AbstractChildController<MonoglotController> {
     @FXML private TextField projectName;
     @FXML private TextArea projectNotes;
@@ -24,10 +20,6 @@ public class SettingsController extends AbstractChildController<MonoglotControll
     }
 
     protected  void clearInfo(){
-        //TODO
-    }
-
-    public void projectChanged() {
         //TODO
     }
 }

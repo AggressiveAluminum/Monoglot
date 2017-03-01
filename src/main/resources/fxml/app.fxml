@@ -32,12 +32,10 @@
 
     <!-- Content -->
     <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <tabs>
-            <fx:include fx:id="projectTab" source="tab/project.fxml"/>
-            <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
-            <!-- keep this last -->
-            <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
-        </tabs>
+        <fx:include fx:id="projectTab" source="tab/project.fxml"/>
+        <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+        <!-- keep this last -->
+        <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
     </TabPane>
 
     <!-- Navigation -->

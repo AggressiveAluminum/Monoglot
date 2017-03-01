@@ -5,9 +5,6 @@ import javafx.scene.control.TabPane;
 
 /**
  * Tracks tab switches for {@link aa.monoglot.ui.history.History History}
- *
- * @author cofl
- * @date 2/17/2017
  */
 class TabSwitchAction implements HistoryAction {
     private final ComboBox tabSelector;

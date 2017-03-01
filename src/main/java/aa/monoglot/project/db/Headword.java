@@ -1,11 +1,7 @@
-package aa.monoglot.db;
+package aa.monoglot.project.db;
 
 import java.sql.Timestamp;
 
-/**
- * @author cofl
- * @date 2/24/2017
- */
 public final class Headword {
     private final static String EMPTY_STRING = "";
 
@@ -49,6 +45,7 @@ public final class Headword {
         return word;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object o){
         if(o instanceof Headword){

@@ -1,6 +1,6 @@
 package aa.monoglot.io;
 
-import aa.monoglot.db.Database;
+import aa.monoglot.project.db.Database;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,8 +13,6 @@ import java.util.Map;
  * Generic IO Utilities for saving/loading/cleaning up projects and project files.
  *
  * TODO: re-write these in a non-blocking fashion.
- * @author cofl
- * @date 2/22/2017
  */
 public class IO {
     private static final Map<String, String> ZIP_CREATE_MAP = Collections.singletonMap("create", "true");
@@ -37,9 +35,8 @@ public class IO {
 
     /**
      * Unzips zip file <code>zip</code> to directory <code>workingDirectory</code>.
-     * <br/>Replaces {@linkplain aa.monoglot.io.SaveLoad#load}
      * <br/>Uses {@linkplain FileTreeCopier}
-     * @throws IOException
+     * @throws IOException if file operations fail.
      */
     public static void unzipToDirectory(Path zip, Path workingDirectory) throws IOException {
         URI zipURI = URI.create("jar:" + zip.toUri());
@@ -51,7 +48,6 @@ public class IO {
 
     /**
      * Safely saves the project to a temporary file, then moves it, to prevent corruption of the existing project.
-     * <br/>Replaces {@linkplain aa.monoglot.io.SaveLoad#save}
      * <br/>TODO: Am I being paranoid? It may be more efficient to just write straight to the thing.
      * @return True if the save and move were successful, else false.
      */

@@ -1,4 +1,4 @@
-package aa.monoglot.db;
+package aa.monoglot.project.db;
 
 import org.h2.tools.RunScript;
 
@@ -10,10 +10,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * @author cofl
- * @date 2/23/2017
- */
 final class DatabaseImpl {
     private Connection connection;
     private Path workingDirectory;

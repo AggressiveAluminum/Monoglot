@@ -5,9 +5,6 @@ import javafx.scene.control.TabPane;
 
 /**
  * Convenience class for creating {@link aa.monoglot.ui.history.TabSwitchAction TabSwitchActions}.
- *
- * @author cofl
- * @date 2/17/2017
  */
 public class TabSwitchActionFactory {
     private final ComboBox tabSelector;

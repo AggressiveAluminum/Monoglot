@@ -1,4 +1,4 @@
-package aa.monoglot.db;
+package aa.monoglot.project.db;
 
 import javafx.util.Callback;
 
@@ -6,10 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * @author cofl
- * @date 2/23/2017
- */
 class SQLAction {
     private final PreparedStatement statement;
     private final Callback<ResultSet, Void> callback;

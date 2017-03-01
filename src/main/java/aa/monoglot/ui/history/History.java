@@ -7,9 +7,6 @@ import java.util.ArrayDeque;
 
 /**
  * Tracks UI navigation history.
- *
- * @author cofl
- * @date 2/15/2017
  */
 public class History {
     private static final int MAX_HISTORY = 32;

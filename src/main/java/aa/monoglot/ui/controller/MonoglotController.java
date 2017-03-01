@@ -1,8 +1,8 @@
 package aa.monoglot.ui.controller;
 
-import aa.monoglot.ApplicationErrorCode;
+import aa.monoglot.util.ApplicationErrorCode;
 import aa.monoglot.Monoglot;
-import aa.monoglot.io.IO;
+import aa.monoglot.project.Project;
 import aa.monoglot.ui.dialog.AboutDialog;
 import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
@@ -18,17 +18,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-/**
- * @author cofl
- * @date 2/8/2017
- */
 public class MonoglotController {
     public List<FileChooser.ExtensionFilter> mgltExtensionFilter;
 
@@ -55,7 +49,7 @@ public class MonoglotController {
 
     public Button historyBackButton, historyForeButton;
 
-    public ComboBox tabSelector;
+    public ComboBox<String> tabSelector;
     private int selected = 1; // Lexicon tab is #1, Project Settings is #0.
 
     @FXML private Label status;
@@ -95,9 +89,9 @@ public class MonoglotController {
     }
 
     private void postInit(){
-        rootPane.setTopAnchor(navigationBar, menuBar.getHeight());
-        rootPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
-        rootPane.setBottomAnchor(tabs, statusBar.getHeight());
+        AnchorPane.setTopAnchor(navigationBar, menuBar.getHeight());
+        AnchorPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
+        AnchorPane.setBottomAnchor(tabs, statusBar.getHeight());
 
         setProjectControlsEnabled(false);
     }
@@ -130,29 +124,31 @@ public class MonoglotController {
 
     // == MENU ACTIONS ==
     public void quitApplication(Event event) {
-        if(checkCloseCurrentProject())
+        if(checkCloseProject())
             Platform.exit();
         else event.consume();
     }
 
     @FXML private void closeProject(ActionEvent e){
-        checkCloseCurrentProject();
+        checkCloseProject();
     }
 
-    private boolean closeProjectImpl() {
-        if(Monoglot.getMonoglot().getProject() != null && Monoglot.getMonoglot().getProject().hasUnsavedChanges()) {
-            Optional<ButtonType> result = new YesNoCancelAlert(
-                    Monoglot.getMonoglot().window,
-                    resources.getString("dialog.saveOnExit.text")
+    private boolean checkCloseProject() {
+        if(Project.isProjectOpen()){
+            if(Project.getProject().hasUnsavedChanges()){
+                Optional<ButtonType> result = new YesNoCancelAlert(
+                        Monoglot.getMonoglot().window,
+                        resources.getString("dialog.saveOnExit.text")
                 ).showAndWait();
-            if(result.isPresent()){
-                if(result.get() == ButtonType.YES)
-                    saveProject(null);
-                else if(result.get() == ButtonType.CANCEL)
-                    return false;
+                if(result.isPresent()){
+                    if(result.get() == ButtonType.YES)
+                        saveProject(null);
+                    else if(result.get() == ButtonType.CANCEL)
+                        return false;
+                }
             }
+            Project.getProject().close();
         }
-        Monoglot.getMonoglot().closeProject();
         return true;
     }
 
@@ -192,17 +188,17 @@ public class MonoglotController {
     }
 
     public void newProject(ActionEvent event) {
-        if(checkCloseCurrentProject())
+        if(checkCloseProject())
             ETC.newProject(this);
     }
 
     public void openProject(ActionEvent event) {
-        if(checkCloseCurrentProject())
+        if(checkCloseProject())
             ETC.openProject(this);
     }
 
     public void recoverWorkingDirectory(ActionEvent event) {
-        if(checkCloseCurrentProject())
+        if(checkCloseProject())
             ETC.recoverWorkingDirectory(this);
     }
 
@@ -214,20 +210,7 @@ public class MonoglotController {
         ETC.saveProjectAs(this);
     }
 
-    private boolean checkCloseCurrentProject(){
-        if(Monoglot.getMonoglot().getProject() != null) {
-            if(closeProjectImpl())
-                setProjectControlsEnabled(false);
-            else return false;
-        }
-        return true;
-    }
-
     public void setLocalStatus(String key, Object... args){
         status.setText(String.format(resources.getString(key), args));
-    }
-
-    public void projectChanged() {
-        lexiconTabController.projectChanged();
     }
 }

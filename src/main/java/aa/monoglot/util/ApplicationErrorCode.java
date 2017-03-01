@@ -1,4 +1,6 @@
-package aa.monoglot;
+package aa.monoglot.util;
+
+import aa.monoglot.Monoglot;
 
 /**
  * Control codes for {@linkplain Monoglot#showError}.
