@@ -7,7 +7,7 @@ import java.util.logging.*;
  */
 public class Log {
 
-    public static Logger logger = null;
+    private static Logger logger = null;
 
 
 
@@ -19,11 +19,5 @@ public class Log {
 
     public Logger getLogger(){
         return logger;
-    }
-
-    public void addErrorToLog(int errorLevel, String error){
-
-
-
     }
 }
