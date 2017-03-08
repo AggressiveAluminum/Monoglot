@@ -5,23 +5,23 @@
 
 
 CREATE TABLE IF NOT EXISTS entry (
-  id INT PRIMARY KEY,
+  id UUID PRIMARY KEY,
   word VARCHAR NOT NULL,
-  romanization VARCHAR,
-  pronunciation VARCHAR,
-  stem VARCHAR,
-  type INT,
-  category INT,
+  romanization VARCHAR NOT NULL,
+  pronunciation VARCHAR NOT NULL,
+  stem VARCHAR NOT NULL,
+  type UUID,
+  category UUID,
   created TIMESTAMP NOT NULL,
   modified TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS definition (
-  id INT PRIMARY KEY,
-  entry_id INT NOT NULL,
-  previous_definition INT,
-  next_definition INT,
-  text TEXT,
+  id UUID PRIMARY KEY,
+  entry_id UUID NOT NULL,
+  previous_definition UUID,
+  next_definition UUID,
+  text VARCHAR NOT NULL,
   created TIMESTAMP NOT NULL,
   modified TIMESTAMP
 );
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS definition (
 CREATE TABLE IF NOT EXISTS types (
   -- stem/root/affix/etc
   -- should we consider making this a fixed set?
-  id INT PRIMARY KEY,
+  id UUID PRIMARY KEY,
   name VARCHAR NOT NULL,
-  description TEXT
+  description VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -43,30 +43,30 @@ CREATE TABLE IF NOT EXISTS categories (
   --    `noun` name: noun
   --    `noun:G1` or `noun:neuter`; name: G1 or neuter, NOT the UI string
   --    `noun:G1:from greek`; name: "from greek"
-  id INT PRIMARY KEY,
+  id UUID PRIMARY KEY,
   name VARCHAR NOT NULL,
   full_name VARCHAR NOT NULL,
-  parent_category INT,
-  description TEXT
+  parent_category UUID,
+  description VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tags (
   -- so people can say stuff like "TODO"
-  id INT PRIMARY KEY,
+  id UUID PRIMARY KEY,
   name VARCHAR NOT NULL,
-  description TEXT
+  description VARCHAR NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rel_tag_entry (
   -- yes, I'm pretty sure this is the best way to do it in SQL.
   -- variable arrays != performant, extra tables w/ relations == performant
-  row_id INT PRIMARY KEY,
-  tag_id INT,
-  entry_id INT
+  row_id UUID PRIMARY KEY,
+  tag_id UUID NOT NULL,
+  entry_id UUID NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS rel_tag_definition (
-  row_id INT PRIMARY KEY,
-  tag_id INT,
-  definition_id INT
+  row_id UUID PRIMARY KEY,
+  tag_id UUID NOT NULL,
+  definition_id UUID NOT NULL
 );

@@ -2,7 +2,9 @@ package aa.monoglot.project.db;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class Database {
     private final DatabaseImpl db;
@@ -20,17 +22,15 @@ public class Database {
         db.flush();
     }
 
-    public Headword newHeadword(String word){
-        //TODO
-        return null;
+    public Headword put(Headword headword) throws SQLException {
+        if(headword.ID == null){
+            UUID id = db.getNextID();
+            Headword.insert(db.getStatement(Headword.INSERT_STR), id, headword).execute();
+            Headword.update(db.getStatement(Headword.UPDATE_STR), id, headword).executeUpdate();
+            return Headword.select(db.getStatement(Headword.SELECT_STR), id);
+        } else {
+            Headword.update(db.getStatement(Headword.UPDATE_STR), headword).executeUpdate();
+            return headword;
+        }
     }
-
-    public void put(final Headword headword) throws SQLException {
-        //TODO
-    }
-
-    /*public void put(final Definition definition) throws SQLException {
-        //TODO
-    }
-     */
 }

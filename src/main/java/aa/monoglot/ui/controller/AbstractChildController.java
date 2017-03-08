@@ -1,5 +1,7 @@
 package aa.monoglot.ui.controller;
 
+import javafx.event.ActionEvent;
+
 abstract class AbstractChildController<P> {
     protected P parentController;
 

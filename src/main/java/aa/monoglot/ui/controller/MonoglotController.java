@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -212,5 +213,10 @@ public class MonoglotController {
 
     public void setLocalStatus(String key, Object... args){
         status.setText(String.format(resources.getString(key), args));
+    }
+
+    @FXML
+    private void createNewWord(ActionEvent event) throws SQLException {
+        lexiconTabController.createNewWord(event);
     }
 }

@@ -22,7 +22,7 @@
             <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
         </Menu>
         <Menu text="%menu.edit" fx:id="editMenu">
-            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N"/>
+            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
             <MenuItem text="%menu.edit.deleteWord"/>
         </Menu>
         <Menu text="%menu.help">
