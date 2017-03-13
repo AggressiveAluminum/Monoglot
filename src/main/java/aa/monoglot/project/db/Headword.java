@@ -1,5 +1,7 @@
 package aa.monoglot.project.db;
 
+import aa.monoglot.util.UT;
+
 import java.sql.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -24,7 +26,6 @@ public final class Headword {
     static final String UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?";
     static final String SELECT_STR = "SELECT * FROM entry WHERE id = ?";
 
-    private final static String EMPTY_STRING = "";
     private final static int ID_COL = 1, WORD_COL = 2, ROMAN_COL = 3, PRONUN_COL = 4,
         STEM_COL = 5, TYPE_COL = 6, CAT_COL = 7, CREATED_COL = 8, MODIFIED_COL = 9;
 
@@ -41,20 +42,15 @@ public final class Headword {
         created = resultSet.getTimestamp(CREATED_COL);
 
         Object temp;
+
         temp = resultSet.getObject(TYPE_COL);
-        if(resultSet.wasNull())
-            type = null;
-        else type = (UUID) temp;
+        type = resultSet.wasNull()?null:(UUID) temp;
 
         temp = resultSet.getObject(CAT_COL);
-        if(resultSet.wasNull())
-            category = null;
-        else category = (UUID) temp;
+        category = resultSet.wasNull()?null:(UUID) temp;
 
         temp = resultSet.getTimestamp(MODIFIED_COL);
-        if(resultSet.wasNull())
-            modified = null;
-        else modified = (Timestamp) temp;
+        modified = resultSet.wasNull()?null:(Timestamp) temp;
     }
 
     public static Headword create() {
@@ -78,14 +74,8 @@ public final class Headword {
     public final Headword update(String newWord, String newRomanization, String newPronunciation, String newStem, UUID newType, UUID newCategory){
         if(newWord == null)
             throw new IllegalArgumentException("A word cannot be empty.");
-        if(newRomanization == null)
-            newRomanization = EMPTY_STRING;
-        if(newPronunciation == null)
-            newPronunciation = EMPTY_STRING;
-        if(newStem == null)
-            newStem = EMPTY_STRING;
-        Headword newHeadword = new Headword(this.ID, newWord, newRomanization, newPronunciation,
-                newStem, newType, newCategory, this.created, Timestamp.from(Instant.now()));
+        Headword newHeadword = new Headword(this.ID, newWord, UT.c(newRomanization), UT.c(newPronunciation),
+                UT.c(newStem), newType, newCategory, this.created, Timestamp.from(Instant.now()));
         if(this.equals(newHeadword))
             return this;
         return newHeadword;
@@ -101,23 +91,17 @@ public final class Headword {
     public boolean equals(Object o){
         if(o != null && o instanceof Headword){
             Headword other = (Headword) o;
-            if(nullCompare(ID , other.ID)
+            if(UT.nc(ID , other.ID)
                     && word.equals(other.word)
                     && created.equals(other.created)
                     && romanization.equals(other.romanization)
                     && pronunciation.equals(other.pronunciation)
                     && stem.equals(other.stem)
-                    && nullCompare(type, other.type)
-                    && nullCompare(category, other.category))
+                    && UT.nc(type, other.type)
+                    && UT.nc(category, other.category))
                 return true;
         }
         return false;
-    }
-
-    private static <T> boolean nullCompare(T a, T b){
-        if(a == null)
-            return b == null;
-        return a.equals(b);
     }
 
     static PreparedStatement insert(PreparedStatement statement, UUID id, Headword headword) throws SQLException {

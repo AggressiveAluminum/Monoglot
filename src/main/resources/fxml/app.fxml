@@ -11,7 +11,7 @@
             <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
             <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
             <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S"/>
-            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" accelerator="Shortcut+Shift+S"/>
+            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem"/>
             <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>

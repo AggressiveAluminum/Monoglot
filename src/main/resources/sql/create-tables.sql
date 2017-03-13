@@ -19,8 +19,7 @@ CREATE TABLE IF NOT EXISTS entry (
 CREATE TABLE IF NOT EXISTS definition (
   id UUID PRIMARY KEY,
   entry_id UUID NOT NULL,
-  previous_definition UUID,
-  next_definition UUID,
+  prev_definition UUID,
   text VARCHAR NOT NULL,
   created TIMESTAMP NOT NULL,
   modified TIMESTAMP

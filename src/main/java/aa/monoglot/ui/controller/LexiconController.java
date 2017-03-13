@@ -6,6 +6,7 @@ import aa.monoglot.project.db.Headword;
 import aa.monoglot.project.db.SearchFilter;
 import aa.monoglot.project.db.WordType;
 import aa.monoglot.util.SilentException;
+import aa.monoglot.util.UT;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -134,7 +135,7 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
         stemField.setText(activeWord.stem);
         createdLabel.setText(activeWord.created.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         if(activeWord.modified != null)
-            modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+            modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         else modifiedLabel.setText("");
         if(activeWord.type == null)
             typeField.getSelectionModel().clearSelection();
@@ -148,12 +149,9 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     public void loadWordList() throws SQLException {
-        String searchText = searchField.getText();
-        if(searchText == null)
-            searchText = "";
-        //TODO
         searchResults.setItems(FXCollections.observableArrayList(
-                Project.getProject().getDatabase().simpleSearch(searchText, null, null, null)));
+                Project.getProject().getDatabase().simpleSearch(
+                        UT.c(searchField.getText()), null, null, null)));
     }
 
     private boolean verifyFields(){
