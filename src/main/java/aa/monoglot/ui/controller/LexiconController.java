@@ -1,11 +1,14 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.Monoglot;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Headword;
 import aa.monoglot.project.db.SearchFilter;
 import aa.monoglot.project.db.WordType;
+import aa.monoglot.util.SilentException;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +21,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ResourceBundle;
 
+/*
+ * Notes on things that tripped me up:
+ *  - In this class, parentController.setProjectControlsEnabled DOES NOT enable word editing.
+ *    Use wordSection.setDisable(false);.
+ */
 public class LexiconController extends AbstractChildController<MonoglotController> {
     private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
     @FXML private ResourceBundle resources;
@@ -45,16 +53,15 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     @FXML private void initialize(){
         filter = new SearchFilter(searchField.textProperty(), searchType.getSelectionModel().selectedIndexProperty(),
                 searchCategory.getSelectionModel().selectedIndexProperty(), searchTags.getCheckModel().getCheckedIndices());
-        searchResults.getSelectionModel().selectedItemProperty().addListener(this::activeWordChanged);
-        //TODO
-
-        // == Field Change Listener ==
-        // use listeners on the fields themselves to update?
+        searchResults.getSelectionModel().selectedItemProperty().addListener(SilentException.invalidationListener(e -> {
+            switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
+            wordSection.setDisable(false);
+        }));
     }
 
     protected void postInitialize(){}
 
-    protected void clearInfo(){
+    public void clearInfo(){
         searchResults.setItems(EMPTY_LIST);
 
         searchField.clear();
@@ -67,58 +74,68 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
 
         searchTags.getCheckModel().clearChecks();
         searchTags.getItems().clear();
-        //TODO
-    }
 
-    private void activeWordChanged(ObservableValue<? extends Headword> value, Headword oldWord, Headword newWord){
-        /*try {
-            Database db = Monoglot.getMonoglot().getProject().getDatabase();
-            if(activeWord != null) {
-                Headword updatedWord = activeWord.update(headwordField.getText(), pronunciationField.getText(), romanizationField.getText(), stemField.getText(), typeField.getSelectionModel().getSelectedItem());
-                if(updatedWord != activeWord)
-                    db.put(updatedWord);
-            }
-            activeWord = newWord;
-        } catch(SQLException e){
-            //TODO: Tell somebody.
-        }*/
+        activeWord = null;
+        headwordField.setText("");
+        pronunciationField.setText("");
+        romanizationField.setText("");
+        stemField.setText("");
+        typeField.getSelectionModel().clearSelection();
+        categoryField.getSelectionModel().clearSelection();
+        tagsField.getCheckModel().clearChecks();
+        createdLabel.setText("");
+        modifiedLabel.setText("");
+        wordSection.setDisable(true);
     }
 
     boolean switchActiveWord(Headword newHeadword) throws SQLException {
-        if(activeWord != null){
-            {
-                //TODO: type and category lookup
-                Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
-                Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
-
-                activeWord = activeWord.update(headwordField.getText(), romanizationField.getText(),
-                        pronunciationField.getText(), stemField.getText(), null, null);
+        if(saveWord()) {
+            if (newHeadword != null) {
+                activeWord = newHeadword;
+                updateWordUI();
             }
-            if(!verify(activeWord)){
-                //TODO: tell somebody;
+            return true;
+        }
+        return false;
+    }
+
+    void createNewWord(ActionEvent event) throws SQLException {
+        switchActiveWord(Headword.create());
+        wordSection.setDisable(false);
+    }
+
+    public boolean hasUnsavedWord(){
+        return activeWord != null && activeWord.ID == null && headwordField.getText() != null && !headwordField.getText().equals("");
+    }
+
+    public boolean saveWord() throws SQLException {
+        if(activeWord != null){
+            if(activeWord.ID == null && (headwordField.getText() == null || headwordField.getText().equals("")))
+                return true;
+            if(!verifyFields()) {
+                //TODO: mark fields. Put this in #verifyFields()?
                 return false;
             }
-            Project.getProject().getDatabase().put(activeWord);
-        }
-        if(newHeadword != null) {
-            activeWord = newHeadword;
+            //TODO: type and category lookup
+            //Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
+            //Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
+
+            activeWord = Project.getProject().getDatabase().put(activeWord.update(headwordField.getText(),
+                    romanizationField.getText(), pronunciationField.getText(), stemField.getText(), null, null));
             updateWordUI();
         }
         return true;
     }
 
-    void createNewWord(ActionEvent event) throws SQLException {
-        //TODO: exception handling.
-        switchActiveWord(Headword.create());
-    }
-    private void updateWordUI(){
+    void updateWordUI() throws SQLException {
         headwordField.setText(activeWord.word);
         romanizationField.setText(activeWord.romanization);
         pronunciationField.setText(activeWord.pronunciation);
         stemField.setText(activeWord.stem);
         createdLabel.setText(activeWord.created.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
-
-        modifiedLabel.setText(activeWord.modified == null?"":activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+        if(activeWord.modified != null)
+            modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+        else modifiedLabel.setText("");
         if(activeWord.type == null)
             typeField.getSelectionModel().clearSelection();
         //else typeField.getSelectionModel().select(activeWord.type);
@@ -127,12 +144,23 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
         //else typeField.getSelectionModel().select(activeWord.category);
         //TODO: category/type lookup
         //TODO: tags
+        loadWordList();
     }
 
-    private static boolean verify(Headword headword){
-        if(headword.word.equals(""))
+    public void loadWordList() throws SQLException {
+        String searchText = searchField.getText();
+        if(searchText == null)
+            searchText = "";
+        //TODO
+        searchResults.setItems(FXCollections.observableArrayList(
+                Project.getProject().getDatabase().simpleSearch(searchText, null, null, null)));
+    }
+
+    private boolean verifyFields(){
+        String field = headwordField.getText();
+        if(field == null || field.equals(""))
             return false;
-        //TODO: verification of categories and types
+        //TODO: verify other fields
         return true;
     }
 }

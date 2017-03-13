@@ -17,12 +17,14 @@
             <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
             <Menu text="%menu.file.advanced">
                 <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverWorkingDirectory"/>
+                <MenuItem text="%menu.file.advanced.saveNoDelete" onAction="#closeProjectNoDeleteItem"/>
             </Menu>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
         </Menu>
         <Menu text="%menu.edit" fx:id="editMenu">
             <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
+            <MenuItem text="%menu.edit.save" accelerator="Shortcut+Alt+S" onAction="#saveCurrentComponent"/>
             <MenuItem text="%menu.edit.deleteWord"/>
         </Menu>
         <Menu text="%menu.help">

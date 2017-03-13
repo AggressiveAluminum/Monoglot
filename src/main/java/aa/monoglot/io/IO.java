@@ -1,6 +1,7 @@
 package aa.monoglot.io;
 
 import aa.monoglot.project.db.Database;
+import aa.monoglot.util.SilentException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -8,6 +9,7 @@ import java.nio.file.*;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Generic IO Utilities for saving/loading/cleaning up projects and project files.
@@ -51,18 +53,28 @@ public class IO {
      * <br/>TODO: Am I being paranoid? It may be more efficient to just write straight to the thing.
      * @return True if the save and move were successful, else false.
      */
-    public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation) throws SQLException {
+    public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation){
         try {
-            database.flush();
+            try {
+                database.flush();
+                database.close();
 
-            Path tmp = zipFolder(workingDirectory);
-            Files.move(tmp, saveLocation, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.REPLACE_EXISTING);
-            Files.deleteIfExists(tmp);
-        } catch (SQLException | IOException e){
-            // uh-oh
-            return false;
+                Path tmp = zipFolder(workingDirectory);
+                Files.move(tmp, saveLocation, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.REPLACE_EXISTING);
+                Files.deleteIfExists(tmp);
+            } catch (SQLException | IOException e) {
+                e.printStackTrace();
+                database.open();
+                // uh-oh
+                return false;
+            }
+            database.open();
+            return true;
+        } catch (SQLException e){// for database opening.
+            SilentException.rethrow(e);
+            //TODO: tell the user that something fucked up, and they don't have a database anymore.
         }
-        return true;
+        return false;
     }
 
     /**

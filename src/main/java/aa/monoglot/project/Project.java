@@ -1,8 +1,11 @@
 package aa.monoglot.project;
 
+import aa.monoglot.Monoglot;
 import aa.monoglot.util.MonoglotEvents;
 import aa.monoglot.project.db.Database;
 import aa.monoglot.io.IO;
+import aa.monoglot.util.SilentException;
+import javafx.event.ActionEvent;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,10 +26,12 @@ public final class Project {
 
     public static void openProject() throws SQLException, IOException, ClassNotFoundException {
         instance = new Project();
+        MonoglotEvents.projectOpened();
     }
 
     public static void openProject(Path path) throws SQLException, IOException, ClassNotFoundException {
         instance = new Project(path);
+        MonoglotEvents.projectOpened();
     }
 
     // === INTERNALS ===
@@ -46,7 +51,6 @@ public final class Project {
         database = new Database(workingDirectory);
         //TODO: log path properly
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
-        MonoglotEvents.projectOpened();
     }
 
     /**
@@ -79,7 +83,6 @@ public final class Project {
         database = new Database(workingDirectory);
         //TODO: log path properly
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
-        MonoglotEvents.projectOpened();
     }
 
     public Path getWorkingDirectory(){
@@ -91,7 +94,7 @@ public final class Project {
     }
 
     public boolean hasUnsavedChanges(){
-        return hasUnsavedChanges;
+        return hasUnsavedChanges || Monoglot.getMonoglot().mainController.lexiconTabController.hasUnsavedWord();
     }
 
     /**
@@ -113,31 +116,38 @@ public final class Project {
      * Saves the project to a file.
      * Writes the working directory contents to the save file.
      */
-    public boolean save(){
+    public boolean save() {
         try {
-            if (IO.safeSave(database, workingDirectory, saveFile)) {
+            if (Monoglot.getMonoglot().mainController.lexiconTabController.saveWord()
+                    && IO.safeSave(database, workingDirectory, saveFile)) {
                 hasUnsavedChanges = false;
                 return true;
             }
-        } catch (SQLException e){/* return false; */}
+        } catch (SQLException e){
+            SilentException.rethrow(e);
+        }
         return false;
     }
 
     /**
      * Cleans up and disposes the current project.
      * <br/><b>Does not check if saving needs to be done!</b>
+     * @param delete If the working directory should be deleted or not; this is only ever false in
+     *      {@link aa.monoglot.ui.controller.MonoglotController#closeProjectNoDeleteItem(ActionEvent)
+     *      MonoglotController#closeProjectNoDeleteItem(ActionEvent)}.
      */
-    public void close(){
+    public void close(boolean delete){
         try {
             database.close();
         } catch(SQLException e){
             //TODO: something about this
         }
 
-        if(!(amRecoveringProject || hasUnsavedChanges))
+        if(delete && !(amRecoveringProject || hasUnsavedChanges))
             IO.nuke(workingDirectory);
         workingDirectory = null;
         saveFile = null;
         MonoglotEvents.projectClosed();
+        instance = null;
     }
 }

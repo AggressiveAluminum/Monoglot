@@ -54,22 +54,23 @@ class ETC {
         }
     }
 
-    static void saveProject(MonoglotController controller){
-        if(!Project.isProjectOpen())
-            return;
-        if(!Project.getProject().hasSavePath()){
-            FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
-            chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
-            File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-            if(f != null) {
-                Path file = f.toPath();
-                if (!Files.isDirectory(file))
-                    Project.getProject().setSaveFile(file);
+    static void saveProject(MonoglotController controller) throws SQLException{
+        if(Project.isProjectOpen()) {
+            Monoglot.getMonoglot().mainController.saveAllComponents();
+            if (!Project.getProject().hasSavePath()) {
+                FileChooser chooser = new FileChooser();
+                chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
+                chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
+                File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
+                if (f != null) {
+                    Path file = f.toPath();
+                    if (!Files.isDirectory(file))
+                        Project.getProject().setSaveFile(file);
+                }
             }
+            if (Project.getProject().hasSavePath())
+                controller.setLocalStatus(Project.getProject().save() ? "app.status.saved" : "app.status.saveFailed");
         }
-        if(Project.getProject().hasSavePath())
-            controller.setLocalStatus(Project.getProject().save()?"app.status.saved":"app.status.saveFailed");
     }
 
     static void saveProjectAs(MonoglotController controller){

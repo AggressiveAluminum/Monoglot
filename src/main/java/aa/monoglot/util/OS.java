@@ -6,8 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @author cofl
- * @date 3/1/2017
+ * OS-specific functionality, such as configuration and log location.
  */
 public class OS {
     public static final OSType OS_TYPE;

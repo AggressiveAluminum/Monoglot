@@ -52,8 +52,8 @@
                     <right>
                         <VBox>
                             <padding><Insets left="40"/></padding>
-                            <Label text="&lt;created>" styleClass="grey-italics" fx:id="createdLabel"/>
-                            <Label text="&lt;modified>" styleClass="grey-italics" fx:id="modifiedLabel"/>
+                            <Label styleClass="grey-italics" fx:id="createdLabel"/>
+                            <Label styleClass="grey-italics" fx:id="modifiedLabel"/>
                         </VBox>
                     </right>
                 </BorderPane>

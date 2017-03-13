@@ -21,13 +21,8 @@ final class DatabaseImpl {
     public DatabaseImpl(Path workingDirectory) throws ClassNotFoundException, SQLException, IOException {
         Class.forName("org.h2.Driver");
         this.workingDirectory = workingDirectory;
-        init();
-    }
-
-    void init() throws SQLException, IOException {
-        try(Reader createTables = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("sql/create-tables.sql"))) {
-            RunScript.execute(getConnection(), createTables);
-        }
+        connection = createConnection();
+        connection.commit();
     }
 
     Connection getConnection() throws SQLException {
@@ -37,7 +32,7 @@ final class DatabaseImpl {
     }
 
     private Connection createConnection() throws SQLException {
-        Connection c = DriverManager.getConnection("jdbc:h2:" + workingDirectory.toString() + "/db");
+        Connection c = DriverManager.getConnection("jdbc:h2:file:" + workingDirectory.toString() + "/db;INIT=RUNSCRIPT FROM 'classpath:sql/create-tables.sql'");
         c.setAutoCommit(false);
         return c;
     }
@@ -45,9 +40,13 @@ final class DatabaseImpl {
     void close() throws SQLException {
         if(connection != null) {
             connection.commit();
+
+            // close all open prepared statements.
             for(String sql: SQL_STATEMENTS.keySet())
                 SQL_STATEMENTS.get(sql).close();
             SQL_STATEMENTS.clear();
+
+            // finish up
             connection.close();
             connection = null;
         }
@@ -60,7 +59,7 @@ final class DatabaseImpl {
     public PreparedStatement getStatement(String sql) throws SQLException {
         PreparedStatement p = SQL_STATEMENTS.get(sql);
         if(p == null)
-            SQL_STATEMENTS.put(sql, p = connection.prepareStatement(sql));
+            SQL_STATEMENTS.put(sql, p = getConnection().prepareStatement(sql));
         return p;
     }
 

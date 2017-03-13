@@ -7,6 +7,7 @@ import aa.monoglot.ui.dialog.AboutDialog;
 import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
+import aa.monoglot.util.SilentException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -125,16 +126,24 @@ public class MonoglotController {
 
     // == MENU ACTIONS ==
     public void quitApplication(Event event) {
-        if(checkCloseProject())
-            Platform.exit();
-        else event.consume();
+        try {
+            if (checkCloseProject(true))
+                Platform.exit();
+            else event.consume();
+        } catch (SQLException e){
+            SilentException.rethrow(e);
+        }
     }
 
-    @FXML private void closeProject(ActionEvent e){
-        checkCloseProject();
+    @FXML private void closeProject(ActionEvent e) throws SQLException {
+        checkCloseProject(true);
     }
 
-    private boolean checkCloseProject() {
+    @FXML private void closeProjectNoDeleteItem(ActionEvent event) throws SQLException {
+        checkCloseProject(false);
+    }
+
+    private boolean checkCloseProject(boolean delete) throws SQLException {
         if(Project.isProjectOpen()){
             if(Project.getProject().hasUnsavedChanges()){
                 Optional<ButtonType> result = new YesNoCancelAlert(
@@ -148,7 +157,7 @@ public class MonoglotController {
                         return false;
                 }
             }
-            Project.getProject().close();
+            Project.getProject().close(delete);
         }
         return true;
     }
@@ -188,22 +197,22 @@ public class MonoglotController {
         }
     }
 
-    public void newProject(ActionEvent event) {
-        if(checkCloseProject())
+    public void newProject(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.newProject(this);
     }
 
-    public void openProject(ActionEvent event) {
-        if(checkCloseProject())
+    public void openProject(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.openProject(this);
     }
 
-    public void recoverWorkingDirectory(ActionEvent event) {
-        if(checkCloseProject())
+    public void recoverWorkingDirectory(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.recoverWorkingDirectory(this);
     }
 
-    public void saveProject(ActionEvent event) {
+    public void saveProject(ActionEvent event) throws SQLException {
         ETC.saveProject(this);
     }
 
@@ -218,5 +227,18 @@ public class MonoglotController {
     @FXML
     private void createNewWord(ActionEvent event) throws SQLException {
         lexiconTabController.createNewWord(event);
+    }
+
+    @FXML
+    private void saveCurrentComponent(ActionEvent event) throws SQLException {
+        if(tabs.getSelectionModel().getSelectedItem() == lexiconTab){
+            lexiconTabController.saveWord();
+        }
+        //TODO: the rest.
+    }
+
+    void saveAllComponents() throws SQLException {
+        lexiconTabController.saveWord();
+        //TODO
     }
 }
