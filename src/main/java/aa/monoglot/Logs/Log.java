@@ -7,57 +7,54 @@ import java.util.logging.*;
  */
 public class Log {
 
-    private static Logger logger = null;
+    public static Logger logger = Logger.getLogger(aa.monoglot.Monoglot.class.getName());
 
-
-
-    public Log (String className){
-        String loggerClassnameArgument = className.getClass().toString();
-
-        logger = Logger.getLogger(loggerClassnameArgument);
+    public Log(){
+        logger.info("Logger name: " + logger.getName());
     }
 
-    public Logger getLogger(){
+    public static void logWarning(String message){
 
-        return logger;
+        logger.warning(message);
+
     }
 
-    public void logIssueSevere(String message){
-        LogRecord record = new LogRecord(Level.SEVERE, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueSevere(String message){
+
     }
 
-    public void logIssueWarning(String message){
-        LogRecord record = new LogRecord(Level.WARNING, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueWarning(String message){
+
+
     }
 
-    public void logInfo(String message){
-        LogRecord record = new LogRecord(Level.INFO, message);
-        record.setLoggerName(logger.getName());
+    public static void logInfo(String message){
+
+
     }
 
-    public void logIssueFine(String message){
-        LogRecord record = new LogRecord(Level.FINE, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueFine(String message){
+
+
     }
 
-    public void logIssueFiner(String message){
-        LogRecord record = new LogRecord(Level.FINER, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueFiner(String message){
+
+
     }
 
-    public void logIssueFinest(String message){
-        LogRecord record = new LogRecord(Level.FINEST, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueFinest(String message){
+
+
     }
 
-    public void logIssueAll(String message){
-        LogRecord record = new LogRecord(Level.ALL, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueAll(String message){
+
+
     }
 
-    public String printLog(){
-        return null;
+    public void printLog(){
+
+
     }
 }
