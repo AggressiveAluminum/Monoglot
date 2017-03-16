@@ -1,5 +1,6 @@
 package aa.monoglot.Logs;
 
+import java.io.IOException;
 import java.util.logging.*;
 
 /**
@@ -7,10 +8,20 @@ import java.util.logging.*;
  */
 public class Log {
 
-    public static Logger logger = Logger.getLogger(aa.monoglot.Monoglot.class.getName());
+    private static Logger logger = null;
 
-    public Log(){
+    public static void createLogger(){
+
+        logger =  Logger.getLogger(aa.monoglot.Monoglot.class.getName());
         logger.info("Logger name: " + logger.getName());
+
+    }
+
+    public static void loggerInit(){
+
+        createLogger();
+        createLogFile();
+
     }
 
     public static void logWarning(String message){
@@ -19,42 +30,56 @@ public class Log {
 
     }
 
-    public static void logIssueSevere(String message){
+    public static void logEnteringMethod(String className, String methodName){
+
+        logger.entering(className, methodName);
 
     }
 
-    public static void logIssueWarning(String message){
+    public static void logExitingMethod(String className, String methodName){
 
+        logger.exiting(className, methodName);
+
+    }
+
+    public static void logIssueSevere(String message, Object catched){
+
+        logger.log(Level.SEVERE, message, catched);
 
     }
 
     public static void logInfo(String message){
 
+        logger.info(message);
 
     }
 
-    public static void logIssueFine(String message){
+    private static void createLogFile(){
+        logEnteringMethod("Log", "createLogFile");
+        logWarning("File handler may throw and IOException.");
 
+        Handler fileHandler = null;
+        Formatter simpleFormatter = null;
 
-    }
+        try{
 
-    public static void logIssueFiner(String message){
+            fileHandler = new FileHandler("");
+            simpleFormatter = new SimpleFormatter();
+            logger.addHandler(fileHandler);
 
+            logInfo("Logger with default formatter.");
+            fileHandler.setFormatter(simpleFormatter);
+            fileHandler.setLevel(Level.ALL);
+            logger.setLevel(Level.ALL);
 
-    }
+            logInfo("Logger with now with simple formatter.");
 
-    public static void logIssueFinest(String message){
+        }
+        catch (IOException exception){
+            logIssueSevere("Error occured in FileHandler.", exception);
+        }
 
-
-    }
-
-    public static void logIssueAll(String message){
-
-
-    }
-
-    public void printLog(){
-
+        logExitingMethod("Log", "createLogFile");
 
     }
 }
