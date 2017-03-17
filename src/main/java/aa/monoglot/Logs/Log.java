@@ -1,6 +1,7 @@
 package aa.monoglot.Logs;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.logging.*;
 
 /**
@@ -17,10 +18,10 @@ public class Log {
 
     }
 
-    public static void loggerInit(){
+    public static void loggerInit(Path filePath){
 
         createLogger();
-        createLogFile();
+        createLogFile(filePath);
 
     }
 
@@ -54,7 +55,7 @@ public class Log {
 
     }
 
-    private static void createLogFile(){
+    private static void createLogFile(Path filePath){
         logEnteringMethod("Log", "createLogFile");
         logWarning("File handler may throw and IOException.");
 
@@ -63,7 +64,7 @@ public class Log {
 
         try{
 
-            fileHandler = new FileHandler("");
+            fileHandler = new FileHandler(filePath.toString());
             simpleFormatter = new SimpleFormatter();
             logger.addHandler(fileHandler);
 
