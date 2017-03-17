@@ -64,7 +64,7 @@ public class Log {
 
         try{
 
-            fileHandler = new FileHandler(filePath.toString());
+            fileHandler = new FileHandler(filePath.toAbsolutePath().toString());
             simpleFormatter = new SimpleFormatter();
             logger.addHandler(fileHandler);
 
