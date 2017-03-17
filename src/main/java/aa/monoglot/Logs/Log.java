@@ -52,7 +52,6 @@ public class Log {
     public static void logInfo(String message){
 
         logger.info(message);
-        this.clone();
 
     }
 
