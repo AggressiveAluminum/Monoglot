@@ -1,4 +1,4 @@
-package aa.monoglot.Logs;
+package aa.monoglot.log;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,58 +11,58 @@ public class Log {
 
     private static Logger logger = null;
 
-    private static void createLogger(){
+    private static void createLogger() {
 
-        logger =  Logger.getLogger(aa.monoglot.Monoglot.class.getName());
+        logger = Logger.getLogger(aa.monoglot.Monoglot.class.getName());
         logger.info("Logger name: " + logger.getName());
 
     }
 
-    public static void loggerInit(Path filePath){
+    public static void loggerInit(Path filePath) {
 
         createLogger();
         createLogFile(filePath);
 
     }
 
-    public static void logWarning(String message){
+    public static void logWarning(String message) {
 
         logger.warning(message);
 
     }
 
-    public static void logEnteringMethod(String className, String methodName){
+    public static void logEnteringMethod(String className, String methodName) {
 
         logger.entering(className, methodName);
 
     }
 
-    public static void logExitingMethod(String className, String methodName){
+    public static void logExitingMethod(String className, String methodName) {
 
         logger.exiting(className, methodName);
 
     }
 
-    public static void logIssueSevere(String message, Object catched){
+    public static void logIssueSevere(String message, Object catched) {
 
         logger.log(Level.SEVERE, message, catched);
 
     }
 
-    public static void logInfo(String message){
+    public static void logInfo(String message) {
 
         logger.info(message);
 
     }
 
-    private static void createLogFile(Path filePath){
+    private static void createLogFile(Path filePath) {
         logEnteringMethod("Log", "createLogFile");
         logWarning("File handler may throw and IOException.");
 
         Handler fileHandler = null;
         Formatter simpleFormatter = null;
 
-        try{
+        try {
 
             fileHandler = new FileHandler(filePath.toAbsolutePath().toString());
             simpleFormatter = new SimpleFormatter();
@@ -75,8 +75,7 @@ public class Log {
 
             logInfo("Logger with now with simple formatter.");
 
-        }
-        catch (IOException exception){
+        } catch (IOException exception) {
             logIssueSevere("Error occured in FileHandler.", exception);
         }
 

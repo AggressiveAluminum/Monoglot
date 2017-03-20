@@ -1,6 +1,6 @@
 package aa.monoglot;
 
-import aa.monoglot.Logs.Log;
+import aa.monoglot.log.Log;
 import aa.monoglot.util.OS;
 import javafx.application.Application;
 
