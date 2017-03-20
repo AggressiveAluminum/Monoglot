@@ -1,5 +1,7 @@
 package aa.monoglot.Logs;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.logging.*;
 
 /**
@@ -9,55 +11,76 @@ public class Log {
 
     private static Logger logger = null;
 
+    private static void createLogger(){
 
+        logger =  Logger.getLogger(aa.monoglot.Monoglot.class.getName());
+        logger.info("Logger name: " + logger.getName());
 
-    public Log (String className){
-        String loggerClassnameArgument = className.getClass().toString();
-
-        logger = Logger.getLogger(loggerClassnameArgument);
     }
 
-    public Logger getLogger(){
+    public static void loggerInit(Path filePath){
 
-        return logger;
+        createLogger();
+        createLogFile(filePath);
+
     }
 
-    public void logIssueSevere(String message){
-        LogRecord record = new LogRecord(Level.SEVERE, message);
-        record.setLoggerName(logger.getName());
+    public static void logWarning(String message){
+
+        logger.warning(message);
+
     }
 
-    public void logIssueWarning(String message){
-        LogRecord record = new LogRecord(Level.WARNING, message);
-        record.setLoggerName(logger.getName());
+    public static void logEnteringMethod(String className, String methodName){
+
+        logger.entering(className, methodName);
+
     }
 
-    public void logInfo(String message){
-        LogRecord record = new LogRecord(Level.INFO, message);
-        record.setLoggerName(logger.getName());
+    public static void logExitingMethod(String className, String methodName){
+
+        logger.exiting(className, methodName);
+
     }
 
-    public void logIssueFine(String message){
-        LogRecord record = new LogRecord(Level.FINE, message);
-        record.setLoggerName(logger.getName());
+    public static void logIssueSevere(String message, Object catched){
+
+        logger.log(Level.SEVERE, message, catched);
+
     }
 
-    public void logIssueFiner(String message){
-        LogRecord record = new LogRecord(Level.FINER, message);
-        record.setLoggerName(logger.getName());
+    public static void logInfo(String message){
+
+        logger.info(message);
+
     }
 
-    public void logIssueFinest(String message){
-        LogRecord record = new LogRecord(Level.FINEST, message);
-        record.setLoggerName(logger.getName());
-    }
+    private static void createLogFile(Path filePath){
+        logEnteringMethod("Log", "createLogFile");
+        logWarning("File handler may throw and IOException.");
 
-    public void logIssueAll(String message){
-        LogRecord record = new LogRecord(Level.ALL, message);
-        record.setLoggerName(logger.getName());
-    }
+        Handler fileHandler = null;
+        Formatter simpleFormatter = null;
 
-    public String printLog(){
-        return null;
+        try{
+
+            fileHandler = new FileHandler(filePath.toAbsolutePath().toString());
+            simpleFormatter = new SimpleFormatter();
+            logger.addHandler(fileHandler);
+
+            logInfo("Logger with default formatter.");
+            fileHandler.setFormatter(simpleFormatter);
+            fileHandler.setLevel(Level.ALL);
+            logger.setLevel(Level.ALL);
+
+            logInfo("Logger with now with simple formatter.");
+
+        }
+        catch (IOException exception){
+            logIssueSevere("Error occured in FileHandler.", exception);
+        }
+
+        logExitingMethod("Log", "createLogFile");
+
     }
 }
