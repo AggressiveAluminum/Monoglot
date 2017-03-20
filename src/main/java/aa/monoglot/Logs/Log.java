@@ -11,7 +11,7 @@ public class Log {
 
     private static Logger logger = null;
 
-    public static void createLogger(){
+    private static void createLogger(){
 
         logger =  Logger.getLogger(aa.monoglot.Monoglot.class.getName());
         logger.info("Logger name: " + logger.getName());
