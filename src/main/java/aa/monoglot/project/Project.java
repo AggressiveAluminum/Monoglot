@@ -4,22 +4,24 @@ import aa.monoglot.Monoglot;
 import aa.monoglot.util.MonoglotEvents;
 import aa.monoglot.project.db.Database;
 import aa.monoglot.io.IO;
+import aa.monoglot.util.OS;
 import aa.monoglot.util.SilentException;
 import javafx.event.ActionEvent;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public final class Project {
     private static Project instance;
-
     public static boolean isProjectOpen(){
         return instance != null;
     }
-
     public static Project getProject(){
         return instance;
     }
@@ -28,7 +30,6 @@ public final class Project {
         instance = new Project();
         MonoglotEvents.projectOpened();
     }
-
     public static void openProject(Path path) throws SQLException, IOException, ClassNotFoundException {
         instance = new Project(path);
         MonoglotEvents.projectOpened();
@@ -39,6 +40,8 @@ public final class Project {
     private Database database;
     private boolean amRecoveringProject = false;
     private boolean hasUnsavedChanges = true;
+    public Properties settings = new Properties();
+    public final Path settingsFile;
 
     /**
      * Creates a new Project.
@@ -49,6 +52,7 @@ public final class Project {
     private Project() throws IOException, SQLException, ClassNotFoundException {
         workingDirectory = Files.createTempDirectory("mglt");
         database = new Database(workingDirectory);
+        settingsFile = workingDirectory.resolve("settings.properties");
         //TODO: log path properly
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
     }
@@ -81,6 +85,16 @@ public final class Project {
         }
 
         database = new Database(workingDirectory);
+        settingsFile = workingDirectory.resolve("settings.properties");
+        System.err.println("OK");
+        if(!Files.exists(settingsFile))
+            Files.createFile(settingsFile);
+        try(InputStream stream = Files.newInputStream(settingsFile)){
+            System.err.println("OK");
+            settings.load(stream);
+            System.err.println("OK");
+        }
+
         //TODO: log path properly
         System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
     }

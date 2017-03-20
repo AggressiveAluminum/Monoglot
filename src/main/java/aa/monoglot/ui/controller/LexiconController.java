@@ -101,8 +101,13 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     void createNewWord(ActionEvent event) throws SQLException {
-        switchActiveWord(Headword.create());
-        wordSection.setDisable(false);
+        if(switchActiveWord(Headword.create()))
+            wordSection.setDisable(false);
+        else System.err.println("Couldn't switch to a new word!");
+    }
+
+    public void deleteWord(ActionEvent event) {
+        //TODO
     }
 
     public boolean hasUnsavedWord(){
@@ -160,6 +165,35 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
             return false;
         //TODO: verify other fields
         return true;
+    }
+
+    @Override
+    public boolean unload(){
+        try {
+            if(saveWord()){
+                clearInfo();
+                wordSection.setDisable(false);
+                return true;
+            }
+        } catch(SQLException e){
+            //TODO: rethrow?
+        }
+        return false;
+    }
+
+    @Override
+    public boolean load(){
+        try {
+            if (activeWord != null) {
+                activeWord = Headword.fetch(activeWord.ID);
+                loadWordList();
+                updateWordUI();
+            }
+            return true;
+        } catch(SQLException e){
+            //TODO: rethrow?
+            return false;
+        }
     }
 }
 

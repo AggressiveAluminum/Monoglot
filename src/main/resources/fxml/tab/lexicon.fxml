@@ -20,10 +20,10 @@
         <BorderPane>
             <top>
                 <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection" disable="true">
-                    <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
+                    <padding><Insets top="10" bottom="5"/></padding>
                     <center>
                         <GridPane vgap="10" hgap="10">
-                            <padding><Insets bottom="5"/></padding>
+                            <padding><Insets bottom="10" left="10" right="10" /></padding>
                             <columnConstraints>
                                 <ColumnConstraints minWidth="10" maxWidth="10"/>
                             </columnConstraints>
@@ -51,28 +51,36 @@
                     </center>
                     <right>
                         <VBox>
-                            <padding><Insets left="40"/></padding>
+                            <padding><Insets left="50" right="10"/></padding>
                             <Label styleClass="grey-italics" fx:id="createdLabel"/>
                             <Label styleClass="grey-italics" fx:id="modifiedLabel"/>
                         </VBox>
                     </right>
+                    <bottom>
+                        <HBox styleClass="controls-bar" spacing="5">
+                            <JFXButton text="%tab.lexicon.button.saveWord" onAction="#saveWord" styleClass="blue-button"/>
+                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button"/>
+                        </HBox>
+                    </bottom>
                 </BorderPane>
             </top>
             <center>
-                <Accordion expandedPane="$lexiconDefinitionsPane">
-                    <panes>
-                        <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
-                            <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
-                                <style>-fx-background-color:transparent;</style>
-                                <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
-                                
-                                <VBox maxHeight="700" minHeight="700">
-                                    <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
-                                </VBox>
-                            </ScrollPane>
-                        </TitledPane>
-                    </panes>
-                </Accordion>
+                <VBox>
+                    <Accordion expandedPane="$lexiconDefinitionsPane">
+                        <panes>
+                            <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
+                                <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
+                                    <style>-fx-background-color:transparent;</style>
+                                    <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
+
+                                    <VBox maxHeight="700" minHeight="700">
+                                        <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
+                                    </VBox>
+                                </ScrollPane>
+                            </TitledPane>
+                        </panes>
+                    </Accordion>
+                </VBox>
             </center>
         </BorderPane>
     </SplitPane>

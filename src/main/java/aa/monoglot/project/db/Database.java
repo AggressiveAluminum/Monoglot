@@ -60,4 +60,8 @@ public class Database {
         }
         return list;
     }
+
+    Headword selectHeadword(UUID id) throws SQLException {
+        return Headword.select(db.getStatement(Headword.SELECT_STR), id);
+    }
 }

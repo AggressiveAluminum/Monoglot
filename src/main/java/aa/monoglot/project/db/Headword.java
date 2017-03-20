@@ -1,5 +1,6 @@
 package aa.monoglot.project.db;
 
+import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
 import java.sql.*;
@@ -151,5 +152,9 @@ public final class Headword {
             resultSet.next();
             return new Headword(resultSet);
         }
+    }
+
+    public static Headword fetch(UUID id) throws SQLException {
+        return Project.getProject().getDatabase().selectHeadword(id);
     }
 }

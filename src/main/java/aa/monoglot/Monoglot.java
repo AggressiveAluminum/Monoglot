@@ -2,6 +2,7 @@ package aa.monoglot;
 
 import aa.monoglot.ui.controller.MonoglotController;
 import aa.monoglot.util.ApplicationErrorCode;
+import aa.monoglot.util.OS;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

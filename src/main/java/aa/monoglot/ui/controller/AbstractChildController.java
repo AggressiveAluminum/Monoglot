@@ -16,5 +16,19 @@ abstract class AbstractChildController<P> {
      */
     protected abstract void clearInfo();
 
-    //public abstract void projectChanged();
+    /**
+     * Called when this tab is switched away from.
+     * @return success
+     */
+    public boolean unload(){
+        return true;
+    }
+
+    /**
+     * Called when this tab is switched in to.
+     * @return success
+     */
+    public boolean load(){
+        return true;
+    }
 }

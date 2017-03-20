@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -74,6 +76,12 @@ public class Definition {
         if(this.equals(newDefinition))
             return this;
         return newDefinition;
+    }
+
+    public final List<Definition> fetch(Headword word){
+        ArrayList<Definition> definitions = new ArrayList<>();
+        //TODO
+        return definitions;
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MonoglotController {
+    static private final int LEXICON_TAB_ORDER  = 1;
+    static private final int PROJECT_TAB_ORDER = 0;
     public List<FileChooser.ExtensionFilter> mgltExtensionFilter;
 
     @FXML
@@ -124,23 +126,19 @@ public class MonoglotController {
         history.back();
     }
 
-    // == MENU ACTIONS ==
-    public void quitApplication(Event event) {
-        try {
-            if (checkCloseProject(true))
-                Platform.exit();
-            else event.consume();
-        } catch (SQLException e){
-            SilentException.rethrow(e);
+    public boolean switchContext(Tab from, Tab to){
+        if (from == lexiconTab) {
+            lexiconTabController.unload();
+        } else if (from == projectTab) {
+            projectTabController.unload();
         }
-    }
 
-    @FXML private void closeProject(ActionEvent e) throws SQLException {
-        checkCloseProject(true);
-    }
-
-    @FXML private void closeProjectNoDeleteItem(ActionEvent event) throws SQLException {
-        checkCloseProject(false);
+        if (to == lexiconTab) {
+            lexiconTabController.load();
+        } else if (to == projectTab) {
+            projectTabController.load();
+        }
+        return true;
     }
 
     private boolean checkCloseProject(boolean delete) throws SQLException {
@@ -160,6 +158,25 @@ public class MonoglotController {
             Project.getProject().close(delete);
         }
         return true;
+    }
+
+    // == MENU ACTIONS ==
+    public void quitApplication(Event event) {
+        try {
+            if (checkCloseProject(true))
+                Platform.exit();
+            else event.consume();
+        } catch (SQLException e){
+            SilentException.rethrow(e);
+        }
+    }
+
+    @FXML private void closeProject(ActionEvent e) throws SQLException {
+        checkCloseProject(true);
+    }
+
+    @FXML private void closeProjectNoDeleteItem(ActionEvent event) throws SQLException {
+        checkCloseProject(false);
     }
 
     public void openSettingsDialog(ActionEvent event) {
@@ -213,28 +230,30 @@ public class MonoglotController {
     }
 
     public void saveProject(ActionEvent event) throws SQLException {
-        ETC.saveProject(this);
+        if(Project.isProjectOpen())
+            ETC.saveProject(this);
     }
 
     public void saveProjectAs(ActionEvent event) {
-        ETC.saveProjectAs(this);
+        if(Project.isProjectOpen())
+            ETC.saveProjectAs(this);
     }
 
     public void setLocalStatus(String key, Object... args){
         status.setText(String.format(resources.getString(key), args));
     }
 
+    /**
+     * Accelerator: Shortcut + N
+     */
     @FXML
     private void createNewWord(ActionEvent event) throws SQLException {
-        lexiconTabController.createNewWord(event);
-    }
-
-    @FXML
-    private void saveCurrentComponent(ActionEvent event) throws SQLException {
-        if(tabs.getSelectionModel().getSelectedItem() == lexiconTab){
-            lexiconTabController.saveWord();
+        if (Project.isProjectOpen()) {// without this check, the app will crash when a project isn't open.
+            if(tabSelector.getSelectionModel().getSelectedIndex() == LEXICON_TAB_ORDER)
+                lexiconTabController.createNewWord(event);
+            else if (history.addAndDo(tabSwitchActionFactory.getTabSwitchAction(tabSelector.getSelectionModel().getSelectedIndex(), LEXICON_TAB_ORDER)))
+                lexiconTabController.createNewWord(event);
         }
-        //TODO: the rest.
     }
 
     void saveAllComponents() throws SQLException {
