@@ -5,7 +5,7 @@
 <?import org.controlsfx.control.CheckComboBox?>
 <Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
     <SplitPane dividerPositions="1">
-        <VBox id="search-section" fx:id="searchSection">
+        <VBox id="search-section">
             <JFXTextField fx:id="searchField" promptText="%prompt.search.search"/>
             <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
             <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
@@ -13,17 +13,17 @@
                 <Label text="%prompt.search.tags" maxHeight="Infinity"/>
                 <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             </HBox>
-            <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
+            <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
                 <JFXListView fx:id="searchResults"/>
             </ScrollPane>
         </VBox>
         <BorderPane>
             <top>
-                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection">
-                    <padding><Insets top="10" left="10" right="10" bottom="10"/></padding>
+                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection" disable="true">
+                    <padding><Insets top="10" bottom="5"/></padding>
                     <center>
                         <GridPane vgap="10" hgap="10">
-                            <padding><Insets bottom="5"/></padding>
+                            <padding><Insets bottom="10" left="10" right="10" /></padding>
                             <columnConstraints>
                                 <ColumnConstraints minWidth="10" maxWidth="10"/>
                             </columnConstraints>
@@ -32,47 +32,55 @@
                             </rowConstraints>
 
                             <!-- Row 0-->
-                            <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text"
+                            <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text" fx:id="headwordField"
                                           GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
-                            <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic"
+                            <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic" fx:id="pronunciationField"
                                           GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
                             <!-- Row 1-->
-                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="romanizationField"/>
+                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="typeField"/>
+                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1" fx:id="categoryField"/>
 
                             <!-- Row 2 -->
-                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="stemField">
                                 <padding><Insets left="10"/></padding>
                             </JFXTextField>
-                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity"/>
+                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity" fx:id="tagsField"/>
                         </GridPane>
                     </center>
                     <right>
                         <VBox>
-                            <padding><Insets left="40"/></padding>
-                            <Label text="&lt;created>" styleClass="grey-italics"/>
-                            <Label text="&lt;modified>" styleClass="grey-italics"/>
+                            <padding><Insets left="50" right="10"/></padding>
+                            <Label styleClass="grey-italics" fx:id="createdLabel"/>
+                            <Label styleClass="grey-italics" fx:id="modifiedLabel"/>
                         </VBox>
                     </right>
+                    <bottom>
+                        <HBox styleClass="controls-bar" spacing="5">
+                            <JFXButton text="%tab.lexicon.button.saveWord" onAction="#saveWord" styleClass="blue-button"/>
+                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button"/>
+                        </HBox>
+                    </bottom>
                 </BorderPane>
             </top>
             <center>
-                <Accordion expandedPane="$lexiconDefinitionsPane">
-                    <panes>
-                        <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
-                            <ScrollPane vbarPolicy="AS_NEEDED" hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
-                                <style>-fx-background-color:transparent;</style>
-                                <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
-                                
-                                <VBox maxHeight="700" minHeight="700">
-                                    <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
-                                </VBox>
-                            </ScrollPane>
-                        </TitledPane>
-                    </panes>
-                </Accordion>
+                <VBox>
+                    <Accordion expandedPane="$lexiconDefinitionsPane">
+                        <panes>
+                            <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
+                                <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
+                                    <style>-fx-background-color:transparent;</style>
+                                    <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
+
+                                    <VBox maxHeight="700" minHeight="700">
+                                        <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
+                                    </VBox>
+                                </ScrollPane>
+                            </TitledPane>
+                        </panes>
+                    </Accordion>
+                </VBox>
             </center>
         </BorderPane>
     </SplitPane>

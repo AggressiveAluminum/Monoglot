@@ -9,8 +9,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * Deletes each file and directory.
- * @author cofl
- * @date 2/22/2017
  */
 class DirectoryDeleter implements FileVisitor<Path> {
     @Override

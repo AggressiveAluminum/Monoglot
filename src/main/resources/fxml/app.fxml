@@ -11,19 +11,19 @@
             <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
             <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
             <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S"/>
-            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" accelerator="Shortcut+Shift+S"/>
+            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem"/>
             <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
             <Menu text="%menu.file.advanced">
                 <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverWorkingDirectory"/>
+                <MenuItem text="%menu.file.advanced.saveNoDelete" onAction="#closeProjectNoDeleteItem"/>
             </Menu>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
         </Menu>
         <Menu text="%menu.edit" fx:id="editMenu">
-            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N"/>
-            <MenuItem text="%menu.edit.deleteWord"/>
+            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
         </Menu>
         <Menu text="%menu.help">
             <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
@@ -32,12 +32,10 @@
 
     <!-- Content -->
     <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <tabs>
-            <fx:include fx:id="projectTab" source="tab/project.fxml"/>
-            <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
-            <!-- keep this last -->
-            <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
-        </tabs>
+        <fx:include fx:id="projectTab" source="tab/project.fxml"/>
+        <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+        <!-- keep this last -->
+        <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
     </TabPane>
 
     <!-- Navigation -->

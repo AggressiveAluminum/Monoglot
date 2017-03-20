@@ -1,6 +1,8 @@
 package aa.monoglot;
 
 import aa.monoglot.ui.controller.MonoglotController;
+import aa.monoglot.util.ApplicationErrorCode;
+import aa.monoglot.util.OS;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -11,8 +13,9 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,18 +33,13 @@ import java.util.ResourceBundle;
  * @author zefrof
  */
 public class Monoglot extends Application {
+    private static Monoglot monoglot;
+
     public Stage window;
     public ResourceBundle bundle;
     public MonoglotController mainController;
-    public List<Image> icons = new ArrayList<>();
+    public final List<Image> icons = new ArrayList<>();
 
-    private Project project;
-
-    private static Monoglot monoglot;
-
-    /**
-     * {@inheritDoc}
-     */
     public void start(Stage primaryStage){
         window = primaryStage;
         monoglot = this;
@@ -52,7 +50,7 @@ public class Monoglot extends Application {
             bundle = ResourceBundle.getBundle("lang/lang");
         } catch(Exception e){
             // Definitely can't recover from a bundle load error. No strings == no usability. Also crashes.
-            showError(e, null);
+            showError(e, ApplicationErrorCode.LOCALIZATION_FAILURE);
             Platform.exit();
         }
 
@@ -70,7 +68,7 @@ public class Monoglot extends Application {
             window.minWidthProperty().bind(p.minWidthProperty());
         } catch(Exception e){
             // Can't really recover from this :(
-            showError(e, true);
+            showError(e, ApplicationErrorCode.APPLICATION_LOAD_FAILURE);
             Platform.exit();
         }
 
@@ -107,55 +105,50 @@ public class Monoglot extends Application {
      * <p>See line #42 (last updated 6:50pm 22 Feb 2017)
      */
     private void uncaughtExceptionHandler(Thread thread, Throwable throwable) {
-        showError(throwable, true);
+        showError(throwable, ApplicationErrorCode.UNUSUAL_FAILURE);
         Platform.exit();
     }
 
     /**
-     * Show a non-fatal error with localized keys.
+     * Show an error to the user. If the code is denoted "Fatal", exit the application abnormally.
+     * @param throwable The error to be shown.
+     * @param code What kind of error this is.
      */
-    public void showError(Exception e){
-        showError(e, false);
-    }
-
-    /**
-     * Shows an error.
-     * @param e The error.
-     * @param isFatal If <code>null</code>, use string literals (really bad). Otherwise, whether or not the exception is recoverable.
-     */
-    public void showError(Throwable e, Boolean isFatal) {
+    public void showError(Throwable throwable, ApplicationErrorCode code){
         Alert error = new Alert(Alert.AlertType.ERROR);
 
         String title, header, text;
-        if(isFatal == null) {
+        if(code == ApplicationErrorCode.LOCALIZATION_FAILURE){
             title = "Resource Load Error";
             header = "An error occurred while loading the application localization file.";
             text = "Unless you're doing something funky, please send this to the developer," +
                     " along with an explanation of what you were doing:";
-        } else if(isFatal){
-            title = bundle.getString("dialog.error.fatalError.title");
-            header = bundle.getString("dialog.error.fatalError.header");
-            text = bundle.getString("dialog.error.fatalError.text");
         } else {
-            title = bundle.getString("dialog.error.normal.title");
-            header = bundle.getString("dialog.error.normal.header");
-            text = bundle.getString("dialog.error.normal.text");
+            title = bundle.getString(code.getPrefix() + ".title");
+            header = bundle.getString(code.getPrefix() + ".header");
+            text = bundle.getString(code.getPrefix() + ".text");
+
+            if(code != ApplicationErrorCode.APPLICATION_LOAD_FAILURE && window != null && window.isShowing())
+                error.initOwner(window);
         }
 
-        /*if(isFatal != null) // for some reason this doesn't work, I can't pin down when or why.
-            error.initOwner(window);*/
         error.setTitle(title);
         error.setHeaderText(header);
         error.setContentText(text);
 
-        StringWriter stringWriter = new StringWriter();
-        e.printStackTrace(new PrintWriter(stringWriter));
-        TextArea area = new TextArea(stringWriter.toString());
-        area.setEditable(false);
-        area.setWrapText(true);
+        if(code.isFatal()) { // if we can't recover, why?
+            StringWriter stringWriter = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(stringWriter));
+            TextArea area = new TextArea(stringWriter.toString());
+            area.setEditable(false);
+            area.setWrapText(true);
+            error.getDialogPane().setExpandableContent(area);
+        }
 
-        error.getDialogPane().setExpandableContent(area);
         error.showAndWait();
+
+        if(code.isFatal())
+            Platform.exit();
     }
 
     /**
@@ -163,51 +156,5 @@ public class Monoglot extends Application {
      */
     public static Monoglot getMonoglot() {
         return monoglot;
-    }
-
-    /**
-     * Get the current project.
-     */
-    public Project getProject() {
-        return project;
-    }
-
-    /**
-     * Creates a new, empty project with no save file to back it up.
-     * @throws IOException
-     */
-    public void newProject() throws IOException {
-        project = new Project();
-    }
-
-    /**
-     * Opens a project from a file.
-     * @param path The project file.
-     * @throws IOException
-     */
-    public void openProject(Path path) throws IOException {
-        project = new Project(path);
-    }
-
-    /**
-     * Cleans up and disposes the current project.
-     * <br/><b>Does not check if saving needs to be done!</b>
-     */
-    public void closeProject() {
-        if(project != null) {
-            project.close();
-            project = null;
-        }
-    }
-
-    /**
-     * Opens a project from a directory, with no attached save file.
-     * This is useful if the application crashes horribly before you can save, so you can
-     * still pick up the pieces.
-     * @param path The working directory where the undead project resides.
-     * @throws IOException
-     */
-    public void recoverProject(Path path) throws IOException {
-        project = new Project(path, true);
     }
 }

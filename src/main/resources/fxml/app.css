@@ -28,6 +28,14 @@
     -fx-background-color: #fafafa;
 }
 
+.controls-bar {
+    -fx-background-color: #f3f3f3;
+    -fx-border-color: black;
+    -fx-border-width: 1px 0 1px 0;
+    -fx-padding: 3px 20px 3px 20px;
+    -fx-effect: dropshadow(three-pass-box, #e3e3e3, 1, 0, 1, 0);
+}
+
 .content-tabs {-fx-tab-max-height: 0;}
 .content-tabs .tab-header-area {visibility: hidden;}
 
@@ -47,8 +55,13 @@
     -fx-pref-width: 80px;
 }
 
-.colored-button {
+.blue-button {
     -fx-background-color: rgb(40,100,214);
+    -fx-text-fill: WHITE;
+}
+
+.red-button {
+    -fx-background-color: rgb(214, 50, 40);
     -fx-text-fill: WHITE;
 }
 

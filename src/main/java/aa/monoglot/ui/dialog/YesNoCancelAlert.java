@@ -5,10 +5,6 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Window;
 
-/**
- * @author cofl
- * @date 2/20/2017
- */
 public class YesNoCancelAlert extends Alert {
     public YesNoCancelAlert(){
         super(AlertType.CONFIRMATION);

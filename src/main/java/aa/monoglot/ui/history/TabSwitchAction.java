@@ -1,13 +1,11 @@
 package aa.monoglot.ui.history;
 
+import aa.monoglot.Monoglot;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
 
 /**
  * Tracks tab switches for {@link aa.monoglot.ui.history.History History}
- *
- * @author cofl
- * @date 2/17/2017
  */
 class TabSwitchAction implements HistoryAction {
     private final ComboBox tabSelector;
@@ -21,13 +19,21 @@ class TabSwitchAction implements HistoryAction {
         this.to = to;
     }
 
-    public void doAction(){
-        tabSelector.getSelectionModel().select(to);
-        tabs.getSelectionModel().select(to);
+    public boolean doAction(){
+        if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(from), tabs.getTabs().get(to))){
+            tabSelector.getSelectionModel().select(to);
+            tabs.getSelectionModel().select(to);
+            return true;
+        }
+        return false;
     }
 
-    public void undoAction(){
-        tabSelector.getSelectionModel().select(from);
-        tabs.getSelectionModel().select(from);
+    public boolean undoAction(){
+        if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(to), tabs.getTabs().get(from))) {
+            tabSelector.getSelectionModel().select(from);
+            tabs.getSelectionModel().select(from);
+            return true;
+        }
+        return false;
     }
 }

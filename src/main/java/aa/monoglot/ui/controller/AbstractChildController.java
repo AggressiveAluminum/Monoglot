@@ -1,13 +1,9 @@
 package aa.monoglot.ui.controller;
 
-/**
- * @author cofl
- * @date 2/12/2017
- */
 abstract class AbstractChildController<P> {
     protected P parentController;
 
-    protected void registerMaster(P parent){
+    void registerMaster(P parent){
         this.parentController = parent;
         postInitialize();
     }
@@ -19,4 +15,20 @@ abstract class AbstractChildController<P> {
      * to prevent outdated information when switching projects.
      */
     protected abstract void clearInfo();
+
+    /**
+     * Called when this tab is switched away from.
+     * @return success
+     */
+    public boolean unload(){
+        return true;
+    }
+
+    /**
+     * Called when this tab is switched in to.
+     * @return success
+     */
+    public boolean load(){
+        return true;
+    }
 }

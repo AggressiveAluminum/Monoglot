@@ -1,17 +1,20 @@
 package aa.monoglot.io;
 
-import aa.monoglot.db.Database;
+import aa.monoglot.project.db.Database;
+import aa.monoglot.util.SilentException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Generic IO Utilities for saving/loading/cleaning up projects and project files.
- * @author cofl
- * @date 2/22/2017
+ *
+ * TODO: re-write these in a non-blocking fashion.
  */
 public class IO {
     private static final Map<String, String> ZIP_CREATE_MAP = Collections.singletonMap("create", "true");
@@ -22,26 +25,20 @@ public class IO {
      * If the save fails, then <code>null</code> is returned.
      * <br/>Uses {@linkplain FileTreeCopier}
      */
-    public static Path zipFolder(Path workingDirectory){
-        Path tmp;
-        try {
-            tmp = Files.createTempFile("mglt-save-", ".zip");
-            Files.deleteIfExists(tmp);
-            URI tmpURI = URI.create("jar:" + tmp.toUri());
-            try (FileSystem zip = FileSystems.newFileSystem(tmpURI, ZIP_CREATE_MAP)) {
-                Files.walkFileTree(workingDirectory, new FileTreeCopier(workingDirectory, zip.getPath("/")));
-            }
-        } catch(IOException e){
-            return null;
+    public static Path zipFolder(Path workingDirectory) throws IOException {
+        Path tmp = Files.createTempFile("mglt-save-", ".zip");
+        Files.deleteIfExists(tmp);
+        URI tmpURI = URI.create("jar:" + tmp.toUri());
+        try(FileSystem zip = FileSystems.newFileSystem(tmpURI, ZIP_CREATE_MAP)) {
+            Files.walkFileTree(workingDirectory, new FileTreeCopier(workingDirectory, zip.getPath("/")));
         }
         return tmp;
     }
 
     /**
      * Unzips zip file <code>zip</code> to directory <code>workingDirectory</code>.
-     * <br/>Replaces {@link aa.monoglot.io.SaveLoad#load SaveLoad.load}
      * <br/>Uses {@linkplain FileTreeCopier}
-     * @throws IOException
+     * @throws IOException if file operations fail.
      */
     public static void unzipToDirectory(Path zip, Path workingDirectory) throws IOException {
         URI zipURI = URI.create("jar:" + zip.toUri());
@@ -53,23 +50,31 @@ public class IO {
 
     /**
      * Safely saves the project to a temporary file, then moves it, to prevent corruption of the existing project.
-     * <br/>Replaces {@link aa.monoglot.io.SaveLoad#save SaveLoad.save}
+     * <br/>TODO: Am I being paranoid? It may be more efficient to just write straight to the thing.
      * @return True if the save and move were successful, else false.
      */
     public static boolean safeSave(Database database, Path workingDirectory, Path saveLocation){
-        database.pause();
         try {
-            Path tmp = zipFolder(workingDirectory);
-            if(tmp != null) {
+            try {
+                database.flush();
+                database.close();
+
+                Path tmp = zipFolder(workingDirectory);
                 Files.move(tmp, saveLocation, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.REPLACE_EXISTING);
                 Files.deleteIfExists(tmp);
+            } catch (SQLException | IOException e) {
+                e.printStackTrace();
+                database.open();
+                // uh-oh
+                return false;
             }
-        } catch (IOException e){
-            database.resume();
-            return false;
+            database.open();
+            return true;
+        } catch (SQLException e){// for database opening.
+            SilentException.rethrow(e);
+            //TODO: tell the user that something fucked up, and they don't have a database anymore.
         }
-        database.resume();
-        return true;
+        return false;
     }
 
     /**

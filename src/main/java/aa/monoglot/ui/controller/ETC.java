@@ -1,7 +1,8 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.util.ApplicationErrorCode;
 import aa.monoglot.Monoglot;
-import aa.monoglot.Project;
+import aa.monoglot.project.Project;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -9,19 +10,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
-/**
- * @author cofl
- * @date 2/22/2017
- */
 class ETC {
     static void recoverWorkingDirectory(MonoglotController controller){
         DirectoryChooser chooser = new DirectoryChooser();
         File file = chooser.showDialog(Monoglot.getMonoglot().window);
         if(file != null){
             try {
-                Monoglot.getMonoglot().recoverProject(file.toPath());
+                Project.openProject(file.toPath());
                 controller.setProjectControlsEnabled(true);
+            } catch(ClassNotFoundException | SQLException e){
+                Monoglot.getMonoglot().showError(e, ApplicationErrorCode.RECOVERABLE_ERROR);
+                //TODO: tell the user.
             } catch(IOException e){
                 //TODO: tell the user.
             }
@@ -36,9 +37,9 @@ class ETC {
 
         if(file != null){
             try {
-                Monoglot.getMonoglot().openProject(file.toPath());
+                Project.openProject(file.toPath());
                 controller.setProjectControlsEnabled(true);
-            } catch(IOException e){
+            } catch(IOException | ClassNotFoundException | SQLException e){
                 //TODO: tell the user.
             }
         }
@@ -46,36 +47,34 @@ class ETC {
 
     static void newProject(MonoglotController controller){
         try {
-            Monoglot.getMonoglot().newProject();
+            Project.openProject();
             controller.setProjectControlsEnabled(true);
-        } catch (IOException e){
+        } catch(IOException | ClassNotFoundException | SQLException e) {
             //TODO: tell the user.
         }
     }
 
-    static void saveProject(MonoglotController controller){
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
-            return;
-        if(!project.hasSavePath()){
-            FileChooser chooser = new FileChooser();
-            chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
-            chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
-            File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
-            if(f != null) {
-                Path file = f.toPath();
-                if (!Files.isDirectory(file))
-                    project.setSaveFile(file);
+    static void saveProject(MonoglotController controller) throws SQLException{
+        if(Project.isProjectOpen()) {
+            Monoglot.getMonoglot().mainController.saveAllComponents();
+            if (!Project.getProject().hasSavePath()) {
+                FileChooser chooser = new FileChooser();
+                chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
+                chooser.setSelectedExtensionFilter(controller.mgltExtensionFilter.get(0));
+                File f = chooser.showSaveDialog(Monoglot.getMonoglot().window);
+                if (f != null) {
+                    Path file = f.toPath();
+                    if (!Files.isDirectory(file))
+                        Project.getProject().setSaveFile(file);
+                }
             }
-        }
-        if(project.hasSavePath()) {
-            controller.setLocalStatus(project.save()?"app.status.saved":"app.status.saveFailed");
+            if (Project.getProject().hasSavePath())
+                controller.setLocalStatus(Project.getProject().save() ? "app.status.saved" : "app.status.saveFailed");
         }
     }
 
     static void saveProjectAs(MonoglotController controller){
-        Project project = Monoglot.getMonoglot().getProject();
-        if(project == null)
+        if(!Project.isProjectOpen())
             return;
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().addAll(controller.mgltExtensionFilter);
@@ -84,8 +83,8 @@ class ETC {
         if(f != null) {
             Path file = f.toPath();
             if (!Files.isDirectory(file))
-                project.setSaveFile(file);
-            controller.setLocalStatus(project.save()?"app.status.saved":"app.status.saveFailed");
+                Project.getProject().setSaveFile(file);
+            controller.setLocalStatus(Project.getProject().save()?"app.status.saved":"app.status.saveFailed");
         }
     }
 }

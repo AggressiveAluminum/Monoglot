@@ -1,11 +1,13 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.util.ApplicationErrorCode;
 import aa.monoglot.Monoglot;
-import aa.monoglot.io.IO;
+import aa.monoglot.project.Project;
 import aa.monoglot.ui.dialog.AboutDialog;
 import aa.monoglot.ui.dialog.YesNoCancelAlert;
 import aa.monoglot.ui.history.History;
 import aa.monoglot.ui.history.TabSwitchActionFactory;
+import aa.monoglot.util.SilentException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -17,18 +19,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
-import java.io.File;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-/**
- * @author cofl
- * @date 2/8/2017
- */
 public class MonoglotController {
+    static private final int LEXICON_TAB_ORDER  = 1;
+    static private final int PROJECT_TAB_ORDER = 0;
     public List<FileChooser.ExtensionFilter> mgltExtensionFilter;
 
     @FXML
@@ -54,7 +53,7 @@ public class MonoglotController {
 
     public Button historyBackButton, historyForeButton;
 
-    public ComboBox tabSelector;
+    public ComboBox<String> tabSelector;
     private int selected = 1; // Lexicon tab is #1, Project Settings is #0.
 
     @FXML private Label status;
@@ -94,9 +93,9 @@ public class MonoglotController {
     }
 
     private void postInit(){
-        rootPane.setTopAnchor(navigationBar, menuBar.getHeight());
-        rootPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
-        rootPane.setBottomAnchor(tabs, statusBar.getHeight());
+        AnchorPane.setTopAnchor(navigationBar, menuBar.getHeight());
+        AnchorPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
+        AnchorPane.setBottomAnchor(tabs, statusBar.getHeight());
 
         setProjectControlsEnabled(false);
     }
@@ -127,32 +126,57 @@ public class MonoglotController {
         history.back();
     }
 
+    public boolean switchContext(Tab from, Tab to){
+        if (from == lexiconTab) {
+            lexiconTabController.unload();
+        } else if (from == projectTab) {
+            projectTabController.unload();
+        }
+
+        if (to == lexiconTab) {
+            lexiconTabController.load();
+        } else if (to == projectTab) {
+            projectTabController.load();
+        }
+        return true;
+    }
+
+    private boolean checkCloseProject(boolean delete) throws SQLException {
+        if(Project.isProjectOpen()){
+            if(Project.getProject().hasUnsavedChanges()){
+                Optional<ButtonType> result = new YesNoCancelAlert(
+                        Monoglot.getMonoglot().window,
+                        resources.getString("dialog.saveOnExit.text")
+                ).showAndWait();
+                if(result.isPresent()){
+                    if(result.get() == ButtonType.YES)
+                        saveProject(null);
+                    else if(result.get() == ButtonType.CANCEL)
+                        return false;
+                }
+            }
+            Project.getProject().close(delete);
+        }
+        return true;
+    }
+
     // == MENU ACTIONS ==
     public void quitApplication(Event event) {
-        if(checkCloseCurrentProject())
-            Platform.exit();
-        else event.consume();
-    }
-
-    @FXML private void closeProject(ActionEvent e){
-        checkCloseCurrentProject();
-    }
-
-    private boolean closeProjectImpl() {
-        if(Monoglot.getMonoglot().getProject() != null && Monoglot.getMonoglot().getProject().hasUnsavedChanges()) {
-            Optional<ButtonType> result = new YesNoCancelAlert(
-                    Monoglot.getMonoglot().window,
-                    resources.getString("dialog.saveOnExit.text")
-                ).showAndWait();
-            if(result.isPresent()){
-                if(result.get() == ButtonType.YES)
-                    saveProject(null);
-                else if(result.get() == ButtonType.CANCEL)
-                    return false;
-            }
+        try {
+            if (checkCloseProject(true))
+                Platform.exit();
+            else event.consume();
+        } catch (SQLException e){
+            SilentException.rethrow(e);
         }
-        Monoglot.getMonoglot().closeProject();
-        return true;
+    }
+
+    @FXML private void closeProject(ActionEvent e) throws SQLException {
+        checkCloseProject(true);
+    }
+
+    @FXML private void closeProjectNoDeleteItem(ActionEvent event) throws SQLException {
+        checkCloseProject(false);
     }
 
     public void openSettingsDialog(ActionEvent event) {
@@ -166,7 +190,7 @@ public class MonoglotController {
             dialog.initOwner(rootPane.getScene().getWindow());
             dialog.showAndWait();
         } catch(Exception e){
-            Monoglot.getMonoglot().showError(e);
+            Monoglot.getMonoglot().showError(e, ApplicationErrorCode.RECOVERABLE_ERROR);
         }
     }
 
@@ -190,39 +214,50 @@ public class MonoglotController {
         }
     }
 
-    public void newProject(ActionEvent event) {
-        if(checkCloseCurrentProject())
+    public void newProject(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.newProject(this);
     }
 
-    public void openProject(ActionEvent event) {
-        if(checkCloseCurrentProject())
+    public void openProject(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.openProject(this);
     }
 
-    public void recoverWorkingDirectory(ActionEvent event) {
-        if(checkCloseCurrentProject())
+    public void recoverWorkingDirectory(ActionEvent event) throws SQLException {
+        if(checkCloseProject(true))
             ETC.recoverWorkingDirectory(this);
     }
 
-    public void saveProject(ActionEvent event) {
-        ETC.saveProject(this);
+    public void saveProject(ActionEvent event) throws SQLException {
+        if(Project.isProjectOpen())
+            ETC.saveProject(this);
     }
 
     public void saveProjectAs(ActionEvent event) {
-        ETC.saveProjectAs(this);
-    }
-
-    private boolean checkCloseCurrentProject(){
-        if(Monoglot.getMonoglot().getProject() != null) {
-            if(closeProjectImpl())
-                setProjectControlsEnabled(false);
-            else return false;
-        }
-        return true;
+        if(Project.isProjectOpen())
+            ETC.saveProjectAs(this);
     }
 
     public void setLocalStatus(String key, Object... args){
         status.setText(String.format(resources.getString(key), args));
+    }
+
+    /**
+     * Accelerator: Shortcut + N
+     */
+    @FXML
+    private void createNewWord(ActionEvent event) throws SQLException {
+        if (Project.isProjectOpen()) {// without this check, the app will crash when a project isn't open.
+            if(tabSelector.getSelectionModel().getSelectedIndex() == LEXICON_TAB_ORDER)
+                lexiconTabController.createNewWord(event);
+            else if (history.addAndDo(tabSwitchActionFactory.getTabSwitchAction(tabSelector.getSelectionModel().getSelectedIndex(), LEXICON_TAB_ORDER)))
+                lexiconTabController.createNewWord(event);
+        }
+    }
+
+    void saveAllComponents() throws SQLException {
+        lexiconTabController.saveWord();
+        //TODO
     }
 }

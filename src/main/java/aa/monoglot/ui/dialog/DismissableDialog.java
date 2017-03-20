@@ -4,10 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
-/**
- * @author cofl
- * @date 2/20/2017
- */
 public class DismissableDialog<R> extends Dialog<R> {
     {
         setOnCloseRequest(e->{

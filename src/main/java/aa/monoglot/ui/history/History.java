@@ -7,9 +7,6 @@ import java.util.ArrayDeque;
 
 /**
  * Tracks UI navigation history.
- *
- * @author cofl
- * @date 2/15/2017
  */
 public class History {
     private static final int MAX_HISTORY = 32;
@@ -43,16 +40,18 @@ public class History {
     /**
      * Adds an action to the history and performs it.
      */
-    public void addAndDo(HistoryAction action){
-        history.push(action);
-        if(history.size() > MAX_HISTORY)
-            history.removeLast();
-        future.clear(); // wipe out forward history
+    public boolean addAndDo(HistoryAction action){
+        if(action.doAction()) {
+            history.push(action);
+            if (history.size() > MAX_HISTORY)
+                history.removeLast();
+            future.clear(); // wipe out forward history
 
-        hasNoHistory.set(false);
-        hasNoFuture.set(true);
-
-        action.doAction();
+            hasNoHistory.set(false);
+            hasNoFuture.set(true);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -61,14 +60,14 @@ public class History {
     public void back(){
         if(history.isEmpty())
             return;
-        HistoryAction action = history.pop();
-        future.push(action);
-        // don't need to check max, history + future will never be > MAX_HISTORY,
+        if(history.peek().undoAction()) {
+            HistoryAction action = history.pop();
+            future.push(action);
+            // don't need to check max, history + future will never be > MAX_HISTORY,
 
-        hasNoHistory.set(history.isEmpty());
-        hasNoFuture.set(false);
-
-        action.undoAction();
+            hasNoHistory.set(history.isEmpty());
+            hasNoFuture.set(false);
+        }
     }
 
     /**
@@ -77,14 +76,14 @@ public class History {
     public void forward(){
         if(future.isEmpty())
             return;
-        HistoryAction action = future.pop();
-        history.push(action);
-        // don't need to check max, history + future will never be > MAX_HISTORY,
+        if(future.peek().doAction()) {
+            HistoryAction action = future.pop();
+            history.push(action);
+            // don't need to check max, history + future will never be > MAX_HISTORY,
 
-        hasNoHistory.set(false);
-        hasNoFuture.set(future.isEmpty());
-
-        action.doAction();
+            hasNoHistory.set(false);
+            hasNoFuture.set(future.isEmpty());
+        }
     }
 
     public void clear() {
