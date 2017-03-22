@@ -4,7 +4,7 @@ import aa.monoglot.ui.ControlledTab;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
-import old.monoglot.Monoglot;
+import aa.monoglot.Monoglot;
 
 /**
  * No-op controller. Does nothing other than register itself. Has some convenience methods
@@ -13,7 +13,8 @@ import old.monoglot.Monoglot;
 public class GenericController implements GeneralController {
     @FXML private ControlledTab tab;
     @FXML private void initialize(){
-        tab.setController(this);
+        if(tab != null)
+            tab.setController(this);
     }
 
     @FXML

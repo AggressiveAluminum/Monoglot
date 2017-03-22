@@ -139,6 +139,7 @@ hs_err_pid*
 
 ## Plugin-specific files:
 .idea/statistic.xml
+.idea/dbnavigator.xml
 
 # IntelliJ
 /out/

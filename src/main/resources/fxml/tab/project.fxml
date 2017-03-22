@@ -1,9 +1,9 @@
+<?import aa.monoglot.ui.ControlledTab?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTextField?>
-<?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.*?>
-<Tab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.ProjectTabController">
+<ControlledTab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.ProjectTabController">
     <AnchorPane>
         <VBox AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10" spacing="10">
             <JFXTextField promptText="%prompt.settings.projectName" styleClass="large-text" fx:id="projectName"/>
@@ -14,4 +14,4 @@
             <JFXButton text="%dialog.cancel" styleClass="cancel-button" onAction="#cancelHandler"/>
         </HBox>
     </AnchorPane>
-</Tab>
+</ControlledTab>

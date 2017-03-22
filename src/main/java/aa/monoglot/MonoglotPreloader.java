@@ -1,6 +1,5 @@
 package aa.monoglot;
 
-import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
 import javafx.application.Preloader;
 import javafx.stage.Stage;
