@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Monoglot.iml" filepath="$PROJECT_DIR$/.idea/modules/Monoglot.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Monoglot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Monoglot_main.iml" group="Monoglot" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Monoglot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Monoglot_test.iml" group="Monoglot" />
     </modules>
   </component>
 </project>

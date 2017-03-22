@@ -1,10 +1,9 @@
 package aa.monoglot.project.db;
 
-import javafx.collections.ObservableList;
+import aa.monoglot.project.Project;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,6 +34,7 @@ public class Database {
     }
 
     public Headword put(Headword headword) throws SQLException {
+        Project.getProject().markSaveNeeded();
         if(headword.ID == null){
             UUID id = db.getNextID();
             Headword.insert(db.getStatement(Headword.INSERT_STR), id, headword).execute();

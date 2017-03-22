@@ -1,10 +1,6 @@
 package aa.monoglot.project.db;
 
-import org.h2.tools.RunScript;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;

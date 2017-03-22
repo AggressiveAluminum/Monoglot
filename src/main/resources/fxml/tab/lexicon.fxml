@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.CheckComboBox?>
-<Tab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.LexiconController">
+<?import aa.monoglot.ui.ControlledTab?>
+<ControlledTab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.LexiconTabController">
     <SplitPane dividerPositions="1">
         <VBox id="search-section">
             <JFXTextField fx:id="searchField" promptText="%prompt.search.search"/>
@@ -84,4 +85,4 @@
             </center>
         </BorderPane>
     </SplitPane>
-</Tab>
+</ControlledTab>

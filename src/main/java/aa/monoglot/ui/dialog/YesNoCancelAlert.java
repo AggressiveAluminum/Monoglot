@@ -5,8 +5,8 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Window;
 
-public class YesNoCancelAlert extends Alert {
-    public YesNoCancelAlert(){
+class YesNoCancelAlert extends Alert {
+    YesNoCancelAlert(){
         super(AlertType.CONFIRMATION);
 
         ButtonBar buttonBar=(ButtonBar)getDialogPane().lookup(".button-bar");
@@ -15,7 +15,7 @@ public class YesNoCancelAlert extends Alert {
         getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
     }
 
-    public YesNoCancelAlert(Window owner, String headerText){
+    YesNoCancelAlert(Window owner, String headerText){
         this();
         initOwner(owner);
         setHeaderText(headerText);

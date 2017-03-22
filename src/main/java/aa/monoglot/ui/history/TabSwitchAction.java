@@ -1,11 +1,12 @@
 package aa.monoglot.ui.history;
 
-import aa.monoglot.Monoglot;
+import aa.monoglot.ui.ControlledTab;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
+import old.monoglot.Monoglot;
 
 /**
- * Tracks tab switches for {@link aa.monoglot.ui.history.History History}
+ * Tracks tab switches for {@linkplain aa.monoglot.ui.history.History}
  */
 class TabSwitchAction implements HistoryAction {
     private final ComboBox tabSelector;
@@ -22,8 +23,11 @@ class TabSwitchAction implements HistoryAction {
     public boolean doAction(){
         if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(from), tabs.getTabs().get(to))){
             tabSelector.getSelectionModel().select(to);
-            tabs.getSelectionModel().select(to);
-            return true;
+            if(((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onUnload()){
+                tabs.getSelectionModel().select(to);
+                ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onLoad();
+                return true;
+            }
         }
         return false;
     }
@@ -31,8 +35,11 @@ class TabSwitchAction implements HistoryAction {
     public boolean undoAction(){
         if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(to), tabs.getTabs().get(from))) {
             tabSelector.getSelectionModel().select(from);
-            tabs.getSelectionModel().select(from);
-            return true;
+            if (((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onUnload()) {
+                tabs.getSelectionModel().select(from);
+                ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onLoad();
+                return true;
+            }
         }
         return false;
     }

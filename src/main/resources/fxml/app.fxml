@@ -14,10 +14,9 @@
             <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem"/>
             <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
             <SeparatorMenuItem/>
-            <MenuItem text="%menu.file.appSettings" onAction="#openSettingsDialog"/>
+            <MenuItem text="%menu.file.appSettings"/>
             <Menu text="%menu.file.advanced">
-                <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverWorkingDirectory"/>
-                <MenuItem text="%menu.file.advanced.saveNoDelete" onAction="#closeProjectNoDeleteItem"/>
+                <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverProject"/>
             </Menu>
             <SeparatorMenuItem/>
             <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
@@ -40,10 +39,8 @@
 
     <!-- Navigation -->
     <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <top/>
         <left>
-            <JFXComboBox fx:id="tabSelector" onAction="#changeActiveTab" onMouseClicked="#changeActiveTabManualRequest"
-                      AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
+            <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
         </left>
         <right>
             <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">

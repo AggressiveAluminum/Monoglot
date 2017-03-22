@@ -1,6 +1,6 @@
 package aa.monoglot.ui.dialog;
 
-import aa.monoglot.Monoglot;
+import old.monoglot.Monoglot;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;

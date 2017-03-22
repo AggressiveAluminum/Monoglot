@@ -1,13 +1,11 @@
 package aa.monoglot.ui.controller;
 
-import aa.monoglot.Monoglot;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Headword;
 import aa.monoglot.project.db.SearchFilter;
 import aa.monoglot.project.db.WordType;
-import aa.monoglot.util.SilentException;
+import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.util.UT;
-import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,22 +18,21 @@ import org.controlsfx.control.CheckComboBox;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ResourceBundle;
 
 /*
  * Notes on things that tripped me up:
  *  - In this class, parentController.setProjectControlsEnabled DOES NOT enable word editing.
  *    Use wordSection.setDisable(false);.
  */
-public class LexiconController extends AbstractChildController<MonoglotController> {
+public class LexiconTabController implements GeneralController {
     private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
-    @FXML private ResourceBundle resources;
+    @FXML private ControlledTab tab;
 
     @FXML private TextField searchField;
     @FXML private ComboBox<?> searchType;
     @FXML private ComboBox<?> searchCategory;
     @FXML private CheckComboBox<?> searchTags;
-    
+
     private SearchFilter filter;
 
     //TODO: change this to HeadWord, modify toString to return proper result.
@@ -52,15 +49,17 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     @FXML private TitledPane lexiconDefinitionsPane;
 
     @FXML private void initialize(){
+        tab.setController(this);
         filter = new SearchFilter(searchField.textProperty(), searchType.getSelectionModel().selectedIndexProperty(),
                 searchCategory.getSelectionModel().selectedIndexProperty(), searchTags.getCheckModel().getCheckedIndices());
-        searchResults.getSelectionModel().selectedItemProperty().addListener(SilentException.invalidationListener(e -> {
-            switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
-            wordSection.setDisable(false);
-        }));
+        searchResults.setOnMouseClicked(event -> {
+            try {
+                switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
+            } catch (SQLException e) {
+                //TODO: deal with it.
+            }
+        });
     }
-
-    protected void postInitialize(){}
 
     public void clearInfo(){
         searchResults.setItems(EMPTY_LIST);
@@ -90,10 +89,11 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     boolean switchActiveWord(Headword newHeadword) throws SQLException {
-        if(saveWord()) {
+        if(save()) {
             if (newHeadword != null) {
                 activeWord = newHeadword;
                 updateWordUI();
+                wordSection.setDisable(false);
             }
             return true;
         }
@@ -101,9 +101,8 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     void createNewWord(ActionEvent event) throws SQLException {
-        if(switchActiveWord(Headword.create()))
-            wordSection.setDisable(false);
-        else System.err.println("Couldn't switch to a new word!");
+        if(!switchActiveWord(Headword.create()))
+            System.err.println("Couldn't switch to a new word!");
     }
 
     public void deleteWord(ActionEvent event) {
@@ -112,25 +111,6 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
 
     public boolean hasUnsavedWord(){
         return activeWord != null && activeWord.ID == null && headwordField.getText() != null && !headwordField.getText().equals("");
-    }
-
-    public boolean saveWord() throws SQLException {
-        if(activeWord != null){
-            if(activeWord.ID == null && (headwordField.getText() == null || headwordField.getText().equals("")))
-                return true;
-            if(!verifyFields()) {
-                //TODO: mark fields. Put this in #verifyFields()?
-                return false;
-            }
-            //TODO: type and category lookup
-            //Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
-            //Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
-
-            activeWord = Project.getProject().getDatabase().put(activeWord.update(headwordField.getText(),
-                    romanizationField.getText(), pronunciationField.getText(), stemField.getText(), null, null));
-            updateWordUI();
-        }
-        return true;
     }
 
     void updateWordUI() throws SQLException {
@@ -168,26 +148,39 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
     }
 
     @Override
-    public boolean unload(){
+    public boolean save(){
         try {
-            if(saveWord()){
-                clearInfo();
-                wordSection.setDisable(false);
-                return true;
+            if (activeWord != null) {
+                if (activeWord.ID == null && (headwordField.getText() == null || headwordField.getText().equals("")))
+                    return true;
+                if (!verifyFields()) {
+                    //TODO: mark fields. Put this in #verifyFields()?
+                    return false;
+                }
+                //TODO: type and category lookup
+                //Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
+                //Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
+
+                activeWord = Project.getProject().getDatabase().put(activeWord.update(headwordField.getText(),
+                        romanizationField.getText(), pronunciationField.getText(), stemField.getText(), null, null));
+                updateWordUI();
             }
+            return true;
         } catch(SQLException e){
-            //TODO: rethrow?
+            //TODO: tell someone
         }
         return false;
     }
 
     @Override
-    public boolean load(){
+    public boolean onLoad(){
+        //TODO: load more things.
         try {
             if (activeWord != null) {
                 activeWord = Headword.fetch(activeWord.ID);
                 loadWordList();
                 updateWordUI();
+                wordSection.setDisable(false);
             }
             return true;
         } catch(SQLException e){
@@ -195,5 +188,14 @@ public class LexiconController extends AbstractChildController<MonoglotControlle
             return false;
         }
     }
-}
 
+    @Override
+    public boolean onUnload(){
+        if(save()){
+            clearInfo();
+            wordSection.setDisable(true);
+            return true;
+        }
+        return false;
+    }
+}

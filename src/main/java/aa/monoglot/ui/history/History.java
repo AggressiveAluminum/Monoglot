@@ -2,27 +2,37 @@ package aa.monoglot.ui.history;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TabPane;
 
 import java.util.ArrayDeque;
 
-/**
- * Tracks UI navigation history.
- */
 public class History {
-    private static final int MAX_HISTORY = 32;
+    public static final int LEXICON_TAB_INDEX = 1;
+
+    private static final int MAX_HISTORY_SIZE = 32;
     private final ArrayDeque<HistoryAction> history = new ArrayDeque<>();
     private final ArrayDeque<HistoryAction> future = new ArrayDeque<>();
     private final BooleanProperty hasNoHistory = new SimpleBooleanProperty(true);
     private final BooleanProperty hasNoFuture = new SimpleBooleanProperty(true);
 
-    public BooleanProperty hasNoHistoryProperty() {
-        return hasNoHistory;
-    }
+    private final ComboBox<String> tabSelector;
+    private final TabPane tabs;
+    private boolean executingHistoryAction = false;
 
-    public BooleanProperty hasNoFutureProperty() {
-        return hasNoFuture;
+    public History(ComboBox<String> tabSelector, TabPane tabs){
+        this.tabSelector = tabSelector;
+        this.tabSelector.setOnAction(this::tabSwitchHandler);
+        this.tabs = tabs;
+        reset();
     }
-
+    /**
+     * Returns if there are any actions in the future list.
+     */
+    public boolean hasFuture(){
+        return !hasNoFuture.get();
+    }
     /**
      * Returns if there are any actions in the history list.
      */
@@ -31,22 +41,15 @@ public class History {
     }
 
     /**
-     * Returns if there are any actions in the future list.
-     */
-    public boolean hasFuture(){
-        return !hasNoFuture.get();
-    }
-
-    /**
      * Adds an action to the history and performs it.
      */
     public boolean addAndDo(HistoryAction action){
-        if(action.doAction()) {
+        executingHistoryAction = true;
+        if(action.doAction()){
             history.push(action);
-            if (history.size() > MAX_HISTORY)
+            if(history.size() > MAX_HISTORY_SIZE)
                 history.removeLast();
-            future.clear(); // wipe out forward history
-
+            future.clear();
             hasNoHistory.set(false);
             hasNoFuture.set(true);
             return true;
@@ -54,43 +57,48 @@ public class History {
         return false;
     }
 
-    /**
-     * Goes back in the history.
-     */
-    public void back(){
-        if(history.isEmpty())
-            return;
-        if(history.peek().undoAction()) {
-            HistoryAction action = history.pop();
-            future.push(action);
-            // don't need to check max, history + future will never be > MAX_HISTORY,
-
-            hasNoHistory.set(history.isEmpty());
-            hasNoFuture.set(false);
-        }
+    public void reset() {
+        history.clear();
+        future.clear();
+        hasNoHistory.set(true);
+        hasNoFuture.set(true);
     }
 
-    /**
-     * Goes forward in the history.
-     */
-    public void forward(){
+    public void goToTab(int index) {
+        int sel = tabs.getSelectionModel().getSelectedIndex();
+        if(index != sel)
+            addAndDo(new TabSwitchAction(tabSelector, tabs, sel, index));
+    }
+
+    public void forward() {
         if(future.isEmpty())
             return;
-        if(future.peek().doAction()) {
-            HistoryAction action = future.pop();
-            history.push(action);
-            // don't need to check max, history + future will never be > MAX_HISTORY,
-
+        executingHistoryAction = true;
+        if(future.peek().doAction()){
+            history.push(future.pop());
             hasNoHistory.set(false);
             hasNoFuture.set(future.isEmpty());
         }
     }
 
-    public void clear() {
-        history.clear();
-        future.clear();
+    public void back() {
+        if(history.isEmpty())
+            return;
+        executingHistoryAction = true;
+        if(history.peek().undoAction()) {
+            future.push(history.pop());
+            hasNoHistory.set(history.isEmpty());
+            hasNoFuture.set(false);
+        }
+    }
 
-        hasNoHistory.set(true);
-        hasNoFuture.set(true);
+    public void tabSwitchHandler(ActionEvent event) {
+        if(!executingHistoryAction) {
+            int from = tabs.getSelectionModel().getSelectedIndex();
+            int to = tabSelector.getSelectionModel().getSelectedIndex();
+            if (from != to)
+                addAndDo(new TabSwitchAction(tabSelector, tabs, from, to));
+        } else executingHistoryAction = false;
     }
 }
+

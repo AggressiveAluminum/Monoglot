@@ -1,60 +1,36 @@
 package aa.monoglot.project;
 
-import aa.monoglot.Monoglot;
-import aa.monoglot.util.MonoglotEvents;
 import aa.monoglot.project.db.Database;
-import aa.monoglot.io.IO;
-import aa.monoglot.util.OS;
-import aa.monoglot.util.SilentException;
-import javafx.event.ActionEvent;
+import aa.monoglot.project.io.IO;
+import aa.monoglot.util.BackedSettings;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Properties;
 
-public final class Project {
-    private static Project instance;
-    public static boolean isProjectOpen(){
-        return instance != null;
-    }
-    public static Project getProject(){
-        return instance;
-    }
+public class Project {
+    private static Project project;
 
-    public static void openProject() throws SQLException, IOException, ClassNotFoundException {
-        instance = new Project();
-        MonoglotEvents.projectOpened();
+    public static boolean isOpen(){
+        return project == null;
     }
-    public static void openProject(Path path) throws SQLException, IOException, ClassNotFoundException {
-        instance = new Project(path);
-        MonoglotEvents.projectOpened();
+    /**
+     * Returns the open project instance, or null if there isn't one open.
+     */
+    public static Project getProject() {
+        return project;
     }
-
-    // === INTERNALS ===
-    private Path workingDirectory, saveFile;
-    private Database database;
-    private boolean amRecoveringProject = false;
-    private boolean hasUnsavedChanges = true;
-    public Properties settings = new Properties();
-    public final Path settingsFile;
-
     /**
      * Creates a new Project.
      * @throws IOException if a working directory cannot be created.
      * @throws SQLException if the database initialization fails.
      * @throws ClassNotFoundException if the database driver cannot be loaded.
      */
-    private Project() throws IOException, SQLException, ClassNotFoundException {
-        workingDirectory = Files.createTempDirectory("mglt");
-        database = new Database(workingDirectory);
-        settingsFile = workingDirectory.resolve("settings.properties");
-        //TODO: log path properly
-        System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
+    public static void newProject() throws SQLException, IOException, ClassNotFoundException {
+        project = new Project(null);
+        //TODO
     }
 
     /**
@@ -69,99 +45,112 @@ public final class Project {
      * @throws ClassNotFoundException if the database driver cannot be loaded.
      * @throws SQLException if the database initialization fails.
      */
-    private Project(Path path) throws IOException, SQLException, ClassNotFoundException {
-        if(path == null)
-            throw new IllegalArgumentException();
-        if(!Files.exists(path))
-            throw new FileNotFoundException(path.toAbsolutePath().toString());
-        if(Files.isDirectory(path)){
-            workingDirectory = path;
-            amRecoveringProject = true;
-        } else {
-            workingDirectory = Files.createTempDirectory("mglt");
-            saveFile = path;
-            IO.unzipToDirectory(saveFile, workingDirectory);
-            hasUnsavedChanges = false;
-        }
-
-        database = new Database(workingDirectory);
-        settingsFile = workingDirectory.resolve("settings.properties");
-        System.err.println("OK");
-        if(!Files.exists(settingsFile))
-            Files.createFile(settingsFile);
-        try(InputStream stream = Files.newInputStream(settingsFile)){
-            System.err.println("OK");
-            settings.load(stream);
-            System.err.println("OK");
-        }
-
-        //TODO: log path properly
-        System.err.println("> (◠‿◠✿) I'll wait for you here, sempai~~ " + workingDirectory.toString());
+    public static void openProject(Path path) throws SQLException, IOException, ClassNotFoundException {
+        project = new Project(path);
+        //TODO
     }
 
-    public Path getWorkingDirectory(){
-        return workingDirectory;
-    }
-
-    public Database getDatabase(){
-        return database;
-    }
-
-    public boolean hasUnsavedChanges(){
-        return hasUnsavedChanges || Monoglot.getMonoglot().mainController.lexiconTabController.hasUnsavedWord();
-    }
+    // === INTERNALS ===
+    private Path savePath, workingPath;
+    private boolean amRecoveringProject = false;
+    private boolean hasUnsavedChanges = true;
+    private final Database database;
+    private final BackedSettings<ProjectKey> settings;
 
     /**
-     * Sets the file to save to for all future saves.
+     * Creates a new project, opens an existing project from either a file, or recovers a project
+     * from a directory.
+     * If the given path is null, a new project is created.
+     * If the given path is a file, the project is opened to a new working directory.
+     * If the given path is a directory, recovery mode is entered: the directory is used as the
+     * working directory, and will not be cleaned up unless the project is explicitly saved.
+     *
+     * @param path Path to the project file or directory
+     * @throws FileNotFoundException if the given path is not null and does not exist.
+     * @throws IOException if file operations fail.
+     * @throws ClassNotFoundException if the database driver cannot be loaded.
+     * @throws SQLException if the database initialization fails.
      */
-    public void setSaveFile(Path path){
-        saveFile = path;
-        hasUnsavedChanges = true;
+    private Project(Path path) throws IOException, SQLException, ClassNotFoundException {
+        if(path == null){
+            workingPath = Files.createTempDirectory("mglt");
+        } else {
+            if(!Files.exists(path))
+                throw new FileNotFoundException(path.toString());
+            if(Files.isDirectory(path)){
+                workingPath = path;
+                amRecoveringProject = true;
+            } else {
+                workingPath = Files.createTempDirectory("mglt");
+                savePath = path;
+                IO.unzipToDirectory(savePath, workingPath);
+                hasUnsavedChanges = false;
+            }
+        }
+
+        database = new Database(workingPath);
+        settings = new BackedSettings<>(workingPath.resolve("settings.properties"));
+    }
+
+    public BackedSettings<ProjectKey> getSettings() {
+        return settings;
+    }
+    public Database getDatabase(){
+        return database;
     }
 
     /**
      * Returns whether or not the project has a save file set.
      */
-    public boolean hasSavePath(){
-        return saveFile != null;
+    public boolean hasSavePath() {
+        return savePath != null;
+    }
+
+    /**
+     * Sets the file to save to for all future saves.
+     */
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
+        hasUnsavedChanges = true;
+    }
+
+    public boolean saveNeeded() {
+        return amRecoveringProject || hasUnsavedChanges;
     }
 
     /**
      * Saves the project to a file.
      * Writes the working directory contents to the save file.
      */
-    public boolean save() {
-        try {
-            if (Monoglot.getMonoglot().mainController.lexiconTabController.saveWord()
-                    && IO.safeSave(database, workingDirectory, saveFile)) {
-                hasUnsavedChanges = false;
-                return true;
-            }
-        } catch (SQLException e){
-            SilentException.rethrow(e);
+    public boolean save() throws SQLException {
+        if(IO.safeSave(database, workingPath, savePath)){
+            hasUnsavedChanges = false;
+            return true;
         }
         return false;
     }
 
     /**
+     * Marks that there are changes made that need to be saved.
+     */
+    public void markSaveNeeded(){
+        hasUnsavedChanges = true;
+    }
+
+    /**
      * Cleans up and disposes the current project.
      * <br/><b>Does not check if saving needs to be done!</b>
-     * @param delete If the working directory should be deleted or not; this is only ever false in
-     *      {@link aa.monoglot.ui.controller.MonoglotController#closeProjectNoDeleteItem(ActionEvent)
-     *      MonoglotController#closeProjectNoDeleteItem(ActionEvent)}.
      */
-    public void close(boolean delete){
+    public void close() {
         try {
             database.close();
         } catch(SQLException e){
-            //TODO: something about this
+            //TODO
         }
 
-        if(delete && !(amRecoveringProject || hasUnsavedChanges))
-            IO.nuke(workingDirectory);
-        workingDirectory = null;
-        saveFile = null;
-        MonoglotEvents.projectClosed();
-        instance = null;
+        if(!saveNeeded())
+            IO.nuke(workingPath);
+        project = null;
+        //TODO
     }
 }

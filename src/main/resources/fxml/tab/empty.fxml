@@ -1,10 +1,10 @@
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Tab?>
+<?import aa.monoglot.ui.ControlledTab?>
 <?import javafx.scene.control.Label?>
-<Tab text="M_EMPTY_TAB">
+<?import javafx.scene.layout.BorderPane?>
+<ControlledTab text="M_EMPTY_TAB" controller="aa.monoglot.ui.controller.GenericController">
     <BorderPane>
         <center>
             <Label BorderPane.alignment="CENTER" styleClass="grey-italics" text="%app.emptyTabText"/>
         </center>
     </BorderPane>
-</Tab>
+</ControlledTab>

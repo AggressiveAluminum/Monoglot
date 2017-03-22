@@ -2,7 +2,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Hyperlink?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.SimpleLinkController">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.GenericController">
     <Label text="%dialog.about.version"/>
     <Label text="%dialog.about.team"/>
     <Separator/>

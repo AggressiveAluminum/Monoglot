@@ -1,4 +1,4 @@
-package aa.monoglot.io;
+package aa.monoglot.project.io;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;

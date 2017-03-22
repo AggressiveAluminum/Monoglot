@@ -1,7 +1,7 @@
-package aa.monoglot.io;
+package aa.monoglot.project.io;
 
 import aa.monoglot.project.db.Database;
-import aa.monoglot.util.SilentException;
+import old.monoglot.util.SilentException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,7 +9,6 @@ import java.nio.file.*;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Generic IO Utilities for saving/loading/cleaning up projects and project files.

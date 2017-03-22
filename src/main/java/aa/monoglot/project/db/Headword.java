@@ -1,6 +1,6 @@
 package aa.monoglot.project.db;
 
-import aa.monoglot.project.Project;
+import old.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
 import java.sql.*;
