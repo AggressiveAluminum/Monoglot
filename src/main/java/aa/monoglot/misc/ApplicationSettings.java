@@ -1,13 +1,11 @@
 package aa.monoglot.misc;
 
-import aa.monoglot.misc.ApplicationSettings.Setting;
 import aa.monoglot.util.BackedSettings;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 public class ApplicationSettings extends BackedSettings<ApplicationSettings.Setting> {
     private enum OSType {
@@ -30,7 +28,7 @@ public class ApplicationSettings extends BackedSettings<ApplicationSettings.Sett
     private final Path settingsPath;
 
     public ApplicationSettings() throws IOException {
-        super(verifySettingsPath(findOSType()));
+        super(verifySettingsPath(findOSType()).resolve("settings.properties"));
         settingsPath = verifySettingsPath(osType);
     }
 
@@ -48,10 +46,13 @@ public class ApplicationSettings extends BackedSettings<ApplicationSettings.Sett
         switch (osType){
             case WINDOWS:
                 p = Paths.get(System.getenv("APPDATA"), "Monoglot");
+                break;
             case OSX:
                 p = Paths.get("~/Library/Preferences/Monoglot");
+                break;
             default:
                 p = Paths.get("~/.monoglot");
+                break;
         }
 
         if(!Files.exists(p))

@@ -21,9 +21,8 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class MonoglotController {
+public class MonoglotController implements GeneralController {
     @FXML private ResourceBundle resources;
-
     @FXML private MenuBar menuBar;
     @FXML private MenuItem saveProjectItem;
     @FXML private MenuItem saveProjectAsItem;
@@ -36,22 +35,22 @@ public class MonoglotController {
     @FXML private BorderPane navigationBar;
     @FXML private AnchorPane statusBar;
 
+    @FXML private Button historyForeButton;
+    @FXML private Button historyBackButton;
+    @FXML private Label status;
+
     private History history;
 
-    @FXML private void init(){
-        history = new History(tabSelector, tabs);
-
+    @FXML private void initialize(){
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
         tabSelector.getItems().remove(tabSelector.getItems().size() - 1);
         tabSelector.getSelectionModel().select(History.LEXICON_TAB_INDEX);
         tabs.getSelectionModel().select(tabs.getTabs().size() - 1);
 
-        Platform.runLater(() -> {
-            AnchorPane.setTopAnchor(navigationBar, menuBar.getHeight());
-            AnchorPane.setTopAnchor(tabs, menuBar.getHeight() + navigationBar.getHeight() - 6);
-            AnchorPane.setBottomAnchor(tabs, statusBar.getHeight());
-        });
+        history = new History(tabSelector, tabs);
+        historyBackButton.disableProperty().bind(history.hasNoHistoryProperty());
+        historyForeButton.disableProperty().bind(history.hasNoFutureProperty());
     }
 
     private void setProjectControlsDisabled(boolean disabled){
@@ -65,7 +64,7 @@ public class MonoglotController {
 
         if(disabled){
             for(Tab t: tabs.getTabs())
-                ((ControlledTab) t).getController().save();
+                ((ControlledTab) t).controller().save();
         } else {
             tabs.getSelectionModel().select(History.LEXICON_TAB_INDEX);
             tabSelector.getSelectionModel().select(History.LEXICON_TAB_INDEX);
@@ -76,12 +75,22 @@ public class MonoglotController {
         return (ControlledTab) tabs.getSelectionModel().getSelectedItem();
     }
 
-    public void quitApplication(WindowEvent event) {
+    public void quitApplication(ActionEvent event) {
         try {
             if (noOpenProject())
                 Platform.exit();
             else event.consume();
         } catch(SQLException e){
+            //TODO: DO SOMETHING WITH THIS, PROPERLY.
+        }
+    }
+
+    public void wQuitApplication(WindowEvent event){
+        try {
+            if(noOpenProject())
+                Platform.exit();
+            else event.consume();
+        } catch (SQLException e){
             //TODO: DO SOMETHING WITH THIS, PROPERLY.
         }
     }
@@ -110,7 +119,7 @@ public class MonoglotController {
             }
             Project.getProject().close();
             for(Tab t: tabs.getTabs())
-                ((ControlledTab) t).getController().onUnload();
+                ((ControlledTab) t).controller().onUnload();
         }
         return true;
     }
@@ -159,7 +168,7 @@ public class MonoglotController {
                 else return;
             }
             for(Tab t: tabs.getTabs())
-                ((ControlledTab) t).getController().save();
+                ((ControlledTab) t).controller().save();
             Project.getProject().save();
         }
     }
@@ -173,7 +182,7 @@ public class MonoglotController {
     @FXML private void createNewWord(ActionEvent event) throws SQLException {
         if(Project.isOpen()){
             history.goToTab(History.LEXICON_TAB_INDEX);
-            ((LexiconTabController) getCurrentTab().getController()).createNewWord(event);
+            ((LexiconTabController) getCurrentTab().controller()).createNewWord(event);
         }
     }
 

@@ -19,7 +19,7 @@ public class ProjectTabController implements GeneralController {
     @FXML private TextField projectName;
     @FXML private TextArea projectNotes;
     @FXML private void initialize(){
-        tab.setController(this);
+        tab.controller(this);
     }
 
     @FXML private void saveHandler(ActionEvent event){

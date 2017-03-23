@@ -1,6 +1,6 @@
 package aa.monoglot.ui.dialog;
 
-import old.monoglot.Monoglot;
+import aa.monoglot.Monoglot;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
@@ -19,8 +19,8 @@ public class AboutDialog extends DismissableDialog {
         setTitle(bundle.getString("dialog.about.title"));
         setResizable(false);
 
-        if(!Monoglot.getMonoglot().icons.isEmpty()){
-            ImageView i = new ImageView(Monoglot.getMonoglot().icons.get(0));
+        if(!Monoglot.getMonoglot().getIcons().isEmpty()){
+            ImageView i = new ImageView(Monoglot.getMonoglot().getIcons().get(0));
             i.setFitWidth(256);
             i.setFitHeight(256);
             getDialogPane().setGraphic(i);

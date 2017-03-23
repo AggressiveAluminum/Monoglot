@@ -1,7 +1,6 @@
 package aa.monoglot.project.io;
 
 import aa.monoglot.project.db.Database;
-import old.monoglot.util.SilentException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,10 +69,9 @@ public class IO {
             database.open();
             return true;
         } catch (SQLException e){// for database opening.
-            SilentException.rethrow(e);
             //TODO: tell the user that something fucked up, and they don't have a database anymore.
+            throw new RuntimeException(e);
         }
-        return false;
     }
 
     /**

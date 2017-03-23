@@ -3,64 +3,73 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="720" minHeight="400" fx:id="rootPane" stylesheets="@app.css">
-    <!-- Menu -->
-    <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <Menu text="%menu.file">
-            <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
-            <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
-            <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S"/>
-            <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem"/>
-            <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W"/>
-            <SeparatorMenuItem/>
-            <MenuItem text="%menu.file.appSettings"/>
-            <Menu text="%menu.file.advanced">
-                <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverProject"/>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
+            minWidth="720" minHeight="400" stylesheets="@app.css">
+    <top>
+        <!-- Menu -->
+        <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+            <Menu text="%menu.file">
+                <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
+                <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
+                <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S" disable="true"/>
+                <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" disable="true"/>
+                <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W" disable="true"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="%menu.file.appSettings"/>
+                <Menu text="%menu.file.advanced">
+                    <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverProject"/>
+                </Menu>
+                <SeparatorMenuItem/>
+                <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
             </Menu>
-            <SeparatorMenuItem/>
-            <MenuItem text="%menu.file.quit" accelerator="Shortcut+Q" onAction="#quitApplication"/>
-        </Menu>
-        <Menu text="%menu.edit" fx:id="editMenu">
-            <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
-        </Menu>
-        <Menu text="%menu.help">
-            <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
-        </Menu>
-    </MenuBar>
-
-    <!-- Content -->
-    <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <fx:include fx:id="projectTab" source="tab/project.fxml"/>
-        <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
-        <!-- keep this last -->
-        <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
-    </TabPane>
-
-    <!-- Navigation -->
-    <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <left>
-            <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT"/>
-        </left>
-        <right>
-            <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">
-                <JFXButton fx:id="historyBackButton" id="historyBackButton" onAction="#historyBack">
-                    <graphic>
-                        <FontIcon iconLiteral="gmi-keyboard-arrow-left"/>
-                    </graphic>
-                </JFXButton>
-                <JFXButton fx:id="historyForeButton" id="historyBackButton" onAction="#historyForward">
-                    <graphic>
-                        <FontIcon iconLiteral="gmi-keyboard-arrow-right"/>
-                    </graphic>
-                </JFXButton>
-            </HBox>
-        </right>
-    </BorderPane>
-
-    <!-- Status bar -->
-    <AnchorPane id="status-bar" fx:id="statusBar"
-                AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-        <Label fx:id="status" AnchorPane.leftAnchor="50"/>
-    </AnchorPane>
-</AnchorPane>
+            <Menu text="%menu.edit" fx:id="editMenu" disable="true">
+                <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
+            </Menu>
+            <Menu text="%menu.help">
+                <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
+            </Menu>
+        </MenuBar>
+    </top>
+    <center>
+        <BorderPane>
+            <top>
+                <!-- Navigation -->
+                <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                    <left>
+                        <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT" disable="true"/>
+                    </left>
+                    <right>
+                        <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">
+                            <JFXButton fx:id="historyBackButton" id="historyBackButton" onAction="#historyBack">
+                                <graphic>
+                                    <FontIcon iconLiteral="gmi-keyboard-arrow-left"/>
+                                </graphic>
+                            </JFXButton>
+                            <JFXButton fx:id="historyForeButton" id="historyBackButton" onAction="#historyForward">
+                                <graphic>
+                                    <FontIcon iconLiteral="gmi-keyboard-arrow-right"/>
+                                </graphic>
+                            </JFXButton>
+                        </HBox>
+                    </right>
+                </BorderPane>
+            </top>
+            <center>
+                <!-- Content -->
+                <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                    <fx:include fx:id="projectTab" source="tab/project.fxml"/>
+                    <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+                    <!-- keep this last -->
+                    <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
+                </TabPane>
+            </center>
+            <bottom>
+                <!-- Status bar -->
+                <AnchorPane id="status-bar" fx:id="statusBar"
+                            AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                    <Label fx:id="status" AnchorPane.leftAnchor="50"/>
+                </AnchorPane>
+            </bottom>
+        </BorderPane>
+    </center>
+</BorderPane>

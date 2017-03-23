@@ -13,14 +13,15 @@ import javafx.application.Platform;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.DialogEvent;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -40,7 +41,7 @@ public class Monoglot extends Application {
     private ResourceBundle resourceBundle;
 
     private final List<Image> icons = new ArrayList<>();
-    private AnchorPane uiRoot;
+    private Scene uiScene;
     private MonoglotController uiController;
     private Window window;
 
@@ -57,7 +58,12 @@ public class Monoglot extends Application {
         }
 
         try { // Logging.
-            Log.init(applicationSettings.resolve(Log.getFileName()));
+            Path p = applicationSettings.resolve("logs");
+            if(Files.isRegularFile(p))
+                Files.delete(p);
+            if(!Files.exists(p))
+                Files.createDirectories(p);
+            Log.init(p.resolve(Log.getFileName()));
         } catch(IOException e){
             notifyPreloader(new Preloader.ErrorNotification(null, "Failed to initiate logging system", e));
             instance = null;
@@ -67,10 +73,12 @@ public class Monoglot extends Application {
         try { // Localization.
             resourceBundle = ResourceBundle.getBundle("local/lang");
         } catch(MissingResourceException e){
+            Log.severe("An unrecoverable error occurred while loading the application.", e);
             notifyPreloader(new Preloader.ErrorNotification(null, "Failed to load application localization", e));
             instance = null;
             return;
         }
+        Log.message(AppString.LOADED_RESOURCE_BUNDLE, resourceBundle.getLocale().toLanguageTag());
 
         // A global uncaught exception handler, for in case something escapes out the top of the application.
         // If something does get out, it's *really* wrong, and any attempts to fix it either failed or were nonexistent.
@@ -87,14 +95,16 @@ public class Monoglot extends Application {
         });
 
         try { // Get the UI now.
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/app.fxml"));
-            uiRoot = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/app.fxml"), resourceBundle);
+            uiScene = new Scene(loader.load());
             uiController = loader.getController();
         } catch (IOException e) {
+            Log.severe(getString(AppError.LOAD_ERROR), e);
             notifyPreloader(new Preloader.ErrorNotification(null, getString(AppError.LOAD_ERROR), e));
             instance = null;
             return;
         }
+        Log.message(AppString.LOADED_UI_FILES);
 
         // Load the shiny icons.
         try(InputStream image = getClass().getClassLoader().getResourceAsStream("images/logo.png");
@@ -104,13 +114,13 @@ public class Monoglot extends Application {
                     new Image(image, 64, 64, true, true),
                     new Image(image, 32, 32, true, true),
                     new Image(image, 16, 16, true, true));
+            Log.message(AppString.LOADED_ICONS);
         } catch(IOException e){
             Log.warning(getString(AppWarning.ICON_LOAD));
             // Not that big a deal.
         }
 
-        Platform.setImplicitExit(false);
-        //TODO
+        Log.exiting(Monoglot.class.getName(), "init");
     }
 
     @Override
@@ -118,24 +128,27 @@ public class Monoglot extends Application {
         Log.entering(Monoglot.class.getName(), "start");
         if(instance == null)
             return;
-
         window = primaryStage;
-        primaryStage.setScene(new Scene(uiRoot));
-        primaryStage.setTitle(getString(AppString.APP_NAME));
-        primaryStage.minHeightProperty().bind(uiRoot.minHeightProperty());
-        primaryStage.maxHeightProperty().bind(uiRoot.maxHeightProperty());
 
+        primaryStage.setScene(uiScene);
+        primaryStage.setTitle(getString(AppString.APP_NAME));
         primaryStage.getIcons().setAll(icons);
-        primaryStage.setOnCloseRequest(uiController::quitApplication);
+        primaryStage.minHeightProperty().bind(((BorderPane) uiScene.getRoot()).minHeightProperty());
+        primaryStage.minWidthProperty().bind(((BorderPane) uiScene.getRoot()).minWidthProperty());
+
+        primaryStage.setOnCloseRequest(uiController::wQuitApplication);
         primaryStage.show();
+        primaryStage.toFront();
+        Log.exiting(Monoglot.class.getName(), "start");
     }
 
     @Override
     public void stop(){
-        Log.entering(Monoglot.class.getName(), "start");
+        Log.entering(Monoglot.class.getName(), "stop");
         if(instance == null)
             return;
         //TODO: if there are any end-tasks
+        Log.exiting(Monoglot.class.getName(), "stop");
     }
 
     public String getString(LocalizationKey key){
@@ -156,6 +169,10 @@ public class Monoglot extends Application {
 
     public static Monoglot getMonoglot() {
         return instance;
+    }
+
+    public List<Image> getIcons() {
+        return icons;
     }
 }
 

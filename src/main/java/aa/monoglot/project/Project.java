@@ -14,7 +14,7 @@ public class Project {
     private static Project project;
 
     public static boolean isOpen(){
-        return project == null;
+        return project != null;
     }
     /**
      * Returns the open project instance, or null if there isn't one open.

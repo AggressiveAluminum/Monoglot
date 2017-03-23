@@ -3,7 +3,6 @@ package aa.monoglot.ui.history;
 import aa.monoglot.ui.ControlledTab;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
-import old.monoglot.Monoglot;
 
 /**
  * Tracks tab switches for {@linkplain aa.monoglot.ui.history.History}
@@ -21,26 +20,20 @@ class TabSwitchAction implements HistoryAction {
     }
 
     public boolean doAction(){
-        if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(from), tabs.getTabs().get(to))){
-            tabSelector.getSelectionModel().select(to);
-            if(((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onUnload()){
-                tabs.getSelectionModel().select(to);
-                ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onLoad();
-                return true;
-            }
-        }
-        return false;
+        tabSelector.getSelectionModel().select(to);
+        if(((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onUnload()){
+            tabs.getSelectionModel().select(to);
+            ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
+            return true;
+        } else return false;
     }
 
     public boolean undoAction(){
-        if(Monoglot.getMonoglot().mainController.switchContext(tabs.getTabs().get(to), tabs.getTabs().get(from))) {
-            tabSelector.getSelectionModel().select(from);
-            if (((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onUnload()) {
-                tabs.getSelectionModel().select(from);
-                ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).getController().onLoad();
-                return true;
-            }
-        }
-        return false;
+        tabSelector.getSelectionModel().select(from);
+        if (((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onUnload()) {
+            tabs.getSelectionModel().select(from);
+            ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
+            return true;
+        } else return false;
     }
 }

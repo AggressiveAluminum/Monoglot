@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.CheckComboBox;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -49,7 +50,7 @@ public class LexiconTabController implements GeneralController {
     @FXML private TitledPane lexiconDefinitionsPane;
 
     @FXML private void initialize(){
-        tab.setController(this);
+        tab.controller(this);
         filter = new SearchFilter(searchField.textProperty(), searchType.getSelectionModel().selectedIndexProperty(),
                 searchCategory.getSelectionModel().selectedIndexProperty(), searchTags.getCheckModel().getCheckedIndices());
         searchResults.setOnMouseClicked(event -> {
@@ -105,8 +106,12 @@ public class LexiconTabController implements GeneralController {
             System.err.println("Couldn't switch to a new word!");
     }
 
-    public void deleteWord(ActionEvent event) {
+    @FXML private void deleteWord(ActionEvent event) {
         //TODO
+    }
+
+    @FXML private void saveWord(ActionEvent event){
+        save();
     }
 
     public boolean hasUnsavedWord(){

@@ -1,15 +1,16 @@
 package aa.monoglot.util;
 
-import javafx.scene.control.Alert;
-import javafx.stage.Window;
+import aa.monoglot.Monoglot;
+import aa.monoglot.misc.keys.AppString;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.logging.*;
 
 public class Log {
-    private static Logger logger = null;
+    private static Logger logger = Logger.getLogger("aa.monoglot");
     private static String logFileName;
 
     private static void createLogger() {
@@ -18,7 +19,7 @@ public class Log {
     }
 
     public static void init(Path filePath) throws IOException {
-        createLogger();
+        //createLogger();
         createLogFile(filePath);
     }
 
@@ -42,6 +43,14 @@ public class Log {
         logger.info(message);
     }
 
+    public static void fine(String message) {
+        logger.fine(message);
+    }
+
+    public static void message(AppString key, Object... arguments) {
+        logger.info(MessageFormat.format(Monoglot.getLocalString(key), arguments));
+    }
+
     public static String getFileName(){
         if(logFileName == null) {
             logFileName = Instant.now().toString().replaceAll(":","-") + ".log";
@@ -55,15 +64,11 @@ public class Log {
 
         try {
             fileHandler = new FileHandler(filePath.toAbsolutePath().toString());
-            simpleFormatter = new SimpleFormatter();
             logger.addHandler(fileHandler);
 
-            info("Logger with default formatter.");
-            fileHandler.setFormatter(simpleFormatter);
+            fileHandler.setFormatter(new LogFormatter());
             fileHandler.setLevel(Level.ALL);
             logger.setLevel(Level.ALL);
-
-            info("Logger with now with simple formatter.");
 
         } catch (IOException exception) {
             severe("Error occured in FileHandler.", exception);

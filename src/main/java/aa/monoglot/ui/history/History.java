@@ -40,6 +40,14 @@ public class History {
         return !hasNoHistory.get();
     }
 
+    public BooleanProperty hasNoHistoryProperty() {
+        return hasNoHistory;
+    }
+
+    public BooleanProperty hasNoFutureProperty(){
+        return hasNoFuture;
+    }
+
     /**
      * Adds an action to the history and performs it.
      */

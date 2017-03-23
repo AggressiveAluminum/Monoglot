@@ -4,13 +4,13 @@ import aa.monoglot.ui.controller.GeneralController;
 import javafx.scene.control.Tab;
 
 public class ControlledTab extends Tab {
-    private GeneralController controller;
-    public void setController(GeneralController controller){
-        this.controller = controller;
+    private GeneralController tabController;
+    public void controller(GeneralController controller){
+        this.tabController = controller;
     }
 
-    public GeneralController getController() {
-        return controller;
+    public GeneralController controller() {
+        return tabController;
     }
     //TODO
 }

@@ -14,7 +14,7 @@ public class GenericController implements GeneralController {
     @FXML private ControlledTab tab;
     @FXML private void initialize(){
         if(tab != null)
-            tab.setController(this);
+            tab.controller(this);
     }
 
     @FXML
