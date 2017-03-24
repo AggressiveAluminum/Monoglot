@@ -1,5 +1,6 @@
 package aa.monoglot.ui.history;
 
+import aa.monoglot.util.Log;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -60,8 +61,10 @@ public class History {
             future.clear();
             hasNoHistory.set(false);
             hasNoFuture.set(true);
+            executingHistoryAction = false;
             return true;
         }
+        executingHistoryAction = false;
         return false;
     }
 
@@ -82,6 +85,7 @@ public class History {
         executingHistoryAction = true;
         tabSelector.getSelectionModel().select(selector);
         tabs.getSelectionModel().select(tab);
+        executingHistoryAction = false;
     }
 
     public void forward() {
@@ -93,6 +97,7 @@ public class History {
             hasNoHistory.set(false);
             hasNoFuture.set(future.isEmpty());
         }
+        executingHistoryAction = false;
     }
 
     public void back() {
@@ -104,9 +109,11 @@ public class History {
             hasNoHistory.set(history.isEmpty());
             hasNoFuture.set(false);
         }
+        executingHistoryAction = false;
     }
 
     public void tabSwitchHandler(ActionEvent event) {
+        Log.entering(this.getClass().getName(), "tabSwitchHandler");
         if(!executingHistoryAction) {
             int from = tabs.getSelectionModel().getSelectedIndex();
             int to = tabSelector.getSelectionModel().getSelectedIndex();

@@ -61,6 +61,10 @@ public class Log {
         logger.fine(Monoglot.getMonoglot().getLocalString(key, arguments));
     }
 
+    public static void finer(String message) {
+        logger.finer(message);
+    }
+
     public static void message(AppString key, Object... arguments) {
         logger.info(MessageFormat.format(Monoglot.getMonoglot().getLocalString(key), arguments));
     }

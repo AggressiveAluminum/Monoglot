@@ -1,6 +1,7 @@
 package aa.monoglot.ui.history;
 
 import aa.monoglot.ui.ControlledTab;
+import aa.monoglot.util.Log;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
 
