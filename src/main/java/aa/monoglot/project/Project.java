@@ -1,8 +1,11 @@
 package aa.monoglot.project;
 
+import aa.monoglot.misc.keys.LocalizationKey;
+import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.db.Database;
 import aa.monoglot.project.io.IO;
 import aa.monoglot.util.BackedSettings;
+import aa.monoglot.util.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -78,9 +81,11 @@ public class Project {
             if(!Files.exists(path))
                 throw new FileNotFoundException(path.toString());
             if(Files.isDirectory(path)){
+                Log.info(LogString.PROJECT_RECOVERING, path.toAbsolutePath().toString());
                 workingPath = path;
                 amRecoveringProject = true;
             } else {
+                Log.info(LogString.PROJECT_OPENING, path.toAbsolutePath().toString());
                 workingPath = Files.createTempDirectory("mglt");
                 savePath = path;
                 IO.unzipToDirectory(savePath, workingPath);
@@ -90,6 +95,8 @@ public class Project {
 
         database = new Database(workingPath);
         settings = new BackedSettings<>(workingPath.resolve("settings.properties"));
+
+        Log.info(LogString.PROJECT_PATH, workingPath.toString());
     }
 
     public BackedSettings<ProjectKey> getSettings() {
@@ -114,7 +121,7 @@ public class Project {
         hasUnsavedChanges = true;
     }
 
-    public boolean saveNeeded() {
+    public boolean isSaveNeeded() {
         return amRecoveringProject || hasUnsavedChanges;
     }
 
@@ -148,7 +155,7 @@ public class Project {
             //TODO
         }
 
-        if(!saveNeeded())
+        if(!isSaveNeeded())
             IO.nuke(workingPath);
         project = null;
         //TODO

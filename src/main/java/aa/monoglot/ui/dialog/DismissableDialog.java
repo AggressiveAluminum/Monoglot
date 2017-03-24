@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
-public class DismissableDialog<R> extends Dialog<R> {
+class DismissableDialog<R> extends Dialog<R> {
     {
         setOnCloseRequest(e->{
             System.out.println("Requested!");

@@ -21,7 +21,8 @@ class TabSwitchAction implements HistoryAction {
 
     public boolean doAction(){
         tabSelector.getSelectionModel().select(to);
-        if(((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onUnload()){
+        ControlledTab from = (ControlledTab) tabs.getSelectionModel().getSelectedItem();
+        if(from.controller().save() && from.controller().onUnload()){
             tabs.getSelectionModel().select(to);
             ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
             return true;
@@ -30,7 +31,8 @@ class TabSwitchAction implements HistoryAction {
 
     public boolean undoAction(){
         tabSelector.getSelectionModel().select(from);
-        if (((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onUnload()) {
+        ControlledTab fromTab = (ControlledTab) tabs.getSelectionModel().getSelectedItem();
+        if (fromTab.controller().save() && fromTab.controller().onUnload()) {
             tabs.getSelectionModel().select(from);
             ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
             return true;

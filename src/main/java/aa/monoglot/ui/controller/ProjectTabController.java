@@ -42,7 +42,7 @@ public class ProjectTabController implements GeneralController {
                 settings.put(K_NOTES, projectNotes.getText());
                 Project.getProject().markSaveNeeded();
             }
-            if(Project.getProject().saveNeeded())
+            if(Project.getProject().isSaveNeeded())
                 settings.store(null);
             return true;
         } catch (IOException e) {

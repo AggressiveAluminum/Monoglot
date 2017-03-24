@@ -5,6 +5,7 @@ import aa.monoglot.project.db.Headword;
 import aa.monoglot.project.db.SearchFilter;
 import aa.monoglot.project.db.WordType;
 import aa.monoglot.ui.ControlledTab;
+import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -166,8 +167,13 @@ public class LexiconTabController implements GeneralController {
                 //Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
                 //Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
 
-                activeWord = Project.getProject().getDatabase().put(activeWord.update(headwordField.getText(),
-                        romanizationField.getText(), pronunciationField.getText(), stemField.getText(), null, null));
+
+                Headword updatedWord = activeWord.update(headwordField.getText(), romanizationField.getText(),
+                        pronunciationField.getText(), stemField.getText(), null, null);
+                if(updatedWord != activeWord) {
+                    activeWord = Project.getProject().getDatabase().put(updatedWord);
+                    Project.getProject().markSaveNeeded();
+                }
                 updateWordUI();
             }
             return true;
@@ -179,28 +185,27 @@ public class LexiconTabController implements GeneralController {
 
     @Override
     public boolean onLoad(){
+        Log.entering(this.getClass().getName(), "onLoad");
         //TODO: load more things.
         try {
             if (activeWord != null) {
                 activeWord = Headword.fetch(activeWord.ID);
-                loadWordList();
                 updateWordUI();
                 wordSection.setDisable(false);
             }
+            loadWordList();
             return true;
         } catch(SQLException e){
             //TODO: rethrow?
+            Log.warning(e.getLocalizedMessage());
             return false;
         }
     }
 
     @Override
     public boolean onUnload(){
-        if(save()){
-            clearInfo();
-            wordSection.setDisable(true);
-            return true;
-        }
-        return false;
+        clearInfo();
+        wordSection.setDisable(true);
+        return true;
     }
 }

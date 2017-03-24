@@ -54,9 +54,9 @@ public class MonoglotPreloader extends Preloader {
         if(notification instanceof Preloader.ErrorNotification) {
             Log.severe(((ErrorNotification) notification).getDetails(), null);
             Dialogs.error(window, ((ErrorNotification) notification).getCause(),
-                    Monoglot.getLocalString(AppError.LOAD_ERROR_TITLE, "Error during startup"),
-                    Monoglot.getLocalString(AppError.LOAD_ERROR_HEADER, "An error occurred during startup."),
-                    Monoglot.getLocalString(AppError.LOAD_ERROR_TEXT, "Unless you're doing something funky, please send this to the developer, along with an explanation of what you were doing:"))
+                    Monoglot.getMonoglot().getLocalString(AppError.LOAD_ERROR_TITLE, "Error during startup"),
+                    Monoglot.getMonoglot().getLocalString(AppError.LOAD_ERROR_HEADER, "An error occurred during startup."),
+                    Monoglot.getMonoglot().getLocalString(AppError.LOAD_ERROR_TEXT, "Unless you're doing something funky, please send this to the developer, along with an explanation of what you were doing:"))
                     .showAndWait();
             window.hide();
             Platform.exit();
@@ -66,7 +66,7 @@ public class MonoglotPreloader extends Preloader {
     @Override
     public void handleStateChangeNotification(StateChangeNotification notification){
         if(notification.getType() == StateChangeNotification.Type.BEFORE_START) {
-            Log.fine(Monoglot.getLocalString(AppString.PRELOADER_DONE));
+            Log.fine(Monoglot.getMonoglot().getLocalString(AppString.PRELOADER_DONE));
             window.hide();
         }
     }

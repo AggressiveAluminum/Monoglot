@@ -27,13 +27,13 @@ public class Dialogs {
 
     private static void ensureExtensionFilters(){
         fileFilter = Arrays.asList(
-                new FileChooser.ExtensionFilter(Monoglot.getLocalString(AppString.MGLT_FILE), "*.mglt", "*.monoglot"),
-                new FileChooser.ExtensionFilter(Monoglot.getLocalString(AppString.ALL_FILES), "*")
+                new FileChooser.ExtensionFilter(Monoglot.getMonoglot().getLocalString(AppString.MGLT_FILE), "*.mglt", "*.monoglot"),
+                new FileChooser.ExtensionFilter(Monoglot.getMonoglot().getLocalString(AppString.ALL_FILES), "*")
         );
     }
 
     public static Optional<ButtonType> yesNoCancel(LocalizationKey key){
-        return new YesNoCancelAlert(Monoglot.getMonoglot().getWindow(), Monoglot.getLocalString(key)).showAndWait();
+        return new YesNoCancelAlert(Monoglot.getMonoglot().getWindow(), Monoglot.getMonoglot().getLocalString(key)).showAndWait();
     }
 
     public static Alert error(Window owner, Throwable cause, String title, String header, String text){

@@ -8,6 +8,7 @@ import aa.monoglot.misc.keys.LocalizationKey;
 import aa.monoglot.ui.controller.MonoglotController;
 import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
+import aa.monoglot.util.UT;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -36,6 +38,10 @@ import java.util.*;
  */
 public class Monoglot extends Application {
     private static Monoglot instance;
+
+    public static Monoglot getMonoglot() {
+        return instance;
+    }
 
     private ApplicationSettings applicationSettings;
     private ResourceBundle resourceBundle;
@@ -83,13 +89,13 @@ public class Monoglot extends Application {
         // A global uncaught exception handler, for in case something escapes out the top of the application.
         // If something does get out, it's *really* wrong, and any attempts to fix it either failed or were nonexistent.
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            String msg = (resourceBundle != null && resourceBundle.containsKey(AppError.UNCAUGHT.getKey()))?getString(AppError.UNCAUGHT):
+            String msg = (resourceBundle != null && resourceBundle.containsKey(AppError.UNCAUGHT.getKey()))?getLocalString(AppError.UNCAUGHT):
                     "An uncaught exception bubbled out of the application. We don't know what to do! Complain about it!";
             Log.severe(msg, throwable);
             Dialogs.error(window, throwable,
-                    getLocalString(AppError.FATAL_ERROR_TITLE, "Fatal Error"),
-                    getLocalString(AppError.FATAL_ERROR_HEADER, "An unrecoverable error occurred while loading the application."),
-                    getLocalString(AppError.FATAL_ERROR_TEXT, "Unless you're doing something funky, please send this to the developer, along with an explanation of what you were doing:"))
+                    UT.c(getLocalString(AppError.FATAL_ERROR_TITLE), "Fatal Error"),
+                    UT.c(getLocalString(AppError.FATAL_ERROR_HEADER), "An unrecoverable error occurred while loading the application."),
+                    UT.c(getLocalString(AppError.FATAL_ERROR_TEXT), "Unless you're doing something funky, please send this to the developer, along with an explanation of what you were doing:"))
                 .showAndWait();
             Platform.exit();
         });
@@ -99,8 +105,8 @@ public class Monoglot extends Application {
             uiScene = new Scene(loader.load());
             uiController = loader.getController();
         } catch (IOException e) {
-            Log.severe(getString(AppError.LOAD_ERROR), e);
-            notifyPreloader(new Preloader.ErrorNotification(null, getString(AppError.LOAD_ERROR), e));
+            Log.severe(getLocalString(AppError.LOAD_ERROR), e);
+            notifyPreloader(new Preloader.ErrorNotification(null, getLocalString(AppError.LOAD_ERROR), e));
             instance = null;
             return;
         }
@@ -116,7 +122,7 @@ public class Monoglot extends Application {
                     new Image(image, 16, 16, true, true));
             Log.message(AppString.LOADED_ICONS);
         } catch(IOException e){
-            Log.warning(getString(AppWarning.ICON_LOAD));
+            Log.warning(getLocalString(AppWarning.ICON_LOAD));
             // Not that big a deal.
         }
 
@@ -131,14 +137,15 @@ public class Monoglot extends Application {
         window = primaryStage;
 
         primaryStage.setScene(uiScene);
-        primaryStage.setTitle(getString(AppString.APP_NAME));
+        primaryStage.setTitle(getLocalString(AppString.APP_NAME));
         primaryStage.getIcons().setAll(icons);
         primaryStage.minHeightProperty().bind(((BorderPane) uiScene.getRoot()).minHeightProperty());
         primaryStage.minWidthProperty().bind(((BorderPane) uiScene.getRoot()).minWidthProperty());
 
         primaryStage.setOnCloseRequest(uiController::wQuitApplication);
+        primaryStage.setAlwaysOnTop(true);
         primaryStage.show();
-        primaryStage.toFront();
+        primaryStage.setAlwaysOnTop(false);
         Log.exiting(Monoglot.class.getName(), "start");
     }
 
@@ -151,24 +158,15 @@ public class Monoglot extends Application {
         Log.exiting(Monoglot.class.getName(), "stop");
     }
 
-    public String getString(LocalizationKey key){
-        return resourceBundle.getString(key.getKey());
-    }
     public Window getWindow(){
         return window;
     }
 
-    public static String getLocalString(LocalizationKey key){
-        return instance.resourceBundle.getString(key.getKey());
+    public String getLocalString(LocalizationKey key){
+        return resourceBundle.getString(key.getKey());
     }
-    public static String getLocalString(LocalizationKey key, String _default){
-        if(instance != null && instance.resourceBundle != null && instance.resourceBundle.containsKey(key.getKey()))
-            return instance.resourceBundle.getString(key.getKey());
-        else return _default;
-    }
-
-    public static Monoglot getMonoglot() {
-        return instance;
+    public String getLocalString(LocalizationKey key, Object... arguments){
+        return MessageFormat.format(resourceBundle.getString(key.getKey()), arguments);
     }
 
     public List<Image> getIcons() {

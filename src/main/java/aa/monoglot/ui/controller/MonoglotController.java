@@ -40,17 +40,18 @@ public class MonoglotController implements GeneralController {
     @FXML private Label status;
 
     private History history;
+    private int numTabs;
 
     @FXML private void initialize(){
+        numTabs = tabs.getTabs().size();
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
-        tabSelector.getItems().remove(tabSelector.getItems().size() - 1);
-        tabSelector.getSelectionModel().select(History.LEXICON_TAB_INDEX);
-        tabs.getSelectionModel().select(tabs.getTabs().size() - 1);
+        tabSelector.getItems().remove(numTabs - 1);
 
         history = new History(tabSelector, tabs);
         historyBackButton.disableProperty().bind(history.hasNoHistoryProperty());
         historyForeButton.disableProperty().bind(history.hasNoFutureProperty());
+        history.silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
     }
 
     private void setProjectControlsDisabled(boolean disabled){
@@ -62,12 +63,15 @@ public class MonoglotController implements GeneralController {
         saveProjectAsItem.setDisable(disabled);
         closeProjectItem.setDisable(disabled);
 
-        if(disabled){
-            for(Tab t: tabs.getTabs())
-                ((ControlledTab) t).controller().save();
-        } else {
+        if(!disabled){
+            history.silentGoTo(History.LEXICON_TAB_INDEX, History.LEXICON_TAB_INDEX);
             tabs.getSelectionModel().select(History.LEXICON_TAB_INDEX);
             tabSelector.getSelectionModel().select(History.LEXICON_TAB_INDEX);
+            ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
+        } else {
+            for(Tab t: tabs.getTabs())
+                ((ControlledTab) t).controller().onUnload();
+            history.silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
         }
     }
 
@@ -106,9 +110,9 @@ public class MonoglotController implements GeneralController {
     // == PROJECT CONTROLS ==
     private boolean noOpenProject() throws SQLException {
         if(Project.isOpen()){
-            if(Project.getProject().hasSavePath())
-                Project.getProject().save();
-            else {
+            for(Tab t: tabs.getTabs())
+                ((ControlledTab) t).controller().save();
+            if(Project.getProject().isSaveNeeded()){
                 Optional<ButtonType> result = Dialogs.yesNoCancel(AppString.CHECK_SAVE);
                 if(result.isPresent()){
                     if(result.get() == ButtonType.YES)
@@ -117,9 +121,9 @@ public class MonoglotController implements GeneralController {
                         return false;
                 }
             }
-            Project.getProject().close();
             for(Tab t: tabs.getTabs())
                 ((ControlledTab) t).controller().onUnload();
+            Project.getProject().close();
         }
         return true;
     }
@@ -174,8 +178,10 @@ public class MonoglotController implements GeneralController {
     }
 
     @FXML private void closeProject(ActionEvent event) throws SQLException {
-        noOpenProject();
-        setProjectControlsDisabled(true);
+        for(Tab t: tabs.getTabs())
+            ((ControlledTab) t).controller().save();
+        if(noOpenProject())
+            setProjectControlsDisabled(true);
     }
 
     // == EDIT CONTROLS ==

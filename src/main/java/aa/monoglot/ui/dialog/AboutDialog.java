@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AboutDialog extends DismissableDialog {
+class AboutDialog extends DismissableDialog {
     public AboutDialog(ResourceBundle bundle) throws Exception {
         //TODO: make this prettier and more functional!
         URL url = getClass().getClassLoader().getResource("fxml/dialog/about.fxml");

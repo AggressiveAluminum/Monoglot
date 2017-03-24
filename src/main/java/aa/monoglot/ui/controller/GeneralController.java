@@ -13,11 +13,12 @@ public interface GeneralController {
     }
 
     /**
-     * Called when the tab becomes inactive. If false is returned, blocks becoming inactive.
+     * Called when the tab becomes inactive. If false is returned, blocks becoming inactive, unless the application
+     * doesn't care.
      * @return True on success, else false.
      */
     default boolean onUnload(){
-        return save();
+        return true;
     }
 
     /**

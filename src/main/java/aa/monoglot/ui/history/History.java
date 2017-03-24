@@ -78,6 +78,12 @@ public class History {
             addAndDo(new TabSwitchAction(tabSelector, tabs, sel, index));
     }
 
+    public void silentGoTo(int selector, int tab) {
+        executingHistoryAction = true;
+        tabSelector.getSelectionModel().select(selector);
+        tabs.getSelectionModel().select(tab);
+    }
+
     public void forward() {
         if(future.isEmpty())
             return;
