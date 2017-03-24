@@ -21,8 +21,6 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -58,6 +56,7 @@ public class Monoglot extends Application {
         try { // Application settings, OS-specific tasks.
             applicationSettings = new ApplicationSettings();
         } catch(IOException e){
+            Log.info("Loaded application settings.");
             notifyPreloader(new Preloader.ErrorNotification(null, "Failed to load application settings", e));
             instance = null;
             return;

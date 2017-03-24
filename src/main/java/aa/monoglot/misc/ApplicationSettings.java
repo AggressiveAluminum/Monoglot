@@ -48,10 +48,10 @@ public class ApplicationSettings extends BackedSettings<ApplicationSettings.Sett
                 p = Paths.get(System.getenv("APPDATA"), "Monoglot");
                 break;
             case OSX:
-                p = Paths.get("~/Library/Preferences/Monoglot");
+                p = Paths.get(System.getProperty("user.home"),"Library", "Preferences", "Monoglot");
                 break;
             default:
-                p = Paths.get("~/.monoglot");
+                p = Paths.get(System.getProperty("user.home"), ".monoglot");
                 break;
         }
 
