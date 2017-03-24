@@ -1,13 +1,17 @@
 package aa.monoglot.util;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * Simple utility functions.
  */
-public class UT {
+public final class UT {
     /**
      * String null coallesce to empty string.
      */
-    public final static String c(String o){
+    public static String c(String o){
         if(o == null)
             return "";
         return o;
@@ -16,7 +20,7 @@ public class UT {
     /**
      * Generic null coallesce to some default.
      */
-    public final static <T> T c(T o, T def){
+    public static <T> T c(T o, T def){
         if(o == null)
             return def;
         return o;
@@ -25,9 +29,17 @@ public class UT {
     /**
      * Compare two objects, taking nulls into account.
      */
-    public final static <T> boolean nc(T a, T b){
+    public static <T> boolean nc(T a, T b){
         if(a == null)
             return b == null;
         return a.equals(b);
+    }
+
+    public static Path forceAssureDirectory(Path directory) throws IOException {
+        if(Files.isRegularFile(directory))
+            Files.delete(directory);
+        if(!Files.exists(directory))
+            Files.createDirectories(directory);
+        return directory;
     }
 }

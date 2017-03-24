@@ -12,10 +12,32 @@ import java.util.logging.*;
 
 public class Log {
     private static Logger logger = Logger.getLogger("aa.monoglot");
-    private static String logFileName;
 
-    public static void init(Path filePath) throws IOException {
-        createLogFile(filePath);
+    static {
+        logger.setLevel(Level.ALL);
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setLevel(Level.ALL);
+        handler.setFormatter(new LogFormatter());
+        logger.setUseParentHandlers(false);
+        logger.addHandler(handler);
+    }
+
+    /**
+     * Initializes logging to file in the directory at <code>path</code>
+     */
+    public static void init(Path path) throws IOException {
+        try {
+            path = path.resolve(Instant.now().toString().replaceAll(":","-") + ".log").toAbsolutePath();
+            FileHandler fileHandler = new FileHandler(path.toString());
+            fileHandler.setFormatter(new LogFormatter());
+            fileHandler.setLevel(Level.ALL);
+
+            logger.addHandler(fileHandler);
+            logger.fine("Now logging to file: " + path.toString());
+        } catch (IOException exception) {
+            severe("Error occured in FileHandler.", exception);
+            throw exception;
+        }
     }
 
     public static void warning(String message) {
@@ -67,28 +89,5 @@ public class Log {
 
     public static void message(AppString key, Object... arguments) {
         logger.info(MessageFormat.format(Monoglot.getMonoglot().getLocalString(key), arguments));
-    }
-
-    public static String getFileName(){
-        if(logFileName == null)
-            logFileName = Instant.now().toString().replaceAll(":","-") + ".log";
-        return logFileName;
-    }
-
-    private static void createLogFile(Path filePath) throws IOException {
-        Handler fileHandler;
-
-        try {
-            fileHandler = new FileHandler(filePath.toAbsolutePath().toString());
-            logger.addHandler(fileHandler);
-
-            fileHandler.setFormatter(new LogFormatter());
-            fileHandler.setLevel(Level.ALL);
-            logger.setLevel(Level.ALL);
-            logger.fine("Now logging to file: " + filePath.toAbsolutePath().toString());
-        } catch (IOException exception) {
-            severe("Error occured in FileHandler.", exception);
-            throw exception;
-        }
     }
 }

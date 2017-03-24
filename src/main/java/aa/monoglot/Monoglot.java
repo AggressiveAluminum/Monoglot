@@ -64,12 +64,7 @@ public class Monoglot extends Application {
         }
 
         try { // Logging.
-            Path p = applicationSettings.resolve("logs");
-            if(Files.isRegularFile(p))
-                Files.delete(p);
-            if(!Files.exists(p))
-                Files.createDirectories(p);
-            Log.init(p.resolve(Log.getFileName()));
+            Log.init(UT.forceAssureDirectory(applicationSettings.resolve("logs")));
         } catch(IOException e){
             notifyPreloader(new Preloader.ErrorNotification(null, "Failed to initiate logging system", e));
             instance = null;
