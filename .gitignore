@@ -177,3 +177,4 @@ $RECYCLE.BIN/
 
 # Gradle
 .gradle/
+.idea/kotlinc.xml

@@ -1,5 +1,6 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Headword;
 import aa.monoglot.project.db.SearchFilter;
@@ -104,7 +105,7 @@ public class LexiconTabController implements GeneralController {
 
     void createNewWord(ActionEvent event) throws SQLException {
         if(!switchActiveWord(Headword.create()))
-            System.err.println("Couldn't switch to a new word!");
+            Log.warning(LogString.LEXICON_SWITCH_FAILED);
     }
 
     @FXML private void deleteWord(ActionEvent event) {
@@ -113,10 +114,6 @@ public class LexiconTabController implements GeneralController {
 
     @FXML private void saveWord(ActionEvent event){
         save();
-    }
-
-    public boolean hasUnsavedWord(){
-        return activeWord != null && activeWord.ID == null && headwordField.getText() != null && !headwordField.getText().equals("");
     }
 
     void updateWordUI() throws SQLException {
@@ -185,8 +182,6 @@ public class LexiconTabController implements GeneralController {
 
     @Override
     public boolean onLoad(){
-        Log.entering(this.getClass().getName(), "onLoad");
-        //TODO: load more things.
         try {
             if (activeWord != null) {
                 activeWord = Headword.fetch(activeWord.ID);
@@ -196,7 +191,6 @@ public class LexiconTabController implements GeneralController {
             loadWordList();
             return true;
         } catch(SQLException e){
-            //TODO: rethrow?
             Log.warning(e.getLocalizedMessage());
             return false;
         }
