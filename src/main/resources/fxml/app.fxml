@@ -59,6 +59,7 @@
                 <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
                     <fx:include fx:id="projectTab" source="tab/project.fxml"/>
                     <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+                    <fx:include fx:id="inflectionsTab" source="tab/table.fxml"/>
                     <!-- keep this last -->
                     <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
                 </TabPane>

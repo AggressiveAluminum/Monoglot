@@ -1,17 +1,14 @@
 package aa.monoglot.ui.controller;
 
-/**
- * Created by Alex on 3/3/17.
- */
-public class InflectionTableController extends AbstractChildController<MonoglotController> {
+import aa.monoglot.ui.ControlledTab;
+import javafx.fxml.FXML;
 
-    @Override
-    protected void postInitialize() {
-        System.out.println("Test");
-    }
+public class InflectionTableController implements GeneralController {
+    @FXML
+    private ControlledTab tab;
 
-    @Override
-    protected void clearInfo() {
-
+    @FXML
+    private void initialize(){
+        tab.controller(this);
     }
 }
