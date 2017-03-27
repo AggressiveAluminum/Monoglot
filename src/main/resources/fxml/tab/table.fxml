@@ -1,28 +1,29 @@
 <?import aa.monoglot.ui.ControlledTab?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
 <ControlledTab fx:id="tab" text="%tab.inflection" xmlns:fx="http://javafx.com/fxml"
                fx:controller="aa.monoglot.ui.controller.InflectionTableController">
-    <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
-        <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-        </padding>
-        <Label style="-fx-font: NORMAL 20 Tahoma;" text="Inflection Table"
-               GridPane.columnIndex="0" GridPane.rowIndex="0">
-        </Label>
-        <TableView fx:id="tableView" GridPane.columnIndex="0"
-                   GridPane.rowIndex="1">
-            <columns>
-                <TableColumn text="First Person">
-                </TableColumn>
-                <TableColumn text="Second Person">
-                </TableColumn>
-                <TableColumn text="Third Person">
-                </TableColumn>
-            </columns>
-        </TableView>
-    </GridPane>
+    <BorderPane>
+        <top>
+           <Label text="Inflection Table" textAlignment="CENTER">
+                <font>
+                    <Font name="Arial" size="20"/>
+                </font>
+           </Label>
+        </top>
+        <!--Space for the table-->
+        <center>
+            <TableView fx:id="tableView">
+                <columns>
+                    <TableColumn text="First Person">
+                    </TableColumn>
+                    <TableColumn text="Second Person">
+                    </TableColumn>
+                    <TableColumn text="Third Person">
+                    </TableColumn>
+                </columns>
+            </TableView>
+        </center>
+    </BorderPane>
 </ControlledTab>
