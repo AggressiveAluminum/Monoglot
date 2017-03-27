@@ -146,15 +146,12 @@ public final class Headword {
         return statement;
     }
 
-    public static Headword select(PreparedStatement statement, UUID id) throws SQLException {
+    public static Headword fetch(UUID id) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_STR);
         statement.setObject(1, id);
-        try(ResultSet resultSet = statement.executeQuery()) {
+        try(ResultSet resultSet = statement.executeQuery()){
             resultSet.next();
             return new Headword(resultSet);
         }
-    }
-
-    public static Headword fetch(UUID id) throws SQLException {
-        return Project.getProject().getDatabase().selectHeadword(id);
     }
 }

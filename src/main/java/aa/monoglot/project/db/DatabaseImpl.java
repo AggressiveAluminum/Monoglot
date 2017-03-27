@@ -52,14 +52,14 @@ final class DatabaseImpl {
         connection.commit();
     }
 
-    public PreparedStatement getStatement(String sql) throws SQLException {
+    PreparedStatement getStatement(String sql) throws SQLException {
         PreparedStatement p = SQL_STATEMENTS.get(sql);
         if(p == null)
             SQL_STATEMENTS.put(sql, p = getConnection().prepareStatement(sql));
         return p;
     }
 
-    public UUID getNextID() {
+    UUID getNextID() {
         //TODO: guarentee doesn't exist.
         return UUID.randomUUID();
     }

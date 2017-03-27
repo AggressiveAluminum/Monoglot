@@ -33,17 +33,25 @@ public class Database {
         db.getConnection();
     }
 
+    PreparedStatement sql(String sql) throws SQLException {
+        return db.getStatement(sql);
+    }
+
     public Headword put(Headword headword) throws SQLException {
         Project.getProject().markSaveNeeded();
         if(headword.ID == null){
             UUID id = db.getNextID();
             Headword.insert(db.getStatement(Headword.INSERT_STR), id, headword).execute();
             db.flush();
-            return Headword.select(db.getStatement(Headword.SELECT_STR), id);
+            return Headword.fetch(id);
         } else {
             Headword.update(db.getStatement(Headword.UPDATE_STR), headword).executeUpdate();
             return headword;
         }
+    }
+
+    UUID getNextID(){
+        return db.getNextID();
     }
 
     public List<Headword> simpleSearch(String searchText, Object type, Object category, Object[] tags) throws SQLException {
@@ -59,9 +67,5 @@ public class Database {
                 list.add(new Headword(resultSet));
         }
         return list;
-    }
-
-    Headword selectHeadword(UUID id) throws SQLException {
-        return Headword.select(db.getStatement(Headword.SELECT_STR), id);
     }
 }
