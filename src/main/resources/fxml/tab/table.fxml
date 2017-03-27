@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.TableColumn?>
 <ControlledTab fx:id="tab" text="%tab.inflection" xmlns:fx="http://javafx.com/fxml"
                fx:controller="aa.monoglot.ui.controller.InflectionTableController">
     <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
@@ -14,6 +15,14 @@
         </Label>
         <TableView fx:id="tableView" GridPane.columnIndex="0"
                    GridPane.rowIndex="1">
+            <columns>
+                <TableColumn text="First Person">
+                </TableColumn>
+                <TableColumn text="Second Person">
+                </TableColumn>
+                <TableColumn text="Third Person">
+                </TableColumn>
+            </columns>
         </TableView>
     </GridPane>
 </ControlledTab>
