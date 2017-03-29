@@ -64,4 +64,8 @@ public class Database {
     Headword selectHeadword(UUID id) throws SQLException {
         return Headword.select(db.getStatement(Headword.SELECT_STR), id);
     }
+
+    public PreparedStatement sql(String sql) throws SQLException{
+        return db.getStatement(sql);
+    }
 }
