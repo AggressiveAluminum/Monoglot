@@ -3,24 +3,25 @@ package aa.monoglot.ui.controller;
 import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Headword;
-import aa.monoglot.project.db.SearchFilter;
 import aa.monoglot.project.db.WordType;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import org.controlsfx.control.CheckComboBox;
 
-import javax.swing.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.UUID;
 
 /*
  * Notes on things that tripped me up:
@@ -35,8 +36,6 @@ public class LexiconTabController implements GeneralController {
     @FXML private ComboBox<?> searchType;
     @FXML private ComboBox<?> searchCategory;
     @FXML private CheckComboBox<?> searchTags;
-
-    private SearchFilter filter;
 
     //TODO: change this to HeadWord, modify toString to return proper result.
     public ListView<Headword> searchResults;
@@ -53,8 +52,10 @@ public class LexiconTabController implements GeneralController {
 
     @FXML private void initialize(){
         tab.controller(this);
-        filter = new SearchFilter(searchField.textProperty(), searchType.getSelectionModel().selectedIndexProperty(),
-                searchCategory.getSelectionModel().selectedIndexProperty(), searchTags.getCheckModel().getCheckedIndices());
+        searchField.textProperty().addListener(this::searchListener);
+        searchTags.getCheckModel().getCheckedIndices().addListener(this::searchListener);
+        searchType.getSelectionModel().selectedIndexProperty().addListener(this::searchListener);
+        searchCategory.getSelectionModel().selectedIndexProperty().addListener(this::searchListener);
         searchResults.setOnMouseClicked(event -> {
             try {
                 switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
@@ -96,7 +97,6 @@ public class LexiconTabController implements GeneralController {
             if (newHeadword != null) {
                 activeWord = newHeadword;
                 updateWordUI();
-                wordSection.setDisable(false);
             }
             return true;
         }
@@ -108,7 +108,12 @@ public class LexiconTabController implements GeneralController {
             Log.warning(LogString.LEXICON_SWITCH_FAILED);
     }
 
-    @FXML private void deleteWord(ActionEvent event) {
+    @FXML private void deleteWord(ActionEvent event) throws SQLException {
+        if(activeWord != null) {
+            Headword.delete(activeWord);
+            activeWord = null;
+            updateWordUI();
+        }
         //TODO
     }
 
@@ -116,19 +121,22 @@ public class LexiconTabController implements GeneralController {
         save();
     }
 
-    void updateWordUI() throws SQLException {
-        headwordField.setText(activeWord.word);
-        romanizationField.setText(activeWord.romanization);
-        pronunciationField.setText(activeWord.pronunciation);
-        stemField.setText(activeWord.stem);
-        createdLabel.setText(activeWord.created.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
-        if(activeWord.modified != null)
+    private void updateWordUI() throws SQLException {
+        if(activeWord == null)
+            wordSection.setDisable(true);
+        else wordSection.setDisable(false);
+        headwordField.setText(activeWord == null?"":activeWord.word);
+        romanizationField.setText(activeWord == null?"":activeWord.romanization);
+        pronunciationField.setText(activeWord == null?"":activeWord.pronunciation);
+        stemField.setText(activeWord == null?"":activeWord.stem);
+        createdLabel.setText(activeWord == null?"":activeWord.created.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+        if(activeWord != null && activeWord.modified != null)
             modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         else modifiedLabel.setText("");
-        if(activeWord.type == null)
+        if(activeWord == null || activeWord.type == null)
             typeField.getSelectionModel().clearSelection();
         //else typeField.getSelectionModel().select(activeWord.type);
-        if(activeWord.category == null)
+        if(activeWord == null || activeWord.category == null)
             categoryField.getSelectionModel().clearSelection();
         //else typeField.getSelectionModel().select(activeWord.category);
         //TODO: category/type lookup
@@ -136,7 +144,14 @@ public class LexiconTabController implements GeneralController {
         loadWordList();
     }
 
-    public void loadWordList() throws SQLException {
+    @FXML private void searchListener(Observable observable){
+        try {
+            loadWordList();
+        } catch (SQLException e){
+            //TODO: do something
+        }
+    }
+    private void loadWordList() throws SQLException {
         searchResults.setItems(FXCollections.observableArrayList(
                 Project.getProject().getDatabase().simpleSearch(
                         UT.c(searchField.getText()), null, null, null)));
@@ -161,14 +176,13 @@ public class LexiconTabController implements GeneralController {
                     return false;
                 }
                 //TODO: type and category lookup
-                //Integer type = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedIndex();
-                //Integer category = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedIndex();
-
+                UUID type = null;// = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedItem().ID;
+                UUID category = null;// = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedItem().ID;
 
                 Headword updatedWord = activeWord.update(headwordField.getText(), romanizationField.getText(),
                         pronunciationField.getText(), stemField.getText(), null, null);
                 if(updatedWord != activeWord) {
-                    activeWord = Project.getProject().getDatabase().put(updatedWord);
+                    activeWord = Headword.put(updatedWord);
                     Project.getProject().markSaveNeeded();
                 }
                 updateWordUI();
@@ -183,12 +197,9 @@ public class LexiconTabController implements GeneralController {
     @Override
     public boolean onLoad(){
         try {
-            if (activeWord != null) {
+            if (activeWord != null)
                 activeWord = Headword.fetch(activeWord.ID);
-                updateWordUI();
-                wordSection.setDisable(false);
-            }
-            loadWordList();
+            updateWordUI();
             return true;
         } catch(SQLException e){
             Log.warning(e.getLocalizedMessage());

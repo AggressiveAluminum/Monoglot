@@ -26,6 +26,7 @@ public final class Headword {
     static final String INSERT_STR = "INSERT INTO entry VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)";
     static final String UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?";
     static final String SELECT_STR = "SELECT * FROM entry WHERE id = ?";
+    static final String DELETE_STR = "DELETE FROM entry WHERE id = ?";
 
     private final static int ID_COL = 1, WORD_COL = 2, ROMAN_COL = 3, PRONUN_COL = 4,
         STEM_COL = 5, TYPE_COL = 6, CAT_COL = 7, CREATED_COL = 8, MODIFIED_COL = 9;
@@ -81,6 +82,9 @@ public final class Headword {
             return this;
         return newHeadword;
     }
+    private Headword update(UUID newID){
+        return new Headword(newID, this.word, this.romanization, this.pronunciation, this.stem, this.type, this.category, this.created, Timestamp.from(Instant.now()));
+    }
 
     @Override
     public String toString(){
@@ -105,27 +109,35 @@ public final class Headword {
         return false;
     }
 
-    static PreparedStatement insert(PreparedStatement statement, UUID id, Headword headword) throws SQLException {
-        /*ID   */statement.setObject(ID_COL, id);
-        /*WORD */statement.setString(WORD_COL, headword.word);
-        /*ROMAN*/statement.setString(ROMAN_COL, headword.romanization);
-        /*PRON */statement.setString(PRONUN_COL, headword.pronunciation);
-        /*STEM */statement.setString(STEM_COL, headword.stem);
-        /*TYPE */
-        if(headword.type == null)
-            statement.setNull(TYPE_COL, Types.OTHER);
-        else statement.setObject(TYPE_COL, headword.type);
-        /*CAT  */
-        if(headword.category == null)
-            statement.setNull(CAT_COL, Types.OTHER);
-        else statement.setObject(CAT_COL, headword.category);
-        /*CREAT*/statement.setTimestamp(CREATED_COL, headword.created);
-        return statement;
+    public static Headword put(Headword word) throws SQLException {
+        Project.getProject().markSaveNeeded();
+        if(word.ID == null) {
+            word = word.update(Project.getProject().getDatabase().getNextID());
+            PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
+            /*ID   */statement.setObject(ID_COL, word.ID);
+            /*WORD */statement.setString(WORD_COL, word.word);
+            /*ROMAN*/statement.setString(ROMAN_COL, word.romanization);
+            /*PRON */statement.setString(PRONUN_COL, word.pronunciation);
+            /*STEM */statement.setString(STEM_COL, word.stem);
+            /*TYPE */
+            if(word.type == null)
+                statement.setNull(TYPE_COL, Types.OTHER);
+            else statement.setObject(TYPE_COL, word.type);
+            /*CAT  */
+            if(word.category == null)
+                statement.setNull(CAT_COL, Types.OTHER);
+            else statement.setObject(CAT_COL, word.category);
+            /*CREAT*/statement.setTimestamp(CREATED_COL, word.created);
+            statement.executeUpdate();
+            return Headword.fetch(word.ID);
+        } else { // word already exists
+            return update(word);
+        }
     }
-    static PreparedStatement update(PreparedStatement statement, Headword headword) throws SQLException {
-        return update(statement, headword.ID, headword);
-    }
-    static PreparedStatement update(PreparedStatement statement, UUID id, Headword headword) throws SQLException {
+    static Headword update(Headword headword) throws SQLException {
+        if(headword.ID == null)
+            throw new IllegalArgumentException();
+        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_STR);
         int order = 1;
         statement.setString(order++, headword.word);
         statement.setString(order++, headword.romanization);
@@ -140,17 +152,25 @@ public final class Headword {
         if(headword.modified == null)
             statement.setNull(order++, Types.TIMESTAMP);
         else statement.setTimestamp(order++, headword.modified);
-
         // WHERE
         statement.setObject(order, headword.ID);
-        return statement;
+        statement.executeUpdate();
+        return fetch(headword.ID);
+    }
+    public static void delete(Headword word) throws SQLException {
+        if(word.ID != null) {
+            PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
+            statement.setObject(1, word.ID);
+            statement.executeUpdate();
+        }
     }
 
     public static Headword fetch(UUID id) throws SQLException {
         PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_STR);
         statement.setObject(1, id);
         try(ResultSet resultSet = statement.executeQuery()){
-            resultSet.next();
+            if(!resultSet.next())
+                return null;
             return new Headword(resultSet);
         }
     }

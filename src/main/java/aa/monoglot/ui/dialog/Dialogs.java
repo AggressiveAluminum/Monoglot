@@ -55,4 +55,17 @@ public class Dialogs {
 
         return alert;
     }
+
+    public static Alert warning(Window owner, String title, String header, String text) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+
+        if(owner != null && owner.isShowing())
+            alert.initOwner(owner);
+
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(text);
+
+        return alert;
+    }
 }

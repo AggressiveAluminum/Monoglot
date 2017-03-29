@@ -1,6 +1,8 @@
 package aa.monoglot.project.io;
 
+import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.db.Database;
+import aa.monoglot.util.Log;
 
 import java.io.IOException;
 import java.net.URI;
@@ -80,7 +82,7 @@ public class IO {
      */
     public static void nuke(Path workingDirectory) {
         try {
-            System.err.println("HAHAHAHAHAHA: " + workingDirectory.toString());
+            Log.info(LogString.PROJECT_NUKING, workingDirectory.toString());
             Files.walkFileTree(workingDirectory, new DirectoryDeleter());
         } catch(Exception e){
             // hope the OS cleans it up later.

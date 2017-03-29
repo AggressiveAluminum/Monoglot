@@ -5,6 +5,7 @@ import aa.monoglot.misc.keys.AppError;
 import aa.monoglot.misc.keys.AppString;
 import aa.monoglot.misc.keys.AppWarning;
 import aa.monoglot.misc.keys.LocalizationKey;
+import aa.monoglot.project.Project;
 import aa.monoglot.ui.controller.MonoglotController;
 import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
@@ -19,8 +20,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -141,6 +147,19 @@ public class Monoglot extends Application {
         primaryStage.show();
         primaryStage.setAlwaysOnTop(false);
         Log.exiting(Monoglot.class.getName(), "start");
+
+        if(getParameters().getRaw().contains("-n")){
+            Project.newProject();
+        } else if(getParameters().getNamed().containsKey("-o")){
+            try {
+                Path p = Paths.get(getParameters().getNamed().get("-o"));
+                Project.openProject(p);
+            } catch (FileNotFoundException | InvalidPathException e){
+                Dialogs.warning(window, getLocalString(AppWarning.NO_SUCH_PROJECT_TITLE),
+                        getLocalString(AppWarning.NO_SUCH_PROJECT_HEADER),
+                        getLocalString(AppWarning.NO_SUCH_PROJECT_TEXT)).show();
+            }
+        }
     }
 
     @Override

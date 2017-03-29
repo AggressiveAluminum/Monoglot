@@ -44,14 +44,16 @@ public class Log {
         logger.warning(message);
     }
     public static void warning(LocalizationKey key, Object... arguments) {
-        logger.warning(Monoglot.getMonoglot().getLocalString(key, arguments));
+        if(Monoglot.getMonoglot() != null)
+            logger.warning(Monoglot.getMonoglot().getLocalString(key, arguments));
     }
 
     public static void warning(String message, Throwable cause){
         logger.log(Level.WARNING, message, cause);
     }
     public static void warning(LocalizationKey key, Throwable cause, Object... arguments){
-        logger.log(Level.WARNING, Monoglot.getMonoglot().getLocalString(key, arguments), cause);
+        if(Monoglot.getMonoglot() != null)
+            logger.log(Level.WARNING, Monoglot.getMonoglot().getLocalString(key, arguments), cause);
     }
 
     public static void entering(String className, String methodName) {
@@ -66,21 +68,24 @@ public class Log {
         logger.log(Level.SEVERE, message, caught);
     }
     public static void severe(LocalizationKey key, Throwable caught, Object... arguments) {
-        logger.log(Level.SEVERE, Monoglot.getMonoglot().getLocalString(key, arguments), caught);
+        if(Monoglot.getMonoglot() != null)
+            logger.log(Level.SEVERE, Monoglot.getMonoglot().getLocalString(key, arguments), caught);
     }
 
     public static void info(String message) {
         logger.info(message);
     }
     public static void info(LocalizationKey key, Object... arguments) {
-        logger.info(Monoglot.getMonoglot().getLocalString(key, arguments));
+        if(Monoglot.getMonoglot() != null)
+            logger.info(Monoglot.getMonoglot().getLocalString(key, arguments));
     }
 
     public static void fine(String message) {
         logger.fine(message);
     }
     public static void fine(LocalizationKey key, Object... arguments) {
-        logger.fine(Monoglot.getMonoglot().getLocalString(key, arguments));
+        if(Monoglot.getMonoglot() != null)
+            logger.fine(Monoglot.getMonoglot().getLocalString(key, arguments));
     }
 
     public static void finer(String message) {
@@ -88,6 +93,7 @@ public class Log {
     }
 
     public static void message(AppString key, Object... arguments) {
-        logger.info(MessageFormat.format(Monoglot.getMonoglot().getLocalString(key), arguments));
+        if(Monoglot.getMonoglot() != null)
+            logger.info(MessageFormat.format(Monoglot.getMonoglot().getLocalString(key), arguments));
     }
 }

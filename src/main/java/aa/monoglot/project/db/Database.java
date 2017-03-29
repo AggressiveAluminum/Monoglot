@@ -37,19 +37,6 @@ public class Database {
         return db.getStatement(sql);
     }
 
-    public Headword put(Headword headword) throws SQLException {
-        Project.getProject().markSaveNeeded();
-        if(headword.ID == null){
-            UUID id = db.getNextID();
-            Headword.insert(db.getStatement(Headword.INSERT_STR), id, headword).execute();
-            db.flush();
-            return Headword.fetch(id);
-        } else {
-            Headword.update(db.getStatement(Headword.UPDATE_STR), headword).executeUpdate();
-            return headword;
-        }
-    }
-
     UUID getNextID(){
         return db.getNextID();
     }
@@ -57,6 +44,7 @@ public class Database {
     public List<Headword> simpleSearch(String searchText, Object type, Object category, Object[] tags) throws SQLException {
         ArrayList<Headword> list = new ArrayList<>();
         PreparedStatement statement = db.getStatement(SIMPLE_SEARCH_SQL);
+        searchText = "%" + searchText + "%";
         statement.setString(1, searchText);
         statement.setString(2, searchText);
         statement.setString(3, searchText);

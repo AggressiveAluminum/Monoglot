@@ -18,11 +18,12 @@ CREATE TABLE IF NOT EXISTS entry (
 
 CREATE TABLE IF NOT EXISTS definition (
   id UUID PRIMARY KEY,
-  entry_id UUID NOT NULL,
-  prev_definition UUID,
+  entry_id UUID,
+  def_order INT NOT NULL,
   text VARCHAR NOT NULL,
   created TIMESTAMP NOT NULL,
-  modified TIMESTAMP
+  modified TIMESTAMP,
+  FOREIGN KEY(entry_id) REFERENCES entry(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS types (
