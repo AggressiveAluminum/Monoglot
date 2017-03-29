@@ -1,73 +1,49 @@
+import java.util.ArrayList;
+
 /**
  * Created by Darren on 3/13/17.
  */
 public class Categories {
-    private class TreeNode {
-        String value = null;
-        //TreeNode parent = null;
-        TreeNode leftChild = null;
-        TreeNode rightChild = null;
 
-        public TreeNode(String newVal){
-            value = newVal;
+    private static class Node {
+
+        public ArrayList<Node> children;
+
+        private Node parent;
+        private String name;
+
+        public Node(String n) {
+            parent = null;
+            name = n;
+            children = null;
         }
 
-        boolean isLeaf(){
-            return (leftChild == null && rightChild == null);
+        public void setParent(Node p) {
+            this.parent = p;
         }
-        boolean isParent(){
-            return (leftChild != null || rightChild != null);
+
+        public Node getParent() {
+            return this.parent;
+        }
+
+        public void addChild(Node c) {
+            children.add(c);
+        }
+
+        public ArrayList<Node> getChildren() {
+            return children;
+        }
+
+        public void setName(String n) {
+            this.name = n;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 
-    private TreeNode root = null;
-    public TreeNode getRoot(){
-        return root;
-    }
-
-    public TreeNode getLeftChild(TreeNode parent){
-        return parent.leftChild;
-    }
-
-    public TreeNode getRightChild(TreeNode parent){
-        return parent.rightChild;
-    }
-
-    public Boolean isLeaf(TreeNode node){
-        return node.isLeaf();
-    }
-
-    public Boolean isRoot(TreeNode node){
-        return node == root;
-    }
-
-    public Boolean isParent(TreeNode node){
-        return node.isParent();
-    }
-
-    public void add(String value){
-        TreeNode node = new TreeNode(value);
-        if(root == null){
-            root = node;
-        }
-        TreeNode current = root;
-        while(true){
-            int compare = current.value.compareTo(value);
-            if(compare > 0){
-                if(current.rightChild == null){
-                    current.rightChild = node;
-                    break;
-                } else {
-                    current = current.rightChild;
-                }
-            } else {
-                if(current.leftChild == null){
-                    current.leftChild = node;
-                    break;
-                } else {
-                    current = current.leftChild;
-                }
-            }
-        }
+    public static void add(String n) {
+        Node node = new Node(n);
     }
 }

@@ -6,12 +6,22 @@ import java.util.ArrayList;
 public class Types {
     public ArrayList<String> types = new ArrayList<String>();
 
-    void add(String temp) {
+    public void add(String temp) {
         types.add(temp);
     }
 
-    void delete(String temp) {
+    public void delete(String temp) {
         types.remove(temp);
     }
 
+    public void setName(String n, int index) {
+        types.set(index, n);
+    }
+
+    public String getName(int index) {
+        return types.get(index);
+    }
+
 }
+
+
