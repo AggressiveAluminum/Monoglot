@@ -1,12 +1,14 @@
 <?import aa.monoglot.ui.ControlledTab?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
+<?import java.lang.String?>
 <ControlledTab fx:id="tab" text="%tab.inflection" xmlns:fx="http://javafx.com/fxml"
                fx:controller="aa.monoglot.ui.controller.InflectionTableController">
     <BorderPane>
         <top>
-           <Label text="Inflection Table" textAlignment="CENTER">
+           <Label BorderPane.alignment="CENTER" text="Inflection Table" >
                 <font>
                     <Font name="Arial" size="20"/>
                 </font>
@@ -24,6 +26,19 @@
                     </TableColumn>
                 </columns>
             </TableView>
+            <DialogPane>
+                <content>
+                    <ComboBox fx:id="InflectionTable" layoutX="15.0" layoutY="33.0" prefWidth="50.0" promptText="Choose Table">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Language 1" />
+                                <String fx:value="Language 2" />
+                                <String fx:value="Language 3" />
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </content>
+            </DialogPane>
         </center>
     </BorderPane>
 </ControlledTab>
