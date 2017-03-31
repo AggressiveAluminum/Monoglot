@@ -14,21 +14,11 @@
                 </font>
            </Label>
         </top>
-        <!--Space for the table-->
+        <!--Space for the dialog-->
         <center>
-            <TableView fx:id="tableView">
-                <columns>
-                    <TableColumn text="First Person">
-                    </TableColumn>
-                    <TableColumn text="Second Person">
-                    </TableColumn>
-                    <TableColumn text="Third Person">
-                    </TableColumn>
-                </columns>
-            </TableView>
             <DialogPane>
                 <content>
-                    <ComboBox fx:id="InflectionTable" layoutX="15.0" layoutY="33.0" prefWidth="50.0" promptText="Choose Table">
+                    <ComboBox fx:id="InflectionTable" layoutX="15.0" layoutY="33.0" prefWidth="50.0" promptText="Choose Table" onAction="#tableSelect">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Language 1" />
