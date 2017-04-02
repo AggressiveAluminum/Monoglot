@@ -20,10 +20,11 @@
                 <content>
                     <ComboBox fx:id="InflectionTable" layoutX="15.0" layoutY="33.0" prefWidth="50.0" promptText="Choose Table" onAction="#tableSelect">
                         <items>
+                            <!--ComboBox to hold names to be selected-->
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Language 1" />
-                                <String fx:value="Language 2" />
-                                <String fx:value="Language 3" />
+                                <String fx:value="Types" />
+                                <String fx:value="Categories" />
+                                <String fx:value="Hot Fudge Sunday" />
                             </FXCollections>
                         </items>
                     </ComboBox>

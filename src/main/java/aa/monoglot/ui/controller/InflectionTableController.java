@@ -13,17 +13,15 @@ public class InflectionTableController implements GeneralController {
 
     @FXML
     private void initialize(){
+
         tab.controller(this);
+
     }
 
     public void tableSelect(ActionEvent actionEvent) {
+        //getting the string that was in the ComboBox that was clicked
         String itemName = (String)(InflectionTable.getSelectionModel().getSelectedItem());
 
-        if(itemName.equals("Language 1")){
-        System.out.println("Hello");
-        }else{
-            System.out.println("NOPE");
-        }
-
+        
     }
 }
