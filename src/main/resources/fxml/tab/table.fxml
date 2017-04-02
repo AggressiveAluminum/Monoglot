@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <ControlledTab fx:id="tab" text="%tab.inflection" xmlns:fx="http://javafx.com/fxml"
                fx:controller="aa.monoglot.ui.controller.InflectionTableController">
     <BorderPane>
@@ -24,12 +25,19 @@
                             <FXCollections fx:factory="observableArrayList">
                                 <String fx:value="Types" />
                                 <String fx:value="Categories" />
-                                <String fx:value="Hot Fudge Sunday" />
                             </FXCollections>
                         </items>
                     </ComboBox>
                 </content>
             </DialogPane>
         </center>
+        <bottom>
+            <TableView>
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+
+            </TableView>
+        </bottom>
     </BorderPane>
 </ControlledTab>
