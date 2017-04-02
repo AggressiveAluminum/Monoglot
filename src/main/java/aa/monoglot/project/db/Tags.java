@@ -10,140 +10,114 @@ import java.util.UUID;
 /**
  * Created by Matt on 3/26/17.
  */
-public class Tags {
+public class Tags{
 
-        static final String INSERT_STR = "INSERT INTO entry VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)";
-        static final String UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?";
-        static final String SELECT_STR = "SELECT * FROM entry WHERE id = ?";
+    /**
+     CREATE TABLE IF NOT EXISTS tags (
+     -- so people can say stuff like "TODO"
+     id UUID PRIMARY KEY,
+     name VARCHAR NOT NULL,
+     description VARCHAR NOT NULL
+     );
+     */
 
-        private final static int ID_COL = 1, WORD_COL = 2, ROMAN_COL = 3, PRONUN_COL = 4,
-                STEM_COL = 5, TYPE_COL = 6, CAT_COL = 7, CREATED_COL = 8, MODIFIED_COL = 9;
+    static final String INSERT_STR = "INSERT INTO tags VALUES (?, ?, ?)";
+    static final String UPDATE_STR = "UPDATE tags SET id=?, name=?, description=?";
+    static final String SELECT_STR = "SELECT * FROM tags WHERE id = ?";
 
-        public final UUID ID, type, category;
-        public final String word, romanization, pronunciation, stem;
-        public final Timestamp created, modified;
+    private final static int ID_COL = 1, NAME_COL = 2, DESC_COL = 3;
 
-        Tags(ResultSet resultSet) throws SQLException {
-            ID = (UUID) resultSet.getObject(ID_COL);
-            word = resultSet.getString(WORD_COL);
-            romanization = resultSet.getString(ROMAN_COL);
-            pronunciation = resultSet.getString(PRONUN_COL);
-            stem = resultSet.getString(STEM_COL);
-            created = resultSet.getTimestamp(CREATED_COL);
+    public  UUID id = null;
+    public String name;
+    public String description;
 
-            Object temp;
-
-            temp = resultSet.getObject(TYPE_COL);
-            type = resultSet.wasNull()?null:(UUID) temp;
-
-            temp = resultSet.getObject(CAT_COL);
-            category = resultSet.wasNull()?null:(UUID) temp;
-
-            temp = resultSet.getTimestamp(MODIFIED_COL);
-            modified = resultSet.wasNull()?null:(Timestamp) temp;
-        }
-
-        public static Headword create() {
-            return new Headword(Timestamp.from(Instant.now()));
-        }
-        Tags(Timestamp created){
-            this(null, "", "", "", "", null, null, created, null);
-        }
-        Tags(UUID id, String word, String romanization, String pronunciation, String stem, UUID type, UUID category, Timestamp created, Timestamp modified){
-            this.ID = id;
-            this.word = word;
-            this.romanization = romanization;
-            this.pronunciation = pronunciation;
-            this.stem = stem;
-            this.type = type;
-            this.category = category;
-            this.created = created;
-            this.modified = modified;
-        }
-
-        public final Tags update(String newWord, String newRomanization, String newPronunciation, String newStem, UUID newType, UUID newCategory){
-            if(newWord == null)
-                throw new IllegalArgumentException("A word cannot be empty.");
-            Tags tag = new Tags(this.ID, newWord, UT.c(newRomanization), UT.c(newPronunciation),
-                    UT.c(newStem), newType, newCategory, this.created, Timestamp.from(Instant.now()));
-            if(this.equals(tag))
-                return this;
-            return tag;
-        }
-
-        @Override
-        public String toString(){
-            return word;
-        }
-
-        @SuppressWarnings("ConstantConditions")
-        @Override
-        public boolean equals(Object o){
-            if(o != null && o instanceof Headword){
-                Headword other = (Headword) o;
-                if(UT.nc(ID , other.ID)
-                        && word.equals(other.word)
-                        && created.equals(other.created)
-                        && romanization.equals(other.romanization)
-                        && pronunciation.equals(other.pronunciation)
-                        && stem.equals(other.stem)
-                        && UT.nc(type, other.type)
-                        && UT.nc(category, other.category))
-                    return true;
-            }
-            return false;
-        }
-
-        static PreparedStatement insert(PreparedStatement statement, UUID id, Headword headword) throws SQLException {
-        /*ID   */statement.setObject(ID_COL, id);
-        /*WORD */statement.setString(WORD_COL, headword.word);
-        /*ROMAN*/statement.setString(ROMAN_COL, headword.romanization);
-        /*PRON */statement.setString(PRONUN_COL, headword.pronunciation);
-        /*STEM */statement.setString(STEM_COL, headword.stem);
-        /*TYPE */
-            if(headword.type == null)
-                statement.setNull(TYPE_COL, Types.OTHER);
-            else statement.setObject(TYPE_COL, headword.type);
-        /*CAT  */
-            if(headword.category == null)
-                statement.setNull(CAT_COL, Types.OTHER);
-            else statement.setObject(CAT_COL, headword.category);
-        /*CREAT*/statement.setTimestamp(CREATED_COL, headword.created);
-            return statement;
-        }
-        static PreparedStatement update(PreparedStatement statement, Headword headword) throws SQLException {
-            return update(statement, headword.ID, headword);
-        }
-        static PreparedStatement update(PreparedStatement statement, UUID id, Headword headword) throws SQLException {
-            int order = 1;
-            statement.setString(order++, headword.word);
-            statement.setString(order++, headword.romanization);
-            statement.setString(order++, headword.pronunciation);
-            statement.setString(order++, headword.stem);
-            if(headword.type == null)
-                statement.setNull(order++, Types.OTHER);
-            else statement.setObject(order++, headword.type);
-            if(headword.category == null)
-                statement.setNull(order++, Types.OTHER);
-            else statement.setObject(order++, headword.category);
-            if(headword.modified == null)
-                statement.setNull(order++, Types.TIMESTAMP);
-            else statement.setTimestamp(order++, headword.modified);
-
-            // WHERE
-            statement.setObject(order, headword.ID);
-            return statement;
-        }
-
-        public static Headword select(PreparedStatement statement, UUID id) throws SQLException {
-            statement.setObject(1, id);
-            try(ResultSet resultSet = statement.executeQuery()) {
-                resultSet.next();
-                return new Headword(resultSet);
-            }
-        }
-
-        public static Headword fetch(UUID id) throws SQLException {
-            return Project.getProject().getDatabase().selectHeadword(id);
-        }
+    Tags(ResultSet resultSet) throws SQLException {
+        id = (UUID) resultSet.getObject(ID_COL);
+        name = resultSet.getString(NAME_COL);
+        description = resultSet.getString(DESC_COL);
     }
+
+
+    Tags(UUID id, String name, String description){
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    @Override
+    public String toString(){
+        return name;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public boolean equals(Object o){
+        if(o != null && o instanceof Tags){
+            Tags other = (Tags) o;
+
+            if(UT.nc(id , other.id)
+                    && name.equals(other.name)
+                    && description.equals(other.description))
+                return true;
+        }
+        return false;
+    }
+
+    public Tags createEmtpyTag(){
+        return new Tags(null, null, null);
+    }
+
+    public Tags insert( UUID id, Tags tag) throws SQLException {
+
+        Project.getProject().markSaveNeeded();
+        PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
+        /*ID   */
+        if ( id == null)
+            throw new IllegalArgumentException("ID cannot be empty.");
+        else statement.setObject(ID_COL, id);
+        /*name */
+        if(tag.name.equals(null))
+            throw new IllegalArgumentException("Name cannot be empty.");
+        else statement.setString(NAME_COL, tag.name);
+        /*Description  */
+        if(tag.description.equals(null))
+            throw new IllegalArgumentException("Description cannot be empty.");
+        else statement.setString(DESC_COL, tag.description);
+
+
+
+        return new Tags(statement.executeQuery());
+    }
+
+    public final Tags update(UUID id, String newName, String newDescription) throws SQLException{
+
+        if ( id == null)
+            throw new IllegalArgumentException("ID cannot be empty.");
+        if(newName.equals(null))
+            throw new IllegalArgumentException("Name cannot be empty.");
+        if(newDescription.equals(null))
+            throw new IllegalArgumentException("A description cannot be empty.");
+
+        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_STR);
+        statement.setObject(ID_COL, id);
+        statement.setString(NAME_COL, newName);
+        statement.setString(DESC_COL, newDescription);
+        statement.executeUpdate();
+
+        return new Tags(id, newName ,newDescription);
+    }
+
+    public static Tags fetch(UUID id) throws SQLException {
+
+        PreparedStatement stmt =  Project.getProject().getDatabase().sql(SELECT_STR);
+        stmt.setObject(1, id);
+        try(ResultSet resultSet = stmt.executeQuery()) {
+            if (resultSet.next()) {
+                return new Tags(resultSet);
+            } else {
+                return null;
+            }
+        }
+
+    }
+}

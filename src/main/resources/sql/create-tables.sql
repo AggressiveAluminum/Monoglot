@@ -70,3 +70,13 @@ CREATE TABLE IF NOT EXISTS rel_tag_definition (
   tag_id UUID NOT NULL,
   definition_id UUID NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS examples (
+id UUID PRIMARY KEY,
+text VARCHAR NOT NULL,
+gloss VARCHAR NOT NULL,
+pronunciation VARCHAR NOT NULL,
+literal_translation VARCHAR NOT NULL,
+free_translation VARCHAR NOT NULL,
+explanation VARCHAR NOT NULL
+);
