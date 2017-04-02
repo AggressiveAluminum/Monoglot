@@ -22,9 +22,13 @@ public class InflectionTableController implements GeneralController {
         String itemName = (String) (InflectionTable.getSelectionModel().getSelectedItem());
 
         if (itemName.equals("Types")) {
-            
+
         } else {
 
         }
+    }
+
+    public void addRow(ActionEvent actionEvent) {
+
     }
 }
