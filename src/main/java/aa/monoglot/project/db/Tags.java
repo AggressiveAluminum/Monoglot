@@ -8,19 +8,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Created by Matt on 3/26/17.
+ CREATE TABLE IF NOT EXISTS tags (
+ -- so people can say stuff like "TODO"
+ id UUID PRIMARY KEY,
+ name VARCHAR NOT NULL,
+ description VARCHAR NOT NULL
+ );
  */
 public class Tags{
-
-    /**
-     CREATE TABLE IF NOT EXISTS tags (
-     -- so people can say stuff like "TODO"
-     id UUID PRIMARY KEY,
-     name VARCHAR NOT NULL,
-     description VARCHAR NOT NULL
-     );
-     */
-
     static final String INSERT_STR = "INSERT INTO tags VALUES (?, ?, ?)";
     static final String UPDATE_STR = "UPDATE tags SET id=?, name=?, description=?";
     static final String SELECT_STR = "SELECT * FROM tags WHERE id = ?";
