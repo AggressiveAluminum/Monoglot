@@ -46,4 +46,14 @@ public class Categories {
     public static void add(String n) {
         Node node = new Node(n);
     }
+
+    @Override
+    public String toString() {
+        //tree
+    }
+
+    @Override
+    public String shortName() {
+        return name;
+    }
 }
