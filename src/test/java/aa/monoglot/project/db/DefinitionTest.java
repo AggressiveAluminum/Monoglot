@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class DefinitionTest {
     private static Headword word1, word2;
@@ -42,8 +43,14 @@ public class DefinitionTest {
     public void updateOrder() throws SQLException {
         Definition def1 = Definition.create(word2, null).update("test1");
         Definition def2 = Definition.create(word2, def1).update("test2");
-        Assert.assertEquals(def1.order, 1);
-        Assert.assertEquals(def2.order, 2);
-        //TODO
+        Assert.assertEquals(1, def1.order);
+        Assert.assertEquals(2, def2.order);
+        List<Definition> defs = def1.update(2);
+        def1 = defs.get(0);
+        def2 = defs.get(1);
+        Assert.assertEquals(1, def1.order);
+        Assert.assertEquals(2, def2.order);
+        Assert.assertEquals("test2", def1.text);
+        Assert.assertEquals("test1", def2.text);
     }
 }

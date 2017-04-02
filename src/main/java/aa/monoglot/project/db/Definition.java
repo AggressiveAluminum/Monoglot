@@ -2,6 +2,8 @@ package aa.monoglot.project.db;
 
 import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.Instant;
@@ -23,7 +25,8 @@ import java.util.*;
 public class Definition {
     static final String INSERT_STR = "INSERT INTO definition VALUES (?, ?, ?, '', ?, NULL)";
     static final String UPDATE_TEXT_STR = "UPDATE definition SET text = ?, modified = ? WHERE id = ?";
-    static final String UPDATE_ORDER_STR = "UPDATE definition SET def_order = ? WHERE def_order = ? AND entry_id = ?; UPDATE definition SET def_order = ? WHERE id = ?";
+    static final String UPDATE_ORDER_STR1 = "UPDATE definition SET def_order = ? WHERE def_order = ? AND entry_id = ?";
+    static final String UPDATE_ORDER_STR2 = "UPDATE definition SET def_order = ? WHERE id = ?";
     static final String SELECT_SINGLE_STR = "SELECT * FROM definition WHERE id = ?";
     static final String SELECT_ALL_STR = "SELECT * FROM definition WHERE entry_id = ?";
 
@@ -87,22 +90,25 @@ public class Definition {
         if(newOrder == order)
             return fetch(headwordID);
         Project.getProject().markSaveNeeded();
-        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_ORDER_STR);
+        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_ORDER_STR1);
         statement.setInt(1, order);
         statement.setInt(2, newOrder);
         statement.setObject(3, headwordID);
-        statement.setInt(4, newOrder);
+        statement.executeUpdate();
+        statement = Project.getProject().getDatabase().sql(UPDATE_ORDER_STR2);
+        statement.setInt(1, newOrder);
+        statement.setObject(2, this.ID);
         statement.executeUpdate();
         return fetch(headwordID);
     }
 
-    public static List<Definition> fetch(Headword word) throws SQLException {
-        if(word.ID == null)
-            throw new IllegalArgumentException("Headword must be saved in the DB before modifying its definitions.");
+    public static ObservableList<Definition> fetch(Headword word) throws SQLException {
+        if(word == null || word.ID == null)
+            return FXCollections.emptyObservableList();
         return fetch(word.ID);
     }
-    private static List<Definition> fetch(UUID wordID) throws SQLException {
-        ArrayList<Definition> definitions = new ArrayList<>();
+    private static ObservableList<Definition> fetch(UUID wordID) throws SQLException {
+        ObservableList<Definition> definitions = FXCollections.observableArrayList();
         PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
         statement.setObject(1, wordID);
         try(ResultSet resultSet = statement.executeQuery()){

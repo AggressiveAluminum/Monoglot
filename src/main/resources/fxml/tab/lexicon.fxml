@@ -73,10 +73,7 @@
                                 <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
                                     <style>-fx-background-color:transparent;</style>
                                     <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
-
-                                    <VBox maxHeight="700" minHeight="700">
-                                        <Label text="%placeholder.long" wrapText="true" VBox.vgrow="ALWAYS" prefWidth="400"/>
-                                    </VBox>
+                                    <ListView fx:id="definitionsList"/>
                                 </ScrollPane>
                             </TitledPane>
                         </panes>
