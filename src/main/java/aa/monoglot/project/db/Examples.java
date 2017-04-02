@@ -120,10 +120,10 @@ public class Examples {
             return new Examples(null, null, null, null, null, null, null);
         }
 
-        private PreparedStatement insert(PreparedStatement statement, UUID id, Examples example) throws SQLException {
+        private PreparedStatement insert(UUID id, Examples example) throws SQLException {
 
             Project.getProject().markSaveNeeded();
-            statement = Project.getProject().getDatabase().sql(INSERT_STR);
+            PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
 
 
              /*ID   */statement.setObject(ID_COL, id);
