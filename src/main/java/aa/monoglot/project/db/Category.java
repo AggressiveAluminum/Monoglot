@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by Darren on 3/13/17.
  */
-public class Categories {
+public class Category {
 
     private static class Node {
 

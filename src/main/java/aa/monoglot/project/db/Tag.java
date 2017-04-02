@@ -4,7 +4,6 @@ import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -15,7 +14,7 @@ import java.util.UUID;
  description VARCHAR NOT NULL
  );
  */
-public class Tags{
+public class Tag {
     static final String INSERT_STR = "INSERT INTO tags VALUES (?, ?, ?)";
     static final String UPDATE_STR = "UPDATE tags SET id=?, name=?, description=?";
     static final String SELECT_STR = "SELECT * FROM tags WHERE id = ?";
@@ -26,14 +25,14 @@ public class Tags{
     public String name;
     public String description;
 
-    Tags(ResultSet resultSet) throws SQLException {
+    Tag(ResultSet resultSet) throws SQLException {
         id = (UUID) resultSet.getObject(ID_COL);
         name = resultSet.getString(NAME_COL);
         description = resultSet.getString(DESC_COL);
     }
 
 
-    Tags(UUID id, String name, String description){
+    Tag(UUID id, String name, String description){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,8 +46,8 @@ public class Tags{
     @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object o){
-        if(o != null && o instanceof Tags){
-            Tags other = (Tags) o;
+        if(o != null && o instanceof Tag){
+            Tag other = (Tag) o;
 
             if(UT.nc(id , other.id)
                     && name.equals(other.name)
@@ -58,11 +57,11 @@ public class Tags{
         return false;
     }
 
-    public Tags createEmtpyTag(){
-        return new Tags(null, null, null);
+    public Tag createEmtpyTag(){
+        return new Tag(null, null, null);
     }
 
-    public Tags insert( UUID id, Tags tag) throws SQLException {
+    public Tag insert(UUID id, Tag tag) throws SQLException {
 
         Project.getProject().markSaveNeeded();
         PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
@@ -81,10 +80,10 @@ public class Tags{
 
 
 
-        return new Tags(statement.executeQuery());
+        return new Tag(statement.executeQuery());
     }
 
-    public final Tags update(UUID id, String newName, String newDescription) throws SQLException{
+    public final Tag update(UUID id, String newName, String newDescription) throws SQLException{
 
         if ( id == null)
             throw new IllegalArgumentException("ID cannot be empty.");
@@ -99,16 +98,16 @@ public class Tags{
         statement.setString(DESC_COL, newDescription);
         statement.executeUpdate();
 
-        return new Tags(id, newName ,newDescription);
+        return new Tag(id, newName ,newDescription);
     }
 
-    public static Tags fetch(UUID id) throws SQLException {
+    public static Tag fetch(UUID id) throws SQLException {
 
         PreparedStatement stmt =  Project.getProject().getDatabase().sql(SELECT_STR);
         stmt.setObject(1, id);
         try(ResultSet resultSet = stmt.executeQuery()) {
             if (resultSet.next()) {
-                return new Tags(resultSet);
+                return new Tag(resultSet);
             } else {
                 return null;
             }

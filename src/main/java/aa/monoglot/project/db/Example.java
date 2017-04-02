@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * Created by Matt on 4/1/17.
  */
-public class Examples {
+public class Example {
 
 //    CREATE TABLE IF NOT EXISTS examples (
 //            id UUID PRIMARY KEY,
@@ -40,7 +40,7 @@ public class Examples {
         public String free_translation;
         public String explanation;
 
-        Examples(ResultSet resultSet) throws SQLException {
+        Example(ResultSet resultSet) throws SQLException {
             id = (UUID) resultSet.getObject(ID_COL);
             text = resultSet.getString(TEXT_COL);
             gloss = resultSet.getString(GLOSS_COL);
@@ -51,8 +51,8 @@ public class Examples {
         }
 
 
-        Examples(UUID id, String text, String gloss, String pronunciation, String literal_translation,
-                 String free_translation, String explanation){
+        Example(UUID id, String text, String gloss, String pronunciation, String literal_translation,
+                String free_translation, String explanation){
             this.id = id;
             this.text = text;
             this.gloss = gloss;
@@ -62,11 +62,11 @@ public class Examples {
             this.explanation = explanation;
         }
 
-        public final Examples update(String newText, String newGloss, String newPronun, String newLiteral, String newFree,
-                                 String newExplanation) throws SQLException{
+        public final Example update(String newText, String newGloss, String newPronun, String newLiteral, String newFree,
+                                    String newExplanation) throws SQLException{
             Project.getProject().markSaveNeeded();
             PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_STR);
-            Examples example;
+            Example example;
             if(newText.equals(null))
                 throw new IllegalArgumentException("Text cannot be empty.");
             if(newGloss.equals(null))
@@ -90,7 +90,7 @@ public class Examples {
 
             statement.executeUpdate();
 
-            return new Examples(id, newText, newGloss, newPronun, newLiteral, newFree, newExplanation);
+            return new Example(id, newText, newGloss, newPronun, newLiteral, newFree, newExplanation);
         }
 
         @Override
@@ -101,8 +101,8 @@ public class Examples {
         @SuppressWarnings("ConstantConditions")
         @Override
         public boolean equals(Object o){
-            if(o != null && o instanceof Examples){
-                Examples other = (Examples) o;
+            if(o != null && o instanceof Example){
+                Example other = (Example) o;
 
                 if(UT.nc(id , other.id)
                         && text.equals(other.text)
@@ -116,11 +116,11 @@ public class Examples {
             return false;
         }
 
-        public Examples createEmtpyExample(){
-            return new Examples(null, null, null, null, null, null, null);
+        public Example createEmtpyExample(){
+            return new Example(null, null, null, null, null, null, null);
         }
 
-        private PreparedStatement insert(UUID id, Examples example) throws SQLException {
+        private PreparedStatement insert(UUID id, Example example) throws SQLException {
 
             Project.getProject().markSaveNeeded();
             PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
@@ -152,13 +152,13 @@ public class Examples {
             return statement;
         }
 
-        public static Examples fetch(UUID id) throws SQLException {
+        public static Example fetch(UUID id) throws SQLException {
 
             PreparedStatement stmt =  Project.getProject().getDatabase().sql(SELECT_STR);
             stmt.setObject(1, id);
             try(ResultSet resultSet = stmt.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Examples(resultSet);
+                    return new Example(resultSet);
                 } else {
                     return null;
                 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Created by Darren on 3/13/17.
  */
-public class Types {
+public class Type {
 
     static final String INSERT_STR = "INSERT INTO types VALUES (?, ?, ?)";
     static final String UPDATE_STR = "UPDATE types SET id=?, name=?, description=?";
@@ -20,22 +20,22 @@ public class Types {
     public static  UUID id = null;
     public static String name = null, description = null;
 
-    Types(ResultSet resultSet) throws SQLException {
+    Type(ResultSet resultSet) throws SQLException {
 
     }
 
-    Types(UUID id, String name, String description) {
+    Type(UUID id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
     }
 
-    public final Types update(String newName, String newDescription) {
+    public final Type update(String newName, String newDescription) {
         if(newName.equals(null))
             throw new IllegalArgumentException("A name cannot be empty.");
         if(newDescription.equals(null))
             throw new IllegalArgumentException("A description cannot be empty.");
-        Types type = new Types(this.id, newName, newDescription);
+        Type type = new Type(this.id, newName, newDescription);
 
         return type;
     }
@@ -48,8 +48,8 @@ public class Types {
     @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object o){
-        if(o != null && o instanceof Types){
-            Types other = (Types) o;
+        if(o != null && o instanceof Type){
+            Type other = (Type) o;
 
             if(UT.nc(id , other.id)
                     && name.equals(other.name)
@@ -59,37 +59,37 @@ public class Types {
         return false;
     }
 
-    static PreparedStatement insert(PreparedStatement statement, UUID id, Types type) throws SQLException {
+    static PreparedStatement insert(PreparedStatement statement, UUID id, Type type) throws SQLException {
         /*ID   */statement.setObject(ID_COL, id);
         /*name */statement.setString(NAME_COL, type.name);
         /*description*/statement.setString(DESC_COL, type.description);
 
         //name
-        if(Types.name == null)
+        if(Type.name == null)
             statement.setNull(NAME_COL, java.sql.Types.OTHER);
-        else statement.setObject(NAME_COL, Types.name);
+        else statement.setObject(NAME_COL, Type.name);
         //description
-        if(Types.description == null)
+        if(Type.description == null)
             statement.setNull(DESC_COL, java.sql.Types.OTHER);
-        else statement.setObject(DESC_COL, Types.description);
+        else statement.setObject(DESC_COL, Type.description);
 
         return statement;
     }
 
 
-    static PreparedStatement update(PreparedStatement statement, Types type) throws SQLException {
-        return update(statement, Types.id, type);
+    static PreparedStatement update(PreparedStatement statement, Type type) throws SQLException {
+        return update(statement, Type.id, type);
     }
 
-    static PreparedStatement update(PreparedStatement statement, UUID id, Types type) throws SQLException {
+    static PreparedStatement update(PreparedStatement statement, UUID id, Type type) throws SQLException {
         int order = 1;
-        statement.setString(order++, Types.name);
-        statement.setString(order++, Types.description);
+        statement.setString(order++, Type.name);
+        statement.setString(order++, Type.description);
 
-        if(Types.name == null)
+        if(Type.name == null)
             statement.setNull(order++, java.sql.Types.OTHER);
         else statement.setObject(order++, type.name);
-        if(Types.description == null)
+        if(Type.description == null)
             statement.setNull(order++, java.sql.Types.OTHER);
         else statement.setObject(order++, type.description);
 
@@ -98,21 +98,21 @@ public class Types {
         return statement;
     }
 
-    public static Types select(PreparedStatement statement, UUID id) throws SQLException {
+    public static Type select(PreparedStatement statement, UUID id) throws SQLException {
         statement.setObject(1, id);
         try(ResultSet resultSet = statement.executeQuery()) {
             resultSet.next();
-            return new Types(resultSet);
+            return new Type(resultSet);
         }
     }
 
-    public static Types fetch(UUID id) throws SQLException {
+    public static Type fetch(UUID id) throws SQLException {
 
         PreparedStatement stmt =  Project.getProject().getDatabase().sql("SELECT * FROM types where id=?");
         stmt.setObject(1, id);
         try(ResultSet resultSet = stmt.executeQuery()) {
             if (resultSet.next()) {
-                return new Types(resultSet);
+                return new Type(resultSet);
             } else {
                 return null;
             }
