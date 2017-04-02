@@ -40,7 +40,6 @@ public class Examples {
         public String free_translation;
         public String explanation;
 
-
         Examples(ResultSet resultSet) throws SQLException {
             id = (UUID) resultSet.getObject(ID_COL);
             text = resultSet.getString(TEXT_COL);
@@ -117,7 +116,11 @@ public class Examples {
             return false;
         }
 
-        public PreparedStatement insert(PreparedStatement statement, UUID id, Examples example) throws SQLException {
+        public Examples createEmtpyExample(){
+            return new Examples(null, null, null, null, null, null, null);
+        }
+
+        private PreparedStatement insert(PreparedStatement statement, UUID id, Examples example) throws SQLException {
 
             Project.getProject().markSaveNeeded();
             statement = Project.getProject().getDatabase().sql(INSERT_STR);
@@ -125,7 +128,7 @@ public class Examples {
 
              /*ID   */statement.setObject(ID_COL, id);
 
-            if(this.equals(null))
+            if(text.equals(null))
                 throw new IllegalArgumentException("Text cannot be empty.");
             else if(gloss.equals(null))
                 throw new IllegalArgumentException("Gloss cannot be empty.");
