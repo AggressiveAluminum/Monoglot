@@ -4,7 +4,6 @@ import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Definition;
 import aa.monoglot.project.db.Headword;
-import aa.monoglot.project.db.WordType;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.component.DefinitionCellFactory;
 import aa.monoglot.util.Log;
@@ -16,16 +15,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
 
-import javax.swing.text.html.*;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.List;
 import java.util.UUID;
 
 /*
@@ -41,15 +36,13 @@ public class LexiconTabController implements GeneralController {
     @FXML private ComboBox<?> searchType;
     @FXML private ComboBox<?> searchCategory;
     @FXML private CheckComboBox<?> searchTags;
-
-    //TODO: change this to HeadWord, modify toString to return proper result.
     public ListView<Headword> searchResults;
 
     @FXML private BorderPane wordSection;
     public Headword activeWord;
     @FXML private TextField headwordField, pronunciationField, romanizationField, stemField;
-    @FXML private ComboBox<WordType> typeField;
-    @FXML private ComboBox<?> categoryField;
+    @FXML private ComboBox<?> typeField;//TODO
+    @FXML private ComboBox<?> categoryField;//TODO
     @FXML private CheckComboBox<?> tagsField;
     @FXML private Label createdLabel, modifiedLabel;
 
