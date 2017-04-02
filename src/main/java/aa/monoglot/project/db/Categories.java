@@ -52,7 +52,6 @@ public class Categories {
         return parent_category + "<" + name;
     }
 
-    @Override
     public String shortName() {
         return name;
     }
