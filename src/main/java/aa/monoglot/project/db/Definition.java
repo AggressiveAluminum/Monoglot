@@ -2,10 +2,11 @@ package aa.monoglot.project.db;
 
 import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
@@ -102,13 +103,13 @@ public class Definition {
         return fetch(headwordID);
     }
 
-    public static ObservableList<Definition> fetch(Headword word) throws SQLException {
+    public static List<Definition> fetch(Headword word) throws SQLException {
         if(word == null || word.ID == null)
-            return FXCollections.emptyObservableList();
+            return Collections.emptyList();
         return fetch(word.ID);
     }
-    private static ObservableList<Definition> fetch(UUID wordID) throws SQLException {
-        ObservableList<Definition> definitions = FXCollections.observableArrayList();
+    private static List<Definition> fetch(UUID wordID) throws SQLException {
+        List<Definition> definitions = new ArrayList<>();
         PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
         statement.setObject(1, wordID);
         try(ResultSet resultSet = statement.executeQuery()){

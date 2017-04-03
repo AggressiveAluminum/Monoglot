@@ -5,7 +5,7 @@ import aa.monoglot.project.Project;
 import aa.monoglot.project.db.Definition;
 import aa.monoglot.project.db.Headword;
 import aa.monoglot.ui.ControlledTab;
-import aa.monoglot.ui.component.DefinitionCellFactory;
+import aa.monoglot.ui.component.DefinitionCell;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
 import javafx.beans.Observable;
@@ -16,11 +16,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
 
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /*
@@ -47,7 +50,7 @@ public class LexiconTabController implements GeneralController {
     @FXML private Label createdLabel, modifiedLabel;
 
     @FXML private TitledPane lexiconDefinitionsPane;
-    @FXML private ListView<Definition> definitionsList;
+    @FXML private VBox definitionsList;
 
     @FXML private void initialize(){
         tab.controller(this);
@@ -62,7 +65,6 @@ public class LexiconTabController implements GeneralController {
                 //TODO: deal with it.
             }
         });
-        definitionsList.setCellFactory(new DefinitionCellFactory());
     }
 
     public void clearInfo() throws SQLException {
@@ -89,7 +91,7 @@ public class LexiconTabController implements GeneralController {
         tagsField.getCheckModel().clearChecks();
         createdLabel.setText("");
         modifiedLabel.setText("");
-        definitionsList.setItems(Definition.fetch(null));
+        definitionsList.getChildren().clear();
         wordSection.setDisable(true);
     }
 
@@ -140,10 +142,17 @@ public class LexiconTabController implements GeneralController {
             categoryField.getSelectionModel().clearSelection();
         //else typeField.getSelectionModel().select(activeWord.category);
 
-        definitionsList.setItems(Definition.fetch(activeWord));
+        loadDefinitions();
         //TODO: category/type lookup
         //TODO: tags
         loadWordList();
+    }
+
+    private void loadDefinitions() throws SQLException {
+        definitionsList.getChildren().clear();
+        List<Definition> definitions = Definition.fetch(activeWord);
+        for (int i = 0; i < definitions.size(); i++)
+            definitionsList.getChildren().add(new DefinitionCell(definitions.get(i)));
     }
 
     @FXML private void searchListener(Observable observable){
