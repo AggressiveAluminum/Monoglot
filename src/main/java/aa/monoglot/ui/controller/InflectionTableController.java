@@ -24,11 +24,7 @@ public class InflectionTableController implements GeneralController {
         if (itemName.equals("Types")) {
 
         } else {
-
+            
         }
-    }
-
-    public void addRow(ActionEvent actionEvent) {
-
     }
 }

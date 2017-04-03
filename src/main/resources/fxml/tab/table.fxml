@@ -33,7 +33,12 @@
             </DialogPane>
         </center>
         <bottom>
-            <!--Possible area for table-->
+            <!--Area for table-->
+            <TableView>
+            <columns>
+                <TableColumn prefWidth="90" text="Infinitive"></TableColumn>
+            </columns>
+            </TableView>
         </bottom>
     </BorderPane>
 </ControlledTab>
