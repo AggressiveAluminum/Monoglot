@@ -10,10 +10,10 @@ organized.
 Build with:
 
 ```
-gradle assemble
+gradle shadowJar
 ```
 
-The jar will be at `build/lib/Monoglot.jar`.
+The jar will be at `build/lib/Monoglot-all.jar`.
 
 Build and run with:
 
