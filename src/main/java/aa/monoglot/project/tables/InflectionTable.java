@@ -9,11 +9,13 @@ public class InflectionTable implements Serializable {
 
     private void save(){
 
+
+
     }
 
     public static void open(String type){
 
-        System.out.println(type);
+    
 
     }
 
