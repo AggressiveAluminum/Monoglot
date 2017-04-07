@@ -185,7 +185,7 @@ public class MonoglotController implements GeneralController {
     }
 
     // == EDIT CONTROLS ==
-    @FXML private void createNewWord(ActionEvent event) throws SQLException {
+    @FXML private void createNewWord(ActionEvent event) throws SQLException, IOException {
         if(Project.isOpen()){
             history.goToTab(History.LEXICON_TAB_INDEX);
             ((LexiconTabController) getCurrentTab().controller()).createNewWord(event);

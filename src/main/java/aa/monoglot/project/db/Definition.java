@@ -8,7 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * <kbd>
@@ -29,7 +32,9 @@ public class Definition {
     static final String UPDATE_ORDER_STR1 = "UPDATE definition SET def_order = ? WHERE def_order = ? AND entry_id = ?";
     static final String UPDATE_ORDER_STR2 = "UPDATE definition SET def_order = ? WHERE id = ?";
     static final String SELECT_SINGLE_STR = "SELECT * FROM definition WHERE id = ?";
-    static final String SELECT_ALL_STR = "SELECT * FROM definition WHERE entry_id = ?";
+    static final String SELECT_ALL_STR = "SELECT * FROM definition WHERE entry_id = ? ORDER BY def_order ASC";
+    static final String DELETE_STR = "DELETE FROM definition WHERE id = ?";
+    static final String DELETE_STR2 = "UPDATE definition as defs SET def_order=((SELECT def_order FROM definition WHERE definition.id=defs.id) - 1) WHERE def_order > ? AND entry_id = ?";
 
     private static final int ID_COL = 1, ENTRY_ID_COL = 2, ORDER_COL = 3, TEXT_COL = 4,
         CREATED_COL = 5, MODIFIED_COL = 6;
@@ -41,6 +46,7 @@ public class Definition {
 
     public static Definition create(Headword word, Definition previous) throws SQLException {
         PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
+        Project.getProject().markSaveNeeded();
         UUID id = Project.getProject().getDatabase().getNextID();
         statement.setObject(1, id);
         statement.setObject(2, word.ID);
@@ -54,6 +60,17 @@ public class Definition {
             resultSet.next();
             return new Definition(resultSet);
         }
+    }
+    public static void delete(Definition definition) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
+        Project.getProject().markSaveNeeded();
+        statement.setObject(1, definition.ID);
+        statement.executeUpdate();
+
+        statement = Project.getProject().getDatabase().sql(DELETE_STR2);
+        statement.setInt(1, definition.order);
+        statement.setObject(2, definition.headwordID);
+        statement.executeUpdate();
     }
     private Definition(UUID id, UUID headwordID, int order, String text, Timestamp created, Timestamp modified){
         this.ID = id;
@@ -116,7 +133,6 @@ public class Definition {
             while(resultSet.next())
                 definitions.add(new Definition(resultSet));
         }
-        definitions.sort(Comparator.comparingInt(e->e.order));
         return definitions;
     }
 

@@ -3,7 +3,11 @@ package aa.monoglot.project.db;
 import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -117,6 +121,16 @@ public class Type {
                 return null;
             }
         }
+    }
+
+    public static List<Type> fetchAll() throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql("SELECT * FROM types");
+        List<Type> types = new ArrayList<>();
+        try(ResultSet resultSet = statement.executeQuery()){
+            while(resultSet.next())
+                types.add(new Type(resultSet));
+        }
+        return types;
     }
 }
 

@@ -159,6 +159,7 @@ public final class Headword {
     }
     public static void delete(Headword word) throws SQLException {
         if(word.ID != null) {
+            Project.getProject().markSaveNeeded();
             PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
             statement.setObject(1, word.ID);
             statement.executeUpdate();

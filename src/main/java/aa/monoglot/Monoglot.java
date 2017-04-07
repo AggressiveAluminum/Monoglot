@@ -23,9 +23,7 @@ import javafx.stage.Window;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.*;
@@ -139,8 +137,8 @@ public class Monoglot extends Application {
         primaryStage.setScene(uiScene);
         primaryStage.setTitle(getLocalString(AppString.APP_NAME));
         primaryStage.getIcons().setAll(icons);
-        primaryStage.minHeightProperty().bind(((BorderPane) uiScene.getRoot()).minHeightProperty());
-        primaryStage.minWidthProperty().bind(((BorderPane) uiScene.getRoot()).minWidthProperty());
+        primaryStage.minHeightProperty().bind(((BorderPane) uiScene.getRoot()).minHeightProperty().add(25));
+        primaryStage.minWidthProperty().bind(((BorderPane) uiScene.getRoot()).minWidthProperty().add(25));
 
         primaryStage.setOnCloseRequest(uiController::wQuitApplication);
         primaryStage.setAlwaysOnTop(true);
@@ -148,12 +146,9 @@ public class Monoglot extends Application {
         primaryStage.setAlwaysOnTop(false);
         Log.exiting(Monoglot.class.getName(), "start");
 
-        if(getParameters().getRaw().contains("-n")){
-            Project.newProject();
-        } else if(getParameters().getNamed().containsKey("-o")){
+        if(getParameters().getRaw().size() > 0){
             try {
-                Path p = Paths.get(getParameters().getNamed().get("-o"));
-                Project.openProject(p);
+                Project.openProject(Paths.get(getParameters().getRaw().get(0)));
             } catch (FileNotFoundException | InvalidPathException e){
                 Dialogs.warning(window, getLocalString(AppWarning.NO_SUCH_PROJECT_TITLE),
                         getLocalString(AppWarning.NO_SUCH_PROJECT_HEADER),
@@ -184,6 +179,10 @@ public class Monoglot extends Application {
 
     public List<Image> getIcons() {
         return icons;
+    }
+
+    public ResourceBundle getResources() {
+        return resourceBundle;
     }
 }
 

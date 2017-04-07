@@ -1,9 +1,9 @@
+<?import aa.monoglot.ui.ControlledTab?>
 <?import com.jfoenix.controls.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.CheckComboBox?>
-<?import aa.monoglot.ui.ControlledTab?>
 <ControlledTab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.LexiconTabController">
     <SplitPane dividerPositions="1">
         <VBox id="search-section">
@@ -61,19 +61,20 @@
                         <HBox styleClass="controls-bar" spacing="5">
                             <JFXButton text="%tab.lexicon.button.saveWord" onAction="#saveWord" styleClass="blue-button"/>
                             <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button"/>
+                            <JFXButton text="%tab.lexicon.button.newDefinition" onAction="#createDefinition" styleClass="blue-button"/>
                         </HBox>
                     </bottom>
                 </BorderPane>
             </top>
             <center>
-                <VBox>
+                <VBox spacing="5">
                     <Accordion expandedPane="$lexiconDefinitionsPane">
                         <panes>
                             <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
                                 <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
                                     <style>-fx-background-color:transparent;</style>
                                     <padding><Insets left="5" right="5" top="4" bottom="5"/></padding>
-                                    <ListView fx:id="definitionsList"/>
+                                    <VBox fx:id="definitionsListPane"/>
                                 </ScrollPane>
                             </TitledPane>
                         </panes>

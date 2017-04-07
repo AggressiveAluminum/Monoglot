@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" minHeight="150">
+    <left>
+        <VBox BorderPane.alignment="CENTER" alignment="TOP_CENTER">
+            <padding>
+                <Insets topRightBottomLeft="0"/>
+            </padding>
+            <BorderPane.margin>
+                <Insets top="8" left="8" right="8" bottom="8"/>
+            </BorderPane.margin>
+            <JFXButton fx:id="upButton" prefWidth="22" prefHeight="22">
+                <padding>
+                    <Insets topRightBottomLeft="0"/>
+                </padding>
+                <graphic>
+                    <FontIcon iconLiteral="gmi-keyboard-arrow-up"/>
+                </graphic>
+            </JFXButton>
+            <Label fx:id="orderNumber" prefWidth="22" prefHeight="22" textAlignment="CENTER" alignment="CENTER">
+                <padding>
+                    <Insets topRightBottomLeft="0"/>
+                </padding>
+            </Label>
+            <JFXButton fx:id="downButton" prefWidth="22" prefHeight="22">
+                <padding>
+                    <Insets topRightBottomLeft="0"/>
+                </padding>
+                <graphic>
+                    <FontIcon iconLiteral="gmi-keyboard-arrow-down"/>
+                </graphic>
+            </JFXButton>
+            <JFXButton fx:id="deleteButton" prefWidth="22" prefHeight="22" styleClass="red-button">
+                <padding>
+                    <Insets topRightBottomLeft="0"/>
+                </padding>
+                <graphic>
+                    <FontIcon iconLiteral="gmi-delete-forever"/>
+                </graphic>
+            </JFXButton>
+        </VBox>
+    </left>
+    <center>
+        <JFXTextArea fx:id="textArea">
+            <padding>
+                <Insets top="8" left="8" right="8" bottom="8"/>
+            </padding>
+        </JFXTextArea>
+    </center>
+</fx:root>

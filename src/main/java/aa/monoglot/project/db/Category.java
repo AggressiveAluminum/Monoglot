@@ -1,16 +1,11 @@
 package aa.monoglot.project.db;
 
-import aa.monoglot.project.Project;
-import aa.monoglot.util.UT;
-
-import java.sql.*;
 import java.util.UUID;
 
 /**
  * Created by Darren on 3/13/17.
  */
 public class Category {
-
     private static class Node {
 
         private Node parent;

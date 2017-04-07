@@ -3,7 +3,11 @@ package aa.monoglot.project.db;
 import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -18,6 +22,7 @@ public class Tag {
     static final String INSERT_STR = "INSERT INTO tags VALUES (?, ?, ?)";
     static final String UPDATE_STR = "UPDATE tags SET id=?, name=?, description=?";
     static final String SELECT_STR = "SELECT * FROM tags WHERE id = ?";
+    static final String SELECT_ALL_STR = "SELECT * FROM tags";
 
     private final static int ID_COL = 1, NAME_COL = 2, DESC_COL = 3;
 
@@ -103,7 +108,7 @@ public class Tag {
 
     public static Tag fetch(UUID id) throws SQLException {
 
-        PreparedStatement stmt =  Project.getProject().getDatabase().sql(SELECT_STR);
+        PreparedStatement stmt = Project.getProject().getDatabase().sql(SELECT_STR);
         stmt.setObject(1, id);
         try(ResultSet resultSet = stmt.executeQuery()) {
             if (resultSet.next()) {
@@ -113,5 +118,20 @@ public class Tag {
             }
         }
 
+    }
+
+    public static List<Tag> fetchAll() throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
+        List<Tag> tags = new ArrayList<>();
+        try(ResultSet resultSet = statement.executeQuery()){
+            while (resultSet.next())
+                tags.add(new Tag(resultSet));
+        }
+        return tags;
+    }
+
+    public static List<Tag> fetchFor(Headword activeWord) {
+        //TODO
+        return null;
     }
 }
