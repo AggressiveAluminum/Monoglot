@@ -5,9 +5,10 @@ import aa.monoglot.project.Project;
 import aa.monoglot.project.db.*;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.component.DefinitionCell;
+import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
-import javafx.beans.Observable;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,7 +25,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 /*
  * Notes on things that tripped me up:
@@ -56,10 +56,16 @@ public class LexiconTabController implements GeneralController {
     @SuppressWarnings("unchecked")
     @FXML private void initialize(){
         tab.controller(this);
-        searchField.textProperty().addListener(this::searchListener);
-        searchTags.getCheckModel().getCheckedIndices().addListener(this::searchListener);
-        searchType.getSelectionModel().selectedIndexProperty().addListener(this::searchListener);
-        searchCategory.getSelectionModel().selectedIndexProperty().addListener(this::searchListener);
+
+        InvalidationListener searchListener = (e) -> {
+            try {
+                loadWordList();
+            } catch(SQLException ex){throw new RuntimeException(ex);}
+        };
+        searchField.textProperty().addListener(searchListener);
+        searchTags.getCheckModel().getCheckedIndices().addListener(searchListener);
+        searchType.getSelectionModel().selectedIndexProperty().addListener(searchListener);
+        searchCategory.getSelectionModel().selectedIndexProperty().addListener(searchListener);
         searchResults.setOnMouseClicked(event -> {
             try {
                 switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
@@ -114,9 +120,13 @@ public class LexiconTabController implements GeneralController {
     }
 
     void createNewWord(ActionEvent event) throws SQLException, IOException {
-        if(!switchActiveWord(Headword.create()))
-            Log.warning(LogString.LEXICON_SWITCH_FAILED);
-        else Log.fine(LogString.LEXICON_NEW_WORD);
+        String word = Dialogs.promptHeadword();
+        if(word != null) {
+            Headword headword = Headword.create(word);
+            Log.fine(LogString.LEXICON_NEW_WORD, word);
+            if (!switchActiveWord(headword))
+                Log.warning(LogString.LEXICON_SWITCH_FAILED);
+        }
     }
 
     @FXML private void deleteWord(ActionEvent event) throws SQLException, IOException {
@@ -174,18 +184,10 @@ public class LexiconTabController implements GeneralController {
         if(definitionsList.size() > 0)
             definitionsList.get(definitionsList.size() - 1).setIsLast(true);
     }
-
-    @FXML private void searchListener(Observable observable){
-        try {
-            loadWordList();
-        } catch (SQLException e){
-            //TODO: do something
-        }
-    }
     private void loadWordList() throws SQLException {
-        searchResults.setItems(FXCollections.observableArrayList(
-                Project.getProject().getDatabase().simpleSearch(
-                        UT.c(searchField.getText()), null, null, null)));
+        searchResults.setItems(FXCollections.observableArrayList(Project.getProject().getDatabase().simpleSearch(
+            UT.c(searchField.getText()), searchType.getSelectionModel().getSelectedItem(),
+                searchCategory.getSelectionModel().getSelectedItem(), searchTags.getCheckModel().getCheckedItems())));
     }
 
     private boolean verifyFields(){
@@ -200,20 +202,10 @@ public class LexiconTabController implements GeneralController {
     public boolean save(){
         try {
             if (activeWord != null) {
-                if (activeWord.ID == null && (headwordField.getText() == null || headwordField.getText().equals("")))
-                    return true;
-                if (!verifyFields())
+                if(!verifyFields())
                     return false;
-                //TODO: type and category lookup
-                UUID type = null;// = typeField.getSelectionModel().isEmpty()?null:typeField.getSelectionModel().getSelectedItem().ID;
-                UUID category = null;// = categoryField.getSelectionModel().isEmpty()?null:categoryField.getSelectionModel().getSelectedItem().ID;
-
-                Headword updatedWord = activeWord.update(headwordField.getText(), romanizationField.getText(),
-                        pronunciationField.getText(), stemField.getText(), null, null);
-                if(updatedWord != activeWord) {
-                    activeWord = Headword.put(updatedWord);
-                    Project.getProject().markSaveNeeded();
-                }
+                activeWord = activeWord.updateAll(headwordField.getText(), romanizationField.getText(), pronunciationField.getText(),
+                        stemField.getText(), typeField.getSelectionModel().getSelectedItem(), categoryField.getSelectionModel().getSelectedItem());
                 updateWordUI();
             }
             return true;
@@ -233,7 +225,7 @@ public class LexiconTabController implements GeneralController {
                 searchType.setItems(types);
             /*ObservableList<Category> categories = FXCollections.observableList(Category.fetchAll());
                 categoryField.setItems(categories);
-                searchCategory.setItems(categories);*/
+                searchCategory.setItems(categories);*///TODO
             ObservableList<Tag> tags = FXCollections.observableList(Tag.fetchAll());
                 tagsField.getItems().setAll(tags);
                 searchTags.getItems().setAll(tags);
@@ -250,9 +242,11 @@ public class LexiconTabController implements GeneralController {
         try {
             clearInfo();
         } catch(SQLException |IOException e){
+            throw new RuntimeException(e);
             //TODO: what to do?
+        } finally {
+            wordSection.setDisable(true);
         }
-        wordSection.setDisable(true);
         return true;
     }
 
@@ -272,6 +266,9 @@ public class LexiconTabController implements GeneralController {
         }
     }
 
+    /**
+     * Handlers for {@linkplain DefinitionCell}, so we don't end up passing a bunch of lambdas individually.
+     */
     public class DefinitionHandlers {
         public void up(ActionEvent event) {
             try {
@@ -296,6 +293,7 @@ public class LexiconTabController implements GeneralController {
                 DefinitionCell cell = (DefinitionCell) ((Button) event.getSource()).getParent().getParent();
                 Definition.delete(cell.getDefinition());
                 populateDefinitions(Definition.fetch(activeWord));
+                Log.info(LogString.LEXICON_DEF_DELETED, cell.getDefinition().order, activeWord.word);
             } catch (SQLException | IOException e) {
                 throw new RuntimeException(e);
             }

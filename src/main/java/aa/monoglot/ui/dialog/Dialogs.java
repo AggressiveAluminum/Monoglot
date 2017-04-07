@@ -3,9 +3,7 @@ package aa.monoglot.ui.dialog;
 import aa.monoglot.Monoglot;
 import aa.monoglot.misc.keys.AppString;
 import aa.monoglot.misc.keys.LocalizationKey;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -67,5 +65,17 @@ public class Dialogs {
         alert.setContentText(text);
 
         return alert;
+    }
+
+    public static String promptHeadword() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.getDialogPane().setStyle(".header-panel {visibility:hidden;-fx-max-height:0}");
+        dialog.initOwner(Monoglot.getMonoglot().getWindow());
+        dialog.setTitle(Monoglot.getMonoglot().getLocalString(AppString.HEADWORD_PROMPT_TITLE));
+        dialog.setHeaderText(Monoglot.getMonoglot().getLocalString(AppString.HEADWORD_PROMPT_HEADER));
+        dialog.getEditor().setPromptText(Monoglot.getMonoglot().getLocalString(AppString.HEADWORD_PROMPT_TEXT));
+
+        Optional<String> result = dialog.showAndWait();
+        return result.filter(e->!e.isEmpty()).orElse(null);
     }
 }

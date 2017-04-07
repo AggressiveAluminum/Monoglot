@@ -23,67 +23,58 @@ import java.util.UUID;
  * </kbd>
  */
 public final class Headword {
-    static final String INSERT_STR = "INSERT INTO entry VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)";
-    static final String UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?";
-    static final String SELECT_STR = "SELECT * FROM entry WHERE id = ?";
-    static final String DELETE_STR = "DELETE FROM entry WHERE id = ?";
-
-    private final static int ID_COL = 1, WORD_COL = 2, ROMAN_COL = 3, PRONUN_COL = 4,
-        STEM_COL = 5, TYPE_COL = 6, CAT_COL = 7, CREATED_COL = 8, MODIFIED_COL = 9;
+    private static final String INSERT_STR = "INSERT INTO entry VALUES (?, ?, '', '', '', NULL, NULL, ?, NULL)",
+        WORD_UPDATE_STR = "UPDATE entry SET word = ?, modified = ? WHERE id = ?",
+        PRON_UPDATE_STR = "UPDATE entry SET pronunication = ?, modified = ? WHERE id = ?",
+        ROMA_UPDATE_STR = "UPDATE entry SET romanization = ?, modified = ? WHERE id = ?",
+        STEM_UPDATE_STR = "UPDATE entry SET stem = ?, modified = ? WHERE id = ?",
+        ALL_UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?",
+        SELECT_STR = "SELECT * FROM ENTRY WHERE id = ? LIMIT 1",
+        DELETE_STR = "DELETE FROM entry WHERE id = ?";
 
     public final UUID ID, type, category;
     public final String word, romanization, pronunciation, stem;
     public final Timestamp created, modified;
 
+    public static Headword create(String word) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
+        UUID id = Project.getProject().getDatabase().getNextID();
+        statement.setObject(1, id);
+        statement.setString(2, word);
+        statement.setTimestamp(3, Timestamp.from(Instant.now()));
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+        return fetch(id);
+    }
+    public static Headword fetch(UUID id) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_STR);
+        statement.setObject(1, id);
+        try(ResultSet resultSet = statement.executeQuery()){
+            if(resultSet.next())
+                return new Headword(resultSet);
+        }
+        return null;
+    }
+    public static void delete(Headword word) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
+        statement.setObject(1, word.ID);
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+    }
     Headword(ResultSet resultSet) throws SQLException {
-        ID = (UUID) resultSet.getObject(ID_COL);
-        word = resultSet.getString(WORD_COL);
-        romanization = resultSet.getString(ROMAN_COL);
-        pronunciation = resultSet.getString(PRONUN_COL);
-        stem = resultSet.getString(STEM_COL);
-        created = resultSet.getTimestamp(CREATED_COL);
+        ID = (UUID) resultSet.getObject(1);
+        word = resultSet.getString(2);
+        romanization = resultSet.getString(3);
+        pronunciation = resultSet.getString(4);
+        stem = resultSet.getString(5);
+        created = resultSet.getTimestamp(8);
 
-        Object temp;
-
-        temp = resultSet.getObject(TYPE_COL);
-        type = resultSet.wasNull()?null:(UUID) temp;
-
-        temp = resultSet.getObject(CAT_COL);
-        category = resultSet.wasNull()?null:(UUID) temp;
-
-        temp = resultSet.getTimestamp(MODIFIED_COL);
-        modified = resultSet.wasNull()?null:(Timestamp) temp;
-    }
-
-    public static Headword create() {
-        return new Headword(Timestamp.from(Instant.now()));
-    }
-    Headword(Timestamp created){
-        this(null, "", "", "", "", null, null, created, null);
-    }
-    Headword(UUID id, String word, String romanization, String pronunciation, String stem, UUID type, UUID category, Timestamp created, Timestamp modified){
-        this.ID = id;
-        this.word = word;
-        this.romanization = romanization;
-        this.pronunciation = pronunciation;
-        this.stem = stem;
-        this.type = type;
-        this.category = category;
-        this.created = created;
-        this.modified = modified;
-    }
-
-    public final Headword update(String newWord, String newRomanization, String newPronunciation, String newStem, UUID newType, UUID newCategory){
-        if(newWord == null)
-            throw new IllegalArgumentException("A word cannot be empty.");
-        Headword newHeadword = new Headword(this.ID, newWord, UT.c(newRomanization), UT.c(newPronunciation),
-                UT.c(newStem), newType, newCategory, this.created, Timestamp.from(Instant.now()));
-        if(this.equals(newHeadword))
-            return this;
-        return newHeadword;
-    }
-    private Headword update(UUID newID){
-        return new Headword(newID, this.word, this.romanization, this.pronunciation, this.stem, this.type, this.category, this.created, Timestamp.from(Instant.now()));
+        Object temp = resultSet.getObject(6);
+            type = resultSet.wasNull()?null:(UUID) temp;
+        temp = resultSet.getObject(7);
+            category = resultSet.wasNull()?null:(UUID) temp;
+        temp = resultSet.getTimestamp(9);
+            modified = resultSet.wasNull()?null:(Timestamp) temp;
     }
 
     @Override
@@ -91,88 +82,98 @@ public final class Headword {
         return word;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object o){
         if(o != null && o instanceof Headword){
             Headword other = (Headword) o;
-            if(UT.nc(ID , other.ID)
+            if(ID.equals(other.ID)
                     && word.equals(other.word)
                     && created.equals(other.created)
                     && romanization.equals(other.romanization)
                     && pronunciation.equals(other.pronunciation)
                     && stem.equals(other.stem)
                     && UT.nc(type, other.type)
-                    && UT.nc(category, other.category))
+                    && UT.nc(category, other.category)
+                    && UT.nc(modified, other.modified))
                 return true;
         }
         return false;
     }
 
-    public static Headword put(Headword word) throws SQLException {
-        Project.getProject().markSaveNeeded();
-        if(word.ID == null) {
-            word = word.update(Project.getProject().getDatabase().getNextID());
-            PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
-            /*ID   */statement.setObject(ID_COL, word.ID);
-            /*WORD */statement.setString(WORD_COL, word.word);
-            /*ROMAN*/statement.setString(ROMAN_COL, word.romanization);
-            /*PRON */statement.setString(PRONUN_COL, word.pronunciation);
-            /*STEM */statement.setString(STEM_COL, word.stem);
-            /*TYPE */
-            if(word.type == null)
-                statement.setNull(TYPE_COL, Types.OTHER);
-            else statement.setObject(TYPE_COL, word.type);
-            /*CAT  */
-            if(word.category == null)
-                statement.setNull(CAT_COL, Types.OTHER);
-            else statement.setObject(CAT_COL, word.category);
-            /*CREAT*/statement.setTimestamp(CREATED_COL, word.created);
-            statement.executeUpdate();
-            return Headword.fetch(word.ID);
-        } else { // word already exists
-            return update(word);
-        }
-    }
-    static Headword update(Headword headword) throws SQLException {
-        if(headword.ID == null)
-            throw new IllegalArgumentException();
-        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_STR);
-        int order = 1;
-        statement.setString(order++, headword.word);
-        statement.setString(order++, headword.romanization);
-        statement.setString(order++, headword.pronunciation);
-        statement.setString(order++, headword.stem);
-        if(headword.type == null)
-            statement.setNull(order++, Types.OTHER);
-        else statement.setObject(order++, headword.type);
-        if(headword.category == null)
-            statement.setNull(order++, Types.OTHER);
-        else statement.setObject(order++, headword.category);
-        if(headword.modified == null)
-            statement.setNull(order++, Types.TIMESTAMP);
-        else statement.setTimestamp(order++, headword.modified);
-        // WHERE
-        statement.setObject(order, headword.ID);
-        statement.executeUpdate();
-        return fetch(headword.ID);
-    }
-    public static void delete(Headword word) throws SQLException {
-        if(word.ID != null) {
-            Project.getProject().markSaveNeeded();
-            PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
-            statement.setObject(1, word.ID);
-            statement.executeUpdate();
-        }
+    public Headword updateWord(String newWord) throws SQLException {
+        if(word.equals(newWord))
+            return this;
+        updateStr(WORD_UPDATE_STR, newWord);
+        return fetch(ID);
     }
 
-    public static Headword fetch(UUID id) throws SQLException {
-        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_STR);
-        statement.setObject(1, id);
-        try(ResultSet resultSet = statement.executeQuery()){
-            if(!resultSet.next())
-                return null;
-            return new Headword(resultSet);
+    public Headword updateStem(String newStem) throws SQLException {
+        if(stem.equals(newStem))
+            return this;
+        updateStr(STEM_UPDATE_STR, newStem);
+        return fetch(ID);
+    }
+
+    public Headword updatePronunciation(String newPronunciation) throws SQLException {
+        if(pronunciation.equals(newPronunciation))
+            return this;
+        updateStr(PRON_UPDATE_STR, newPronunciation);
+        return fetch(ID);
+    }
+
+    public Headword updateRomanization(String newRomanization) throws SQLException {
+        if(romanization.equals(newRomanization))
+            return this;
+        updateStr(ROMA_UPDATE_STR, newRomanization);
+        return fetch(ID);
+    }
+
+    private void updateStr(String sql, String newValue) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(sql);
+        statement.setString(1, newValue);
+        statement.setTimestamp(2, Timestamp.from(Instant.now()));
+        statement.setObject(3, ID);
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+    }
+
+    public Headword updateType(Type newType){
+        /*if(type.equals(newType.ID))
+            return this;*///TODO
+        return null;
+    }
+
+    public Headword updateCategory(Category newCategory){
+        /*if(category.equals(newCategory.ID))
+            return this;*///TODO
+        return null;
+    }
+
+    public Headword updateAll(String newWord, String newRomanization, String newPronunciation, String newStem, Type newType, Category newCategory) throws SQLException {
+        if(word.equals(newWord)
+                && romanization.equals(newRomanization)
+                && pronunciation.equals(newPronunciation)
+                && stem.equals(newStem)){
+            //if((newType == null && type == null) || (type != null && newType != null && type.equals(newType.ID)))
+                //return this;
+            //if((newCategory == null && category == null) || (category != null && newCategory != null && category.equals(newCategory.ID)))
+                //return this;
         }
+        PreparedStatement statement = Project.getProject().getDatabase().sql(ALL_UPDATE_STR);
+        statement.setObject(1, newWord);
+        statement.setObject(2, newRomanization);
+        statement.setObject(3, newPronunciation);
+        statement.setObject(4, newStem);
+        if(newType == null || (Math.random() < Double.POSITIVE_INFINITY))//TODO
+            statement.setNull(5, Types.OTHER);
+        //else statement.setObject(5, newType.ID);
+        if(newCategory == null || (Math.random() < Double.POSITIVE_INFINITY))//TODO
+            statement.setNull(6, Types.OTHER);
+        //else statement.setObject(6, newType.ID);
+        statement.setTimestamp(7, Timestamp.from(Instant.now()));
+        statement.setObject(8, ID);
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+        return fetch(ID);
     }
 }

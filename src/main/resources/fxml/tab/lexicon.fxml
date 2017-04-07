@@ -70,6 +70,7 @@
                 <VBox spacing="5">
                     <Accordion expandedPane="$lexiconDefinitionsPane">
                         <panes>
+                            <!--suppress JavaFxUnresolvedFxIdReference -->
                             <TitledPane text="%tab.lexicon.definitions" fx:id="lexiconDefinitionsPane">
                                 <ScrollPane hbarPolicy="NEVER" fitToHeight="true" fitToWidth="true">
                                     <style>-fx-background-color:transparent;</style>

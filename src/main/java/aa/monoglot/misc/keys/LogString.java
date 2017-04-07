@@ -8,7 +8,8 @@ public enum LogString implements LocalizationKey {
     PROJECT_NUKING("log.project.nuking-working-dir"),
     LEXICON_NEW_WORD("log.lexicon.new-word"),
     LEXICON_WORD_DELETED("log.lexicon.deleted-word"),
-    LEXICON_DEF_ADDED("log.lexicon.added-definition");
+    LEXICON_DEF_ADDED("log.lexicon.added-definition"),
+    LEXICON_DEF_DELETED("log.lexicon.deleted-definition");
 
     private final String string;
     LogString(String str){

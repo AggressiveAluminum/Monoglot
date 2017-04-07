@@ -1,6 +1,6 @@
 package aa.monoglot.project.db;
 
-import aa.monoglot.project.Project;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -41,7 +41,7 @@ public class Database {
         return db.getNextID();
     }
 
-    public List<Headword> simpleSearch(String searchText, Object type, Object category, Object[] tags) throws SQLException {
+    public List<Headword> simpleSearch(String searchText, Type type, Category category, List<Tag> tags) throws SQLException {
         ArrayList<Headword> list = new ArrayList<>();
         PreparedStatement statement = db.getStatement(SIMPLE_SEARCH_SQL);
         searchText = "%" + searchText + "%";

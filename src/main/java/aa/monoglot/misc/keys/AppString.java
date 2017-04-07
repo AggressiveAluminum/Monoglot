@@ -8,7 +8,10 @@ public enum AppString implements LocalizationKey {
     LOADED_RESOURCE_BUNDLE("log.load.loaded-resource-bundle"),
     LOADED_UI_FILES("log.load.loaded-ui-files"),
     LOADED_ICONS("log.load.loaded-icons"),
-    PRELOADER_DONE("log.load.preloader-done");
+    PRELOADER_DONE("log.load.preloader-done"),
+    HEADWORD_PROMPT_TITLE("dialog.headword-prompt.title"),
+    HEADWORD_PROMPT_HEADER("dialog.headword-prompt.header"),
+    HEADWORD_PROMPT_TEXT("dialog.headword-prompt.text");
 
     private final String key;
     AppString(String key){
