@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import org.controlsfx.control.CheckComboBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <ControlledTab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.LexiconTabController">
     <SplitPane dividerPositions="1">
         <VBox id="search-section">
@@ -59,8 +60,11 @@
                     </right>
                     <bottom>
                         <HBox styleClass="controls-bar" spacing="5">
-                            <JFXButton text="%tab.lexicon.button.saveWord" onAction="#saveWord" styleClass="blue-button"/>
-                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button"/>
+                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button">
+                                <graphic>
+                                    <FontIcon iconLiteral="gmi-delete-forever"/>
+                                </graphic>
+                            </JFXButton>
                             <JFXButton text="%tab.lexicon.button.newDefinition" onAction="#createDefinition" styleClass="blue-button"/>
                         </HBox>
                     </bottom>

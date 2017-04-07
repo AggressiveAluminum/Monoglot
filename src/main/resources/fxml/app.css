@@ -74,3 +74,9 @@
     -fx-font-weight: bold;
     -fx-font-size: 18px;
 }
+
+.jfx-text-field:invalid-field {
+    /*-fx-text-box-border: red;*/
+    -jfx-focus-color: red;
+    -jfx-unfocus-color: red;
+}

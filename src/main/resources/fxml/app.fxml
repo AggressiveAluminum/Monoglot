@@ -9,7 +9,7 @@
         <!-- Menu -->
         <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
             <Menu text="%menu.file">
-                <MenuItem text="%menu.file.newProject" onAction="#newProject"/>
+                <MenuItem text="%menu.file.newProject" onAction="#newProject" accelerator="Shortcut+Alt+N"/>
                 <MenuItem text="%menu.file.openProject" onAction="#openProject" accelerator="Shortcut+O"/>
                 <MenuItem text="%menu.file.saveProject" onAction="#saveProject" fx:id="saveProjectItem" accelerator="Shortcut+S" disable="true"/>
                 <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" disable="true"/>

@@ -6,16 +6,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<fx:root type="BorderPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" minHeight="150">
+<fx:root type="BorderPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <left>
         <VBox BorderPane.alignment="CENTER" alignment="TOP_CENTER">
             <padding>
-                <Insets topRightBottomLeft="0"/>
+                <Insets bottom="40"/>
             </padding>
             <BorderPane.margin>
                 <Insets top="8" left="8" right="8" bottom="8"/>
             </BorderPane.margin>
-            <JFXButton fx:id="upButton" prefWidth="22" prefHeight="22">
+            <JFXButton fx:id="upButton">
                 <padding>
                     <Insets topRightBottomLeft="0"/>
                 </padding>
@@ -23,12 +23,12 @@
                     <FontIcon iconLiteral="gmi-keyboard-arrow-up"/>
                 </graphic>
             </JFXButton>
-            <Label fx:id="orderNumber" prefWidth="22" prefHeight="22" textAlignment="CENTER" alignment="CENTER">
+            <Label fx:id="orderNumber" textAlignment="CENTER" alignment="CENTER">
                 <padding>
                     <Insets topRightBottomLeft="0"/>
                 </padding>
             </Label>
-            <JFXButton fx:id="downButton" prefWidth="22" prefHeight="22">
+            <JFXButton fx:id="downButton">
                 <padding>
                     <Insets topRightBottomLeft="0"/>
                 </padding>
@@ -36,7 +36,7 @@
                     <FontIcon iconLiteral="gmi-keyboard-arrow-down"/>
                 </graphic>
             </JFXButton>
-            <JFXButton fx:id="deleteButton" prefWidth="22" prefHeight="22" styleClass="red-button">
+            <JFXButton fx:id="deleteButton" styleClass="red-button">
                 <padding>
                     <Insets topRightBottomLeft="0"/>
                 </padding>

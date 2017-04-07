@@ -5,7 +5,6 @@ import aa.monoglot.ui.controller.LexiconTabController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
@@ -48,13 +47,6 @@ public class DefinitionCell extends BorderPane {
         });
     }
 
-    private static void setSizes(Control node){
-        node.setMinHeight(42);
-        node.setMaxHeight(42);
-        node.setMinWidth(42);
-        node.setMaxWidth(42);
-    }
-
     public Definition getDefinition() {
         return definition;
     }
@@ -67,6 +59,9 @@ public class DefinitionCell extends BorderPane {
         downButton.setDisable(false);
     }
 
+    public void save() throws SQLException {
+        update(definition.update(textArea.getText()));
+    }
     public void setIsLast(boolean isLast){
         downButton.setDisable(isLast);
     }

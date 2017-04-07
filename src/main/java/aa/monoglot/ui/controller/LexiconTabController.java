@@ -12,6 +12,7 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -33,6 +34,7 @@ import java.util.List;
  */
 public class LexiconTabController implements GeneralController {
     private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
+    private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("invalid-field");
     @FXML private ControlledTab tab;
     private final DefinitionHandlers definitionHandlers = new DefinitionHandlers();
 
@@ -57,6 +59,7 @@ public class LexiconTabController implements GeneralController {
     @FXML private void initialize(){
         tab.controller(this);
 
+        // === SEARCH ===
         InvalidationListener searchListener = (e) -> {
             try {
                 loadWordList();
@@ -73,6 +76,68 @@ public class LexiconTabController implements GeneralController {
                 throw new RuntimeException(e);
             }
         });
+
+        // === HEADWORD FOCUS ===
+        headwordField.focusedProperty().addListener((v, o, n) -> {
+            try {
+                if(!n && activeWord != null && verifyFields()) {
+                    activeWord = activeWord.updateWord(headwordField.getText());
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+        headwordField.textProperty().addListener(e->verifyFields());
+        romanizationField.focusedProperty().addListener((v, o, n) -> {
+            try {
+                if(!n && activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateRomanization(romanizationField.getText());
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+        romanizationField.textProperty().addListener(e->verifyFields());
+        pronunciationField.focusedProperty().addListener((v, o, n) -> {
+            try {
+                if(!n && activeWord != null && verifyFields())
+                    activeWord = activeWord.updatePronunciation(pronunciationField.getText());
+            } catch(SQLException e){throw new RuntimeException(e);}
+        });
+        pronunciationField.textProperty().addListener(e->verifyFields());
+        stemField.focusedProperty().addListener((v, o, n) -> {
+            try {
+                if(!n && activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateStem(stemField.getText());
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+        stemField.textProperty().addListener(e->verifyFields());
+        tagsField.focusedProperty().addListener((v, o, n) -> {
+            try {
+                if(!n && activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateTags(tagsField.getCheckModel().getCheckedItems());
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+        typeField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
+            try {
+                if(activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateType(n);
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+        categoryField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
+            try {
+                if(activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateCategory(n);
+                    updateWordUI();
+                }
+            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+        });
+
+        // === DEFINITIONS INIT ===
         definitionsListPane.getChildren().setAll(FXCollections.observableArrayList());
         // don't try this at home, kids.
         definitionsList = (ObservableList<DefinitionCell>) (ObservableList) definitionsListPane.getChildren();
@@ -138,10 +203,6 @@ public class LexiconTabController implements GeneralController {
         }
     }
 
-    @FXML private void saveWord(ActionEvent event){
-        save();
-    }
-
     private void updateWordUI() throws SQLException, IOException {
         if(activeWord == null)
             wordSection.setDisable(true);
@@ -164,9 +225,9 @@ public class LexiconTabController implements GeneralController {
             categoryField.getSelectionModel().clearSelection();
         else if((temp = categoryField.getItems().indexOf(activeWord.category)) != -1)
             categoryField.getSelectionModel().select(temp);
-        if(activeWord != null) {
-            List<Tag> tags = Tag.fetchFor(activeWord);
-        }
+        if(activeWord != null)
+            for(Tag tag: Tag.fetchFor(activeWord))
+                tagsField.getCheckModel().check(tagsField.getItems().indexOf(tag));
         populateDefinitions(null);
         loadWordList();
     }
@@ -185,17 +246,21 @@ public class LexiconTabController implements GeneralController {
             definitionsList.get(definitionsList.size() - 1).setIsLast(true);
     }
     private void loadWordList() throws SQLException {
-        searchResults.setItems(FXCollections.observableArrayList(Project.getProject().getDatabase().simpleSearch(
-            UT.c(searchField.getText()), searchType.getSelectionModel().getSelectedItem(),
-                searchCategory.getSelectionModel().getSelectedItem(), searchTags.getCheckModel().getCheckedItems())));
+        if(Project.isOpen())
+            searchResults.setItems(FXCollections.observableArrayList(Project.getProject().getDatabase().simpleSearch(
+                UT.c(searchField.getText()), searchType.getSelectionModel().getSelectedItem(),
+                    searchCategory.getSelectionModel().getSelectedItem(), searchTags.getCheckModel().getCheckedItems())));
     }
 
     private boolean verifyFields(){
         String field = headwordField.getText();
-        if(field == null || field.length() == 0)
-            return false;
+        boolean ok = true;
+        if(field == null || field.length() == 0) {
+            ok = false;
+            headwordField.pseudoClassStateChanged(ERROR_CLASS, true);
+        } else headwordField.pseudoClassStateChanged(ERROR_CLASS, false);
         //TODO: verify other fields
-        return true;
+        return ok;
     }
 
     @Override
@@ -206,6 +271,8 @@ public class LexiconTabController implements GeneralController {
                     return false;
                 activeWord = activeWord.updateAll(headwordField.getText(), romanizationField.getText(), pronunciationField.getText(),
                         stemField.getText(), typeField.getSelectionModel().getSelectedItem(), categoryField.getSelectionModel().getSelectedItem());
+                for(DefinitionCell cell: definitionsList)
+                    cell.save();
                 updateWordUI();
             }
             return true;

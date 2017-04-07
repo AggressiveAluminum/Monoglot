@@ -144,6 +144,7 @@ public class Monoglot extends Application {
         primaryStage.setAlwaysOnTop(true);
         primaryStage.show();
         primaryStage.setAlwaysOnTop(false);
+        primaryStage.requestFocus();
         Log.exiting(Monoglot.class.getName(), "start");
 
         if(getParameters().getRaw().size() > 0){

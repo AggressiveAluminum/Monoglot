@@ -20,6 +20,8 @@ public class ProjectTabController implements GeneralController {
     @FXML private TextArea projectNotes;
     @FXML private void initialize(){
         tab.controller(this);
+        projectName.focusedProperty().addListener((v, o, n) -> {if(!n) try {saveNameHandler(null);} catch(IOException e){throw new RuntimeException(e);}});
+        projectNotes.focusedProperty().addListener((v, o, n) -> {if(!n) try {saveNotesHandler(null);} catch(IOException e){throw new RuntimeException(e);}});
     }
 
     @FXML private void saveHandler(ActionEvent event){
@@ -30,20 +32,28 @@ public class ProjectTabController implements GeneralController {
         onLoad();
     }
 
+    @FXML private void saveNameHandler(ActionEvent event) throws IOException {
+        BackedSettings<ProjectKey> settings = Project.getProject().getSettings();
+        if(!settings.get(K_NAME, "").equals(projectName.getText())){
+            settings.put(K_NAME, projectName.getText());
+            Project.getProject().markSaveNeeded();
+            settings.store(null);
+        }
+    }
+    @FXML private void saveNotesHandler(ActionEvent event) throws IOException {
+        BackedSettings<ProjectKey> settings = Project.getProject().getSettings();
+        if(!settings.get(K_NOTES, "").equals(projectNotes.getText())){
+            settings.put(K_NOTES, projectNotes.getText());
+            Project.getProject().markSaveNeeded();
+            settings.store(null);
+        }
+    }
+
     @Override
     public boolean save(){
         try {
-            BackedSettings<ProjectKey> settings = Project.getProject().getSettings();
-            if(!settings.get(K_NAME, "").equals(projectName.getText())){
-                settings.put(K_NAME, projectName.getText());
-                Project.getProject().markSaveNeeded();
-            }
-            if(!settings.get(K_NOTES, "").equals(projectNotes.getText())){
-                settings.put(K_NOTES, projectNotes.getText());
-                Project.getProject().markSaveNeeded();
-            }
-            if(Project.getProject().isSaveNeeded())
-                settings.store(null);
+            saveNameHandler(null);
+            saveNotesHandler(null);
             return true;
         } catch (IOException e) {
             //TODO: tell someone

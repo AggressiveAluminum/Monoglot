@@ -1,17 +1,14 @@
 <?import aa.monoglot.ui.ControlledTab?>
-<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.VBox?>
 <ControlledTab text="%tab.project" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.ProjectTabController">
-    <AnchorPane>
-        <VBox AnchorPane.leftAnchor="10" AnchorPane.topAnchor="10" spacing="10">
-            <JFXTextField promptText="%prompt.settings.projectName" styleClass="large-text" fx:id="projectName"/>
-            <TextArea promptText="%prompt.settings.projectNotes" fx:id="projectNotes"/>
-        </VBox>
-        <HBox AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" spacing="5">
-            <JFXButton text="%dialog.save" styleClass="save-button" onAction="#saveHandler"/>
-            <JFXButton text="%dialog.cancel" styleClass="cancel-button" onAction="#cancelHandler"/>
-        </HBox>
-    </AnchorPane>
+    <VBox spacing="10">
+        <padding>
+            <Insets topRightBottomLeft="10"/>
+        </padding>
+        <JFXTextField promptText="%prompt.settings.projectName" styleClass="large-text" fx:id="projectName"/>
+        <TextArea promptText="%prompt.settings.projectNotes" fx:id="projectNotes"/>
+    </VBox>
 </ControlledTab>

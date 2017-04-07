@@ -2,6 +2,7 @@ package aa.monoglot.project.db;
 
 import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.Instant;
@@ -25,7 +26,7 @@ import java.util.UUID;
 public final class Headword {
     private static final String INSERT_STR = "INSERT INTO entry VALUES (?, ?, '', '', '', NULL, NULL, ?, NULL)",
         WORD_UPDATE_STR = "UPDATE entry SET word = ?, modified = ? WHERE id = ?",
-        PRON_UPDATE_STR = "UPDATE entry SET pronunication = ?, modified = ? WHERE id = ?",
+        PRON_UPDATE_STR = "UPDATE entry SET pronunciation = ?, modified = ? WHERE id = ?",
         ROMA_UPDATE_STR = "UPDATE entry SET romanization = ?, modified = ? WHERE id = ?",
         STEM_UPDATE_STR = "UPDATE entry SET stem = ?, modified = ? WHERE id = ?",
         ALL_UPDATE_STR = "UPDATE entry SET word=?, romanization=?, pronunciation=?, stem=?,type=?,category=?,modified=? where id=?",
@@ -137,13 +138,13 @@ public final class Headword {
         Project.getProject().markSaveNeeded();
     }
 
-    public Headword updateType(Type newType){
+    public Headword updateType(Type newType) throws SQLException {
         /*if(type.equals(newType.ID))
             return this;*///TODO
         return null;
     }
 
-    public Headword updateCategory(Category newCategory){
+    public Headword updateCategory(Category newCategory) throws SQLException {
         /*if(category.equals(newCategory.ID))
             return this;*///TODO
         return null;
@@ -175,5 +176,10 @@ public final class Headword {
         statement.executeUpdate();
         Project.getProject().markSaveNeeded();
         return fetch(ID);
+    }
+
+    public Headword updateTags(ObservableList<Tag> checkedItems) throws SQLException {
+        //TODO
+        return this;
     }
 }
