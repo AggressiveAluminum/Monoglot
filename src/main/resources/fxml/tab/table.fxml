@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
+<?import javafx.scene.control.TableColumn?>
 <ControlledTab fx:id="tab" text="%tab.inflection" xmlns:fx="http://javafx.com/fxml"
                fx:controller="aa.monoglot.ui.controller.InflectionTableController">
     <BorderPane>
@@ -28,11 +29,11 @@
                 </ComboBox>
             </HBox>
         </top>
-        <!--Space for the dialog-->
         <center>
             <TableView>
              <columns>
-
+                 <TableColumn text="Type 1"/>
+                 <TableColumn text="Type 2"/>
              </columns>
             </TableView>
         </center>

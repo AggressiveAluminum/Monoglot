@@ -21,6 +21,6 @@ public class InflectionTableController implements GeneralController {
         //getting the string that was in the ComboBox that was clicked
         String itemName = (String) (InflectionTable.getSelectionModel().getSelectedItem());
 
-
+        aa.monoglot.project.tables.InflectionTable.open(itemName);
     }
 }
