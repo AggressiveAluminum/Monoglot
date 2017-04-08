@@ -21,10 +21,10 @@
         </VBox>
         <BorderPane>
             <top>
-                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500" fx:id="wordSection" disable="true">
+                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500">
                     <padding><Insets top="10" bottom="5"/></padding>
                     <center>
-                        <GridPane vgap="10" hgap="10">
+                        <GridPane vgap="10" hgap="10" fx:id="wordSection">
                             <padding><Insets bottom="10" left="10" right="10" /></padding>
                             <columnConstraints>
                                 <ColumnConstraints minWidth="10" maxWidth="10"/>
@@ -52,7 +52,7 @@
                         </GridPane>
                     </center>
                     <right>
-                        <VBox>
+                        <VBox fx:id="timestampsSection">
                             <padding><Insets left="50" right="10"/></padding>
                             <Label styleClass="grey-italics" fx:id="createdLabel"/>
                             <Label styleClass="grey-italics" fx:id="modifiedLabel"/>
@@ -60,12 +60,14 @@
                     </right>
                     <bottom>
                         <HBox styleClass="controls-bar" spacing="5">
-                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button">
+                            <JFXButton text="%tab.lexicon.button.newWord" onAction="#createNewWord" styleClass="blue-button">
+                            </JFXButton>
+                            <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button" fx:id="deleteWordButton">
                                 <graphic>
                                     <FontIcon iconLiteral="gmi-delete-forever"/>
                                 </graphic>
                             </JFXButton>
-                            <JFXButton text="%tab.lexicon.button.newDefinition" onAction="#createDefinition" styleClass="blue-button"/>
+                            <JFXButton text="%tab.lexicon.button.newDefinition" onAction="#createDefinition" styleClass="blue-button" fx:id="newDefinitionButton"/>
                         </HBox>
                     </bottom>
                 </BorderPane>

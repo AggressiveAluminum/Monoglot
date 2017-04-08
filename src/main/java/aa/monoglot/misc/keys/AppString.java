@@ -11,7 +11,9 @@ public enum AppString implements LocalizationKey {
     PRELOADER_DONE("log.load.preloader-done"),
     HEADWORD_PROMPT_TITLE("dialog.headword-prompt.title"),
     HEADWORD_PROMPT_HEADER("dialog.headword-prompt.header"),
-    HEADWORD_PROMPT_TEXT("dialog.headword-prompt.text");
+    HEADWORD_PROMPT_TEXT("dialog.headword-prompt.text"),
+    HELP_WINDOW_TITLE("app.help.title"),
+    DIALOG_ABOUT_TITLE("dialog.about.title");
 
     private final String key;
     AppString(String key){

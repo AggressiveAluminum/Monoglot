@@ -5,6 +5,7 @@ import aa.monoglot.misc.keys.AppString;
 import aa.monoglot.project.Project;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.dialog.Dialogs;
+import aa.monoglot.ui.dialog.HelpWindow;
 import aa.monoglot.ui.history.History;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -195,5 +196,9 @@ public class MonoglotController implements GeneralController {
     // == OTHER ACTIONS ==
     @FXML private void openAboutDialog(ActionEvent event){
 
+    }
+
+    @FXML private void showHelp(ActionEvent event){
+        new HelpWindow().show();
     }
 }

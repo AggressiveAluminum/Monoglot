@@ -26,6 +26,7 @@
                 <MenuItem text="%menu.edit.newHeadword" accelerator="Shortcut+N" onAction="#createNewWord"/>
             </Menu>
             <Menu text="%menu.help">
+                <MenuItem text="%menu.help.help" onAction="#showHelp"/>
                 <MenuItem text="%menu.help.about" onAction="#openAboutDialog"/>
             </Menu>
         </MenuBar>

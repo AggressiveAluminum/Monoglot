@@ -16,7 +16,7 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
 
@@ -27,11 +27,6 @@ import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 
-/*
- * Notes on things that tripped me up:
- *  - In this class, parentController.setProjectControlsEnabled DOES NOT enable word editing.
- *    Use wordSection.setDisable(false);.
- */
 public class LexiconTabController implements GeneralController {
     private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
     private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("invalid-field");
@@ -44,7 +39,10 @@ public class LexiconTabController implements GeneralController {
     @FXML private CheckComboBox<Tag> searchTags;
     public ListView<Headword> searchResults;
 
-    @FXML private BorderPane wordSection;
+    @FXML private GridPane wordSection;
+    @FXML private VBox timestampsSection;
+    @FXML private Button deleteWordButton;
+    @FXML private Button newDefinitionButton;
     private Headword activeWord;
     @FXML private TextField headwordField, pronunciationField, romanizationField, stemField;
     @FXML private ComboBox<Type> typeField;
@@ -81,7 +79,7 @@ public class LexiconTabController implements GeneralController {
         headwordField.focusedProperty().addListener((v, o, n) -> {
             try {
                 if(!n && activeWord != null && verifyFields()) {
-                    activeWord = activeWord.updateWord(headwordField.getText());
+                    activeWord = activeWord.updateWord(headwordField.getText().trim());
                     updateWordUI();
                 }
             } catch(SQLException | IOException e){throw new RuntimeException(e);}
@@ -170,7 +168,14 @@ public class LexiconTabController implements GeneralController {
         modifiedLabel.setText("");
         populateDefinitions(Collections.emptyList());
 
-        wordSection.setDisable(true);
+        setWordControlsDisabled(true);
+    }
+
+    private void setWordControlsDisabled(boolean disabled){
+        wordSection.setDisable(disabled);
+        timestampsSection.setDisable(disabled);
+        deleteWordButton.setDisable(disabled);
+        newDefinitionButton.setDisable(disabled);
     }
 
     boolean switchActiveWord(Headword newHeadword) throws SQLException, IOException {
@@ -184,10 +189,12 @@ public class LexiconTabController implements GeneralController {
         return false;
     }
 
+    @FXML
     void createNewWord(ActionEvent event) throws SQLException, IOException {
         String word = Dialogs.promptHeadword();
         if(word != null) {
             Headword headword = Headword.create(word);
+            Definition.create(headword, null);
             Log.fine(LogString.LEXICON_NEW_WORD, word);
             if (!switchActiveWord(headword))
                 Log.warning(LogString.LEXICON_SWITCH_FAILED);
@@ -204,9 +211,7 @@ public class LexiconTabController implements GeneralController {
     }
 
     private void updateWordUI() throws SQLException, IOException {
-        if(activeWord == null)
-            wordSection.setDisable(true);
-        else wordSection.setDisable(false);
+        setWordControlsDisabled(activeWord == null);
         headwordField.setText(activeWord == null?"":activeWord.word);
         romanizationField.setText(activeWord == null?"":activeWord.romanization);
         pronunciationField.setText(activeWord == null?"":activeWord.pronunciation);
@@ -253,9 +258,8 @@ public class LexiconTabController implements GeneralController {
     }
 
     private boolean verifyFields(){
-        String field = headwordField.getText();
         boolean ok = true;
-        if(field == null || field.length() == 0) {
+        if(headwordField.getText().trim().length() == 0) {
             ok = false;
             headwordField.pseudoClassStateChanged(ERROR_CLASS, true);
         } else headwordField.pseudoClassStateChanged(ERROR_CLASS, false);
@@ -269,7 +273,7 @@ public class LexiconTabController implements GeneralController {
             if (activeWord != null) {
                 if(!verifyFields())
                     return false;
-                activeWord = activeWord.updateAll(headwordField.getText(), romanizationField.getText(), pronunciationField.getText(),
+                activeWord = activeWord.updateAll(headwordField.getText().trim(), romanizationField.getText(), pronunciationField.getText(),
                         stemField.getText(), typeField.getSelectionModel().getSelectedItem(), categoryField.getSelectionModel().getSelectedItem());
                 for(DefinitionCell cell: definitionsList)
                     cell.save();
@@ -312,7 +316,7 @@ public class LexiconTabController implements GeneralController {
             throw new RuntimeException(e);
             //TODO: what to do?
         } finally {
-            wordSection.setDisable(true);
+            setWordControlsDisabled(true);
         }
         return true;
     }

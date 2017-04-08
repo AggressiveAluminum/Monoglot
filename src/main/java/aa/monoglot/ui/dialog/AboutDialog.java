@@ -1,22 +1,22 @@
 package aa.monoglot.ui.dialog;
 
 import aa.monoglot.Monoglot;
+import aa.monoglot.misc.keys.AppString;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
 
 import java.net.URL;
-import java.util.ResourceBundle;
 
 class AboutDialog extends DismissableDialog {
-    public AboutDialog(ResourceBundle bundle) throws Exception {
+    public AboutDialog() throws Exception {
         //TODO: make this prettier and more functional!
         URL url = getClass().getClassLoader().getResource("fxml/dialog/about.fxml");
         if(url == null) //TODO: make this exception more specific.
             throw new Exception("fxml/dialog/about.fxml");
-        Parent p = FXMLLoader.load(url, bundle);
+        Parent p = FXMLLoader.load(url, Monoglot.getMonoglot().getResources());
         getDialogPane().contentProperty().set(p);
-        setTitle(bundle.getString("dialog.about.title"));
+        setTitle(Monoglot.getMonoglot().getLocalString(AppString.DIALOG_ABOUT_TITLE));
         setResizable(false);
 
         if(!Monoglot.getMonoglot().getIcons().isEmpty()){
