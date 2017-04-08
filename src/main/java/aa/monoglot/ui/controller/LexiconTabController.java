@@ -1,5 +1,7 @@
 package aa.monoglot.ui.controller;
 
+import aa.monoglot.Monoglot;
+import aa.monoglot.misc.keys.AppString;
 import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.Project;
 import aa.monoglot.project.db.*;
@@ -28,8 +30,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class LexiconTabController implements GeneralController {
-    private static final ObservableList<Headword> EMPTY_LIST = new SimpleListProperty<>();
     private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("invalid-field");
+    private static final PseudoClass GREY_ITALICS = PseudoClass.getPseudoClass("grey-italics");
     @FXML private ControlledTab tab;
     private final DefinitionHandlers definitionHandlers = new DefinitionHandlers();
 
@@ -37,7 +39,8 @@ public class LexiconTabController implements GeneralController {
     @FXML private ComboBox<Type> searchType;
     @FXML private ComboBox<Category> searchCategory;
     @FXML private CheckComboBox<Tag> searchTags;
-    public ListView<Headword> searchResults;
+    @FXML private ListView<Headword> searchResults;
+    @FXML private Label searchResultsCount;
 
     @FXML private GridPane wordSection;
     @FXML private VBox timestampsSection;
@@ -143,7 +146,7 @@ public class LexiconTabController implements GeneralController {
 
     @SuppressWarnings("unchecked")
     private void clearInfo() throws SQLException, IOException {
-        searchResults.setItems(EMPTY_LIST);
+        searchResults.setItems(FXCollections.emptyObservableList());
 
         searchField.clear();
 
@@ -210,6 +213,7 @@ public class LexiconTabController implements GeneralController {
         }
     }
 
+    @SuppressWarnings("SuspiciousMethodCalls")
     private void updateWordUI() throws SQLException, IOException {
         setWordControlsDisabled(activeWord == null);
         headwordField.setText(activeWord == null?"":activeWord.word);
@@ -251,10 +255,14 @@ public class LexiconTabController implements GeneralController {
             definitionsList.get(definitionsList.size() - 1).setIsLast(true);
     }
     private void loadWordList() throws SQLException {
-        if(Project.isOpen())
-            searchResults.setItems(FXCollections.observableArrayList(Project.getProject().getDatabase().simpleSearch(
-                UT.c(searchField.getText()), searchType.getSelectionModel().getSelectedItem(),
-                    searchCategory.getSelectionModel().getSelectedItem(), searchTags.getCheckModel().getCheckedItems())));
+        if(Project.isOpen()) {
+            ObservableList<Headword> words = Project.getProject().getDatabase().simpleSearch(
+                    UT.c(searchField.getText()), searchType.getSelectionModel().getSelectedItem(),
+                    searchCategory.getSelectionModel().getSelectedItem(), searchTags.getCheckModel().getCheckedItems());
+            searchResultsCount.setText(Monoglot.getMonoglot().getLocalString(AppString.SEARCH_RESULT_COUNT, words.size()));
+            searchResultsCount.pseudoClassStateChanged(GREY_ITALICS,words.isEmpty());
+            searchResults.setItems(words);
+        }
     }
 
     private boolean verifyFields(){

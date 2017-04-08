@@ -65,7 +65,7 @@
     -fx-text-fill: WHITE;
 }
 
-.grey-italics {
+.grey-italics,:grey-italics {
     -fx-font-style: italic;
     -fx-text-fill: #444444;
 }

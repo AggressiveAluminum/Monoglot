@@ -1,5 +1,7 @@
 package aa.monoglot.project.db;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
@@ -41,8 +43,8 @@ public class Database {
         return db.getNextID();
     }
 
-    public List<Headword> simpleSearch(String searchText, Type type, Category category, List<Tag> tags) throws SQLException {
-        ArrayList<Headword> list = new ArrayList<>();
+    public ObservableList<Headword> simpleSearch(String searchText, Type type, Category category, List<Tag> tags) throws SQLException {
+        ObservableList<Headword> list = FXCollections.observableArrayList();
         PreparedStatement statement = db.getStatement(SIMPLE_SEARCH_SQL);
         searchText = "%" + searchText + "%";
         statement.setString(1, searchText);

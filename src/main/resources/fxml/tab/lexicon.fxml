@@ -15,6 +15,9 @@
                 <Label text="%prompt.search.tags" maxHeight="Infinity"/>
                 <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
             </HBox>
+            <Separator/>
+            <Label fx:id="searchResultsCount"/>
+            <Separator/>
             <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
                 <JFXListView fx:id="searchResults"/>
             </ScrollPane>
