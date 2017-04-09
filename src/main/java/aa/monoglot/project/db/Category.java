@@ -4,130 +4,131 @@ import aa.monoglot.project.Project;
 import aa.monoglot.util.UT;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Darren on 3/13/17.
+ * <kbd>
+ * CREATE TABLE IF NOT EXISTS categories (
+ *   -- part-of-speech.
+ *   -- for noun classes/verb conjugation paradigms/etc, have the subcategory
+ *   --   with a "pointer" to its parent
+ *   -- it may be worth it to keep this as a tree in-memory?
+ *   --  as strings for the UI: (examples)
+ *   --    `noun` name: noun
+ *   --    `noun:G1` or `noun:neuter`; name: G1 or neuter, NOT the UI string
+ *   --    `noun:G1:from greek`; name: "from greek"
+ *   ID INT8 PRIMARY KEY,
+ *   name VARCHAR NOT NULL,
+ *   full_name VARCHAR NOT NULL,
+ *   parent_category INT8,
+ *   description VARCHAR NOT NULL
+ * );
+ * </kbd>
  */
 public class Category {
+    private static final String INSERT_STR = "INSERT INTO categories VALUES (?, ?, ?, ?, '')";
+    private static final String UPDATE_NAME_STR = "UPDATE categories SET name=?,full_name=? WHERE ID=?";
+    private static final String UPDATE_DESC_STR = "UPDATE categories SET description=? WHERE ID=?";
+    private static final String SELECT_STR = "SELECT * FROM categories WHERE ID = ?";
+    private static final String DELETE_STR = "DELETE FROM categories WHERE ID = ?";
+    private static final String SELECT_ALL_STR = "SELECT * FROM categories";
 
-    static final String INSERT_STR = "INSERT INTO tags VALUES (?, ?, ?, ?, ?)";
-    static final String UPDATE_STR = "UPDATE tags SET id=?, name=?, full_name=?, parent_category=?, description=?";
-    static final String SELECT_STR = "SELECT * FROM categories WHERE id = ?";
+    public final long ID;
+    public final Long parent_category;
+    public final String name, full_name, description;
 
-    private final static int ID_COL = 1, NAME_COL = 2, FNAME_COL = 3, PARCAT_COL = 4, DESC_COL = 5;
-
-    public static  UUID id = null, parent_category = null;
-    public static String name = null, full_name = null, description = null;
-
-
-    Category(ResultSet resultSet) throws SQLException {
-        id = (UUID) resultSet.getObject(ID_COL);
-        name = resultSet.getString(NAME_COL);
-        full_name = resultSet.getString(FNAME_COL);
-        parent_category = (UUID) resultSet.getObject(PARCAT_COL);
-        description = resultSet.getString(DESC_COL);
+    private Category(ResultSet resultSet) throws SQLException {
+        ID = resultSet.getLong(1);
+        name = resultSet.getString(2);
+        full_name = resultSet.getString(3);
+        description = resultSet.getString(5);
+        Long temp = resultSet.getLong(4);
+        if(resultSet.wasNull())
+            parent_category = null;
+        else parent_category = temp;
     }
 
-
-    Category(UUID id, String name, String full_name, UUID parent_category, String description){
-        this.id = id;
-        this.name = name;
-        this.full_name = full_name;
-        this.parent_category = parent_category;
-        this.description = description;
-    }
-
-    @Override
-    public String toString() {
-        return parent_category + "<" + name;
-    }
-
-    public String shortName() {
-        return name;
-    }
-
-    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean equals(Object o){
-        if(o != null && o instanceof Category){
-            Category other = (Category) o;
-
-            if(UT.nc(id , other.id)
-                    && name.equals(other.name)
-                    && full_name.equals(other.full_name)
-                    && UT.nc(parent_category, other.parent_category)
-                    && description.equals(other.description))
-                return true;
-        }
-        return false;
+        if(o == null || !(o instanceof Category))
+            return false;
+        return ID == ((Category) o).ID;
     }
 
-    public Category createEmtpyCategory(){
-        return new Category(null, null, null, null, null);
-    }
-
-    public Category insert(UUID id, Category category) throws SQLException {
-
-        Project.getProject().markSaveNeeded();
+    public static Category create(String name, Category parent) throws SQLException {
+        if(name == null || name.isEmpty())
+            throw new IllegalArgumentException("Name cannot be empty.");
         PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
-        //ID
-        if (id == null)
-            throw new IllegalArgumentException("ID cannot be empty.");
-        else statement.setObject(ID_COL, id);
-        //name
-        if(category.name.equals(null))
-            throw new IllegalArgumentException("Name cannot be empty.");
-        else statement.setString(NAME_COL, category.name);
-        //Full name
-        if(category.full_name.equals(null))
-            throw new IllegalArgumentException("Full Name cannont be empty");
-        else statement.setString(FNAME_COL, category.full_name);
-        //Parent category can be null
-
-        //Description
-        if(category.description.equals(null))
-            throw new IllegalArgumentException("Description cannot be empty.");
-        else statement.setString(DESC_COL, category.description);
-
-
-
-        return new Category(statement.executeQuery());
-    }
-
-    public final Category update(UUID id, String newName, String newFullName, UUID parID, String newDescription) throws SQLException{
-
-        if (id == null)
-            throw new IllegalArgumentException("ID cannot be empty.");
-        if(newName.equals(null))
-            throw new IllegalArgumentException("Name cannot be empty.");
-        if(newFullName.equals(null))
-            throw new IllegalArgumentException("Full Name cannot be empty");
-        if(newDescription.equals(null))
-            throw new IllegalArgumentException("A description cannot be empty.");
-
-        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_STR);
-        statement.setObject(ID_COL, id);
-        statement.setString(NAME_COL, newName);
-        statement.setString(FNAME_COL, newFullName);
-        statement.setObject(PARCAT_COL, parID);
-        statement.setString(DESC_COL, newDescription);
-        statement.executeUpdate();
-
-        return new Category(id, newName, newFullName, parID ,newDescription);
-    }
-
-
-    public static Category fetch(UUID id) throws SQLException {
-
-        PreparedStatement stmt =  Project.getProject().getDatabase().sql(SELECT_STR);
-        stmt.setObject(1, id);
-        try(ResultSet resultSet = stmt.executeQuery()) {
-            if (resultSet.next()) {
-                return new Category(resultSet);
-            } else {
-                return null;
-            }
+        long id = Project.getProject().getDatabase().getNextID("categories");
+        statement.setLong(1, id);
+        statement.setString(2, name);
+        if(parent != null) {
+            statement.setString(3, parent.full_name + ":" + name);
+            statement.setLong(4, parent.ID);
+        } else {
+            statement.setString(3, name);
+            statement.setNull(4, Types.OTHER);
         }
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+        return fetch(id);
+    }
+
+    public void delete(Category category) throws SQLException {
+        if(category != null){
+            PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
+            statement.setLong(1, category.ID);
+            statement.executeUpdate();
+            Project.getProject().markSaveNeeded();
+        }
+    }
+
+    public Category updateName(String newName) throws SQLException {
+        if(newName == null || newName.equals(name))
+            return this;
+        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_NAME_STR);
+        statement.setString(1, newName);
+        if(parent_category != null) {
+            //noinspection ConstantConditions
+            statement.setString(2, fetch(parent_category).full_name + ":" + newName);
+        } else {
+            statement.setString(2, newName);
+        }
+        statement.setLong(3, ID);
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+        return fetch(ID);
+    }
+    public Category updateDescription(String newDescription) throws SQLException {
+        if(newDescription == null || newDescription.isEmpty())
+            return this;
+        PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_DESC_STR);
+        statement.setString(1, newDescription);
+        statement.setLong(2, ID);
+        statement.executeUpdate();
+        Project.getProject().markSaveNeeded();
+        return fetch(ID);
+    }
+
+    public static Category fetch(long id) throws SQLException {
+        PreparedStatement statement =  Project.getProject().getDatabase().sql(SELECT_STR);
+        statement.setLong(1, id);
+        try(ResultSet resultSet = statement.executeQuery()){
+            if (resultSet.next())
+                return new Category(resultSet);
+        }
+        return null;
+    }
+
+    public static List<Category> fetchAll() throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
+        List<Category> categories = new ArrayList<>();
+        try(ResultSet resultSet = statement.executeQuery()){
+            while(resultSet.next())
+                categories.add(new Category(resultSet));
+        }
+        return categories;
     }
 }

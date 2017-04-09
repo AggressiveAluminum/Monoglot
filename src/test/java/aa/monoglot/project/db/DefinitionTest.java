@@ -14,8 +14,8 @@ public class DefinitionTest {
     @BeforeClass
     public static void init() throws Exception {
         Project.newProject();
-        word1 = Headword.put(Headword.create().update("test","","","",null,null));
-        word2 = Headword.put(Headword.create().update("tekst","text","tɛk͡st","tex",null,null));
+        word1 = Headword.create("test");
+        word2 = Headword.create("tekst");
     }
     @AfterClass
     public static void close() throws Exception {
@@ -34,15 +34,15 @@ public class DefinitionTest {
     @Test
     public void updateText() throws SQLException {
         Definition def1 = Definition.create(word1, null);
-        Definition def2 = def1.update("A test definition");
+        Definition def2 = def1.updateText("A test definition");
         Assert.assertEquals(def1.ID, def2.ID);
         Assert.assertEquals(def1.headwordID, def2.headwordID);
     }
 
     @Test
     public void updateOrder() throws SQLException {
-        Definition def1 = Definition.create(word2, null).update("test1");
-        Definition def2 = Definition.create(word2, def1).update("test2");
+        Definition def1 = Definition.create(word2, null).updateText("test1");
+        Definition def2 = Definition.create(word2, def1).updateText("test2");
         Assert.assertEquals(1, def1.order);
         Assert.assertEquals(2, def2.order);
         List<Definition> defs = def1.update(2);

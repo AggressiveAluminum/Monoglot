@@ -11,7 +11,6 @@ import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -56,6 +55,8 @@ public class LexiconTabController implements GeneralController {
     @FXML private VBox definitionsListPane;
     private ObservableList<DefinitionCell> definitionsList;
 
+    private boolean updatingUIFlag = false;
+
     @SuppressWarnings("unchecked")
     @FXML private void initialize(){
         tab.controller(this);
@@ -81,61 +82,63 @@ public class LexiconTabController implements GeneralController {
         // === HEADWORD FOCUS ===
         headwordField.focusedProperty().addListener((v, o, n) -> {
             try {
-                if(!n && activeWord != null && verifyFields()) {
-                    activeWord = activeWord.updateWord(headwordField.getText().trim());
+                if(!updatingUIFlag && !n && activeWord != null && verifyFields()) {
+                    save();
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
         headwordField.textProperty().addListener(e->verifyFields());
         romanizationField.focusedProperty().addListener((v, o, n) -> {
             try {
-                if(!n && activeWord != null && verifyFields()){
+                if(!updatingUIFlag && !n && activeWord != null && verifyFields()) {
                     activeWord = activeWord.updateRomanization(romanizationField.getText());
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
         romanizationField.textProperty().addListener(e->verifyFields());
         pronunciationField.focusedProperty().addListener((v, o, n) -> {
             try {
-                if(!n && activeWord != null && verifyFields())
+                if(!updatingUIFlag && !n && activeWord != null && verifyFields()) {
                     activeWord = activeWord.updatePronunciation(pronunciationField.getText());
+                    updateWordUI();
+                }
             } catch(SQLException e){throw new RuntimeException(e);}
         });
         pronunciationField.textProperty().addListener(e->verifyFields());
         stemField.focusedProperty().addListener((v, o, n) -> {
             try {
-                if(!n && activeWord != null && verifyFields()){
+                if(!updatingUIFlag && !n && activeWord != null && verifyFields()) {
                     activeWord = activeWord.updateStem(stemField.getText());
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
         stemField.textProperty().addListener(e->verifyFields());
         tagsField.focusedProperty().addListener((v, o, n) -> {
             try {
-                if(!n && activeWord != null && verifyFields()){
+                if(!updatingUIFlag && !n && activeWord != null && verifyFields()) {
                     activeWord = activeWord.updateTags(tagsField.getCheckModel().getCheckedItems());
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
         typeField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
             try {
-                if(activeWord != null && verifyFields()){
+                if(!updatingUIFlag && activeWord != null && verifyFields()){
                     activeWord = activeWord.updateType(n);
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
         categoryField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
             try {
-                if(activeWord != null && verifyFields()){
+                if(!updatingUIFlag && activeWord != null && verifyFields()) {
                     activeWord = activeWord.updateCategory(n);
                     updateWordUI();
                 }
-            } catch(SQLException | IOException e){throw new RuntimeException(e);}
+            } catch(SQLException e){throw new RuntimeException(e);}
         });
 
         // === DEFINITIONS INIT ===
@@ -146,16 +149,13 @@ public class LexiconTabController implements GeneralController {
 
     @SuppressWarnings("unchecked")
     private void clearInfo() throws SQLException, IOException {
+        updatingUIFlag = true;
         searchResults.setItems(FXCollections.emptyObservableList());
-
         searchField.clear();
-
         searchType.getSelectionModel().clearSelection();
         searchType.getItems().clear();
-
         searchCategory.getSelectionModel().clearSelection();
         searchCategory.getItems().clear();
-
         searchTags.getCheckModel().clearChecks();
         searchTags.getItems().clear();
 
@@ -165,13 +165,17 @@ public class LexiconTabController implements GeneralController {
         romanizationField.setText("");
         stemField.setText("");
         typeField.getSelectionModel().clearSelection();
+        typeField.setValue(null);
+        typeField.getButtonCell().setText("");
         categoryField.getSelectionModel().clearSelection();
+        categoryField.setValue(null);
+        categoryField.getButtonCell().setText("");
         tagsField.getCheckModel().clearChecks();
         createdLabel.setText("");
         modifiedLabel.setText("");
         populateDefinitions(Collections.emptyList());
-
         setWordControlsDisabled(true);
+        updatingUIFlag = false;
     }
 
     private void setWordControlsDisabled(boolean disabled){
@@ -182,11 +186,11 @@ public class LexiconTabController implements GeneralController {
     }
 
     boolean switchActiveWord(Headword newHeadword) throws SQLException, IOException {
+        if(newHeadword == null)
+            return true;
         if(save()) {
-            if (newHeadword != null) {
-                activeWord = newHeadword;
-                updateWordUI();
-            }
+            activeWord = newHeadword;
+            updateWordUI();
             return true;
         }
         return false;
@@ -201,6 +205,7 @@ public class LexiconTabController implements GeneralController {
             Log.fine(LogString.LEXICON_NEW_WORD, word);
             if (!switchActiveWord(headword))
                 Log.warning(LogString.LEXICON_SWITCH_FAILED);
+            else headwordField.requestFocus();
         }
     }
 
@@ -214,8 +219,8 @@ public class LexiconTabController implements GeneralController {
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")
-    private void updateWordUI() throws SQLException, IOException {
-        setWordControlsDisabled(activeWord == null);
+    private void updateWordUI() throws SQLException {
+        updatingUIFlag = true;
         headwordField.setText(activeWord == null?"":activeWord.word);
         romanizationField.setText(activeWord == null?"":activeWord.romanization);
         pronunciationField.setText(activeWord == null?"":activeWord.pronunciation);
@@ -225,30 +230,32 @@ public class LexiconTabController implements GeneralController {
             modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         else modifiedLabel.setText("");
 
-        int temp;
-        if(activeWord == null || activeWord.type == null)
-            typeField.getSelectionModel().clearSelection();
-        else if((temp = typeField.getItems().indexOf(activeWord.type)) != -1)
-            typeField.getSelectionModel().select(temp);
-        if(activeWord == null || activeWord.category == null)
-            categoryField.getSelectionModel().clearSelection();
-        else if((temp = categoryField.getItems().indexOf(activeWord.category)) != -1)
-            categoryField.getSelectionModel().select(temp);
-        if(activeWord != null)
+        typeField.getSelectionModel().clearSelection();
+        typeField.setValue(null);
+        typeField.getButtonCell().setText("");
+        categoryField.getSelectionModel().clearSelection();
+        categoryField.setValue(null);
+        categoryField.getButtonCell().setText("");
+        tagsField.getCheckModel().clearChecks();
+        if(activeWord != null){
+            if(activeWord.getType() != null)
+                typeField.getSelectionModel().select(activeWord.getType());
+            if(activeWord.getCategory() != null)
+                categoryField.getSelectionModel().select(activeWord.getCategory());
             for(Tag tag: Tag.fetchFor(activeWord))
                 tagsField.getCheckModel().check(tagsField.getItems().indexOf(tag));
-        populateDefinitions(null);
+        }
+        populateDefinitions(Definition.fetch(activeWord));
         loadWordList();
+        setWordControlsDisabled(activeWord == null);
+        updatingUIFlag = false;
     }
 
     @SuppressWarnings("unchecked")
-    private void populateDefinitions(List<Definition> list) throws SQLException, IOException {
+    private void populateDefinitions(List<Definition> list) throws SQLException {
         definitionsListPane.getChildren().setAll(FXCollections.observableArrayList());
         // don't try this at home, kids.
         definitionsList = (ObservableList<DefinitionCell>) (ObservableList) definitionsListPane.getChildren();
-
-        if(list == null)
-            list = Definition.fetch(activeWord);
         for(Definition definition: list)
             definitionsList.add(new DefinitionCell(definition, definitionHandlers));
         if(definitionsList.size() > 0)
@@ -266,13 +273,13 @@ public class LexiconTabController implements GeneralController {
     }
 
     private boolean verifyFields(){
-        boolean ok = true;
         if(headwordField.getText().trim().length() == 0) {
-            ok = false;
             headwordField.pseudoClassStateChanged(ERROR_CLASS, true);
-        } else headwordField.pseudoClassStateChanged(ERROR_CLASS, false);
-        //TODO: verify other fields
-        return ok;
+            return false;
+        } else {
+            headwordField.pseudoClassStateChanged(ERROR_CLASS, false);
+            return true;
+        }
     }
 
     @Override
@@ -288,7 +295,7 @@ public class LexiconTabController implements GeneralController {
                 updateWordUI();
             }
             return true;
-        } catch(SQLException | IOException e){
+        } catch(SQLException e){
             //TODO: tell someone
         }
         return false;
@@ -297,20 +304,20 @@ public class LexiconTabController implements GeneralController {
     @Override
     public boolean onLoad(){
         try {
-            if (activeWord != null)
+            if(activeWord != null)
                 activeWord = Headword.fetch(activeWord.ID);
             ObservableList<Type> types = FXCollections.observableList(Type.fetchAll());
                 typeField.setItems(types);
                 searchType.setItems(types);
-            /*ObservableList<Category> categories = FXCollections.observableList(Category.fetchAll());
+            ObservableList<Category> categories = FXCollections.observableList(Category.fetchAll());
                 categoryField.setItems(categories);
-                searchCategory.setItems(categories);*///TODO
+                searchCategory.setItems(categories);
             ObservableList<Tag> tags = FXCollections.observableList(Tag.fetchAll());
                 tagsField.getItems().setAll(tags);
                 searchTags.getItems().setAll(tags);
             updateWordUI();
             return true;
-        } catch(SQLException | IOException e){
+        } catch(SQLException e){
             Log.warning(e.getLocalizedMessage());
             return false;
         }
@@ -320,7 +327,7 @@ public class LexiconTabController implements GeneralController {
     public boolean onUnload(){
         try {
             clearInfo();
-        } catch(SQLException |IOException e){
+        } catch(SQLException | IOException e){
             throw new RuntimeException(e);
             //TODO: what to do?
         } finally {
@@ -332,9 +339,8 @@ public class LexiconTabController implements GeneralController {
     @FXML
     private void createDefinition(ActionEvent event) throws SQLException, IOException {
         if(activeWord != null) {
-            if(activeWord.ID == null)
-                if(!verifyFields() || !save())
-                    return;
+            if(!verifyFields())
+                return;
             Definition previous = definitionsList.isEmpty()?null: definitionsList.get(definitionsList.size() - 1).getDefinition();
             if(definitionsList.size() > 0)
                 definitionsList.get(definitionsList.size() - 1).setIsLast(false);
@@ -353,7 +359,7 @@ public class LexiconTabController implements GeneralController {
             try {
                 DefinitionCell cell = (DefinitionCell) ((Button) event.getSource()).getParent().getParent();
                 populateDefinitions(cell.getDefinition().update(cell.getDefinition().order - 1));
-            } catch(SQLException | IOException e){
+            } catch(SQLException e){
                 throw new RuntimeException(e);
             }
         }
@@ -362,7 +368,7 @@ public class LexiconTabController implements GeneralController {
             try {
                 DefinitionCell cell = (DefinitionCell) ((Button) event.getSource()).getParent().getParent();
                 populateDefinitions(cell.getDefinition().update(cell.getDefinition().order + 1));
-            } catch(SQLException | IOException e){
+            } catch(SQLException e){
                 throw new RuntimeException(e);
             }
         }
@@ -373,7 +379,7 @@ public class LexiconTabController implements GeneralController {
                 Definition.delete(cell.getDefinition());
                 populateDefinitions(Definition.fetch(activeWord));
                 Log.info(LogString.LEXICON_DEF_DELETED, cell.getDefinition().order, activeWord.word);
-            } catch (SQLException | IOException e) {
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }

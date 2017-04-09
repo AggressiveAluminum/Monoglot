@@ -62,12 +62,12 @@
                         </VBox>
                     </right>
                     <bottom>
-                        <HBox styleClass="controls-bar" spacing="5">
+                        <HBox styleClass="controls-bar" spacing="5" style="-fx-font-weight:600">
                             <JFXButton text="%tab.lexicon.button.newWord" onAction="#createNewWord" styleClass="blue-button">
                             </JFXButton>
                             <JFXButton text="%tab.lexicon.button.deleteWord" onAction="#deleteWord" styleClass="red-button" fx:id="deleteWordButton">
                                 <graphic>
-                                    <FontIcon iconLiteral="gmi-delete-forever"/>
+                                    <FontIcon iconLiteral="gmi-delete-forever" iconColor="whitesmoke"/>
                                 </graphic>
                             </JFXButton>
                             <JFXButton text="%tab.lexicon.button.newDefinition" onAction="#createDefinition" styleClass="blue-button" fx:id="newDefinitionButton"/>

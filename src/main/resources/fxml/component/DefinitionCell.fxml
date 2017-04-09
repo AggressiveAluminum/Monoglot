@@ -41,7 +41,7 @@
                     <Insets topRightBottomLeft="0"/>
                 </padding>
                 <graphic>
-                    <FontIcon iconLiteral="gmi-delete-forever"/>
+                    <FontIcon iconLiteral="gmi-delete-forever" iconColor="whitesmoke"/>
                 </graphic>
             </JFXButton>
         </VBox>

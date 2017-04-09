@@ -58,9 +58,4 @@ final class DatabaseImpl {
             SQL_STATEMENTS.put(sql, p = getConnection().prepareStatement(sql));
         return p;
     }
-
-    UUID getNextID() {
-        //TODO: guarentee doesn't exist.
-        return UUID.randomUUID();
-    }
 }

@@ -21,11 +21,15 @@ public class DefinitionCell extends BorderPane {
     @FXML private Button deleteButton;
     @FXML private TextArea textArea;
 
-    public DefinitionCell(Definition definition, LexiconTabController.DefinitionHandlers handlers) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/component/DefinitionCell.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        loader.load();
+    public DefinitionCell(Definition definition, LexiconTabController.DefinitionHandlers handlers){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/component/DefinitionCell.fxml"));
+            loader.setRoot(this);
+            loader.setController(this);
+            loader.load();
+        } catch (IOException e){
+            throw new RuntimeException(e);
+        }
 
         update(definition);
         if(handlers != null) {
@@ -37,7 +41,7 @@ public class DefinitionCell extends BorderPane {
             if(!n) {
                 boolean last = downButton.isDisabled();
                 try {
-                    update(definition.update(textArea.getText()));
+                    update(definition.updateText(textArea.getText()));
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -60,7 +64,7 @@ public class DefinitionCell extends BorderPane {
     }
 
     public void save() throws SQLException {
-        update(definition.update(textArea.getText()));
+        update(definition.updateText(textArea.getText()));
     }
     public void setIsLast(boolean isLast){
         downButton.setDisable(isLast);

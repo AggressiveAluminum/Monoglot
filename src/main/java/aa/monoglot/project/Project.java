@@ -3,6 +3,7 @@ package aa.monoglot.project;
 import aa.monoglot.misc.keys.LocalizationKey;
 import aa.monoglot.misc.keys.LogString;
 import aa.monoglot.project.db.Database;
+import aa.monoglot.project.db.Type;
 import aa.monoglot.project.io.IO;
 import aa.monoglot.util.BackedSettings;
 import aa.monoglot.util.Log;
@@ -74,7 +75,7 @@ public class Project {
      * @throws ClassNotFoundException if the database driver cannot be loaded.
      * @throws SQLException if the database initialization fails.
      */
-    private Project(Path path) throws IOException, SQLException, ClassNotFoundException {
+    private Project(final Path path) throws IOException, SQLException, ClassNotFoundException {
         if(path == null){
             workingPath = Files.createTempDirectory("mglt");
         } else {
@@ -95,6 +96,10 @@ public class Project {
 
         database = new Database(workingPath);
         settings = new BackedSettings<>(workingPath.resolve("settings.properties"));
+
+        if(path == null){
+            Type.populateDefaults(database);
+        }
 
         Log.info(LogString.PROJECT_PATH, workingPath.toString());
     }

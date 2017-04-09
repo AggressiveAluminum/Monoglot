@@ -16,30 +16,27 @@ import java.util.UUID;
 /**
  * <kbd>
  * CREATE TABLE IF NOT EXISTS definition (
- *    id UUID PRIMARY KEY,
+ *    ID UUID PRIMARY KEY,
  *    entry_id UUID,
  *    def_order INT NOT NULL,
  *    text VARCHAR NOT NULL,
  *    created TIMESTAMP NOT NULL,
  *    modified TIMESTAMP,
- *    FOREIGN KEY(entry_id) REFERENCES entry(id) ON DELETE CASCADE ON UPDATE CASCADE
+ *    FOREIGN KEY(entry_id) REFERENCES entry(ID) ON DELETE CASCADE ON UPDATE CASCADE
  * );
  * </kbd>
  */
 public class Definition {
-    static final String INSERT_STR = "INSERT INTO definition VALUES (?, ?, ?, '', ?, NULL)";
-    static final String UPDATE_TEXT_STR = "UPDATE definition SET text = ?, modified = ? WHERE id = ?";
-    static final String UPDATE_ORDER_STR1 = "UPDATE definition SET def_order = ? WHERE def_order = ? AND entry_id = ?";
-    static final String UPDATE_ORDER_STR2 = "UPDATE definition SET def_order = ? WHERE id = ?";
-    static final String SELECT_SINGLE_STR = "SELECT * FROM definition WHERE id = ?";
-    static final String SELECT_ALL_STR = "SELECT * FROM definition WHERE entry_id = ? ORDER BY def_order ASC";
-    static final String DELETE_STR = "DELETE FROM definition WHERE id = ?";
-    static final String DELETE_STR2 = "UPDATE definition as defs SET def_order=((SELECT def_order FROM definition WHERE definition.id=defs.id) - 1) WHERE def_order > ? AND entry_id = ?";
+    private static final String INSERT_STR = "INSERT INTO definition VALUES (?, ?, ?, '', ?, NULL)",
+            UPDATE_TEXT_STR = "UPDATE definition SET text = ?, modified = ? WHERE ID = ?",
+            UPDATE_ORDER_STR1 = "UPDATE definition SET def_order = ? WHERE def_order = ? AND entry_id = ?",
+            UPDATE_ORDER_STR2 = "UPDATE definition SET def_order = ? WHERE ID = ?",
+            SELECT_SINGLE_STR = "SELECT * FROM definition WHERE ID = ?",
+            SELECT_ALL_STR = "SELECT * FROM definition WHERE entry_id = ? ORDER BY def_order ASC",
+            DELETE_STR = "DELETE FROM definition WHERE ID = ?",
+            DELETE_STR2 = "UPDATE definition AS defs SET def_order=((SELECT def_order FROM definition WHERE definition.ID=defs.ID) - 1) WHERE def_order > ? AND entry_id = ?";
 
-    private static final int ID_COL = 1, ENTRY_ID_COL = 2, ORDER_COL = 3, TEXT_COL = 4,
-        CREATED_COL = 5, MODIFIED_COL = 6;
-
-    public final UUID ID, headwordID;
+    final long ID, headwordID;
     public final int order;
     public final String text;
     public final Timestamp created, modified;
@@ -47,9 +44,9 @@ public class Definition {
     public static Definition create(Headword word, Definition previous) throws SQLException {
         PreparedStatement statement = Project.getProject().getDatabase().sql(INSERT_STR);
         Project.getProject().markSaveNeeded();
-        UUID id = Project.getProject().getDatabase().getNextID();
-        statement.setObject(1, id);
-        statement.setObject(2, word.ID);
+        long id = Project.getProject().getDatabase().getNextID("definition");
+        statement.setLong(1, id);
+        statement.setLong(2, word.ID);
         statement.setInt(3, previous == null?1:previous.order + 1);
         statement.setTimestamp(4, Timestamp.from(Instant.now()));
         statement.execute();
@@ -64,35 +61,27 @@ public class Definition {
     public static void delete(Definition definition) throws SQLException {
         PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
         Project.getProject().markSaveNeeded();
-        statement.setObject(1, definition.ID);
+        statement.setLong(1, definition.ID);
         statement.executeUpdate();
 
         statement = Project.getProject().getDatabase().sql(DELETE_STR2);
         statement.setInt(1, definition.order);
-        statement.setObject(2, definition.headwordID);
+        statement.setLong(2, definition.headwordID);
         statement.executeUpdate();
     }
-    private Definition(UUID id, UUID headwordID, int order, String text, Timestamp created, Timestamp modified){
-        this.ID = id;
-        this.headwordID = headwordID;
-        this.order = order;
-        this.text = text;
-        this.created = created;
-        this.modified = modified;
-    }
     private Definition(ResultSet resultSet) throws SQLException {
-        ID = (UUID) resultSet.getObject(ID_COL);
-        headwordID = (UUID) resultSet.getObject(ENTRY_ID_COL);
-        order = resultSet.getInt(ORDER_COL);
-        text = resultSet.getString(TEXT_COL);
-        created = resultSet.getTimestamp(CREATED_COL);
+        ID = resultSet.getLong(1);
+        headwordID = resultSet.getLong(2);
+        order = resultSet.getInt(3);
+        text = resultSet.getString(4);
+        created = resultSet.getTimestamp(5);
 
-        Timestamp temp = (Timestamp) resultSet.getObject(MODIFIED_COL);
+        Timestamp temp = (Timestamp) resultSet.getObject(6);
         modified = resultSet.wasNull()?null:temp;
     }
 
-    public Definition update(String newText) throws SQLException{
-        if(text.equals(newText))
+    public Definition updateText(String newText) throws SQLException{
+        if(newText == null || text.equals(newText))
             return this;
         Project.getProject().markSaveNeeded();
         PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_TEXT_STR);
@@ -100,35 +89,44 @@ public class Definition {
         statement.setTimestamp(2, Timestamp.from(Instant.now()));
         statement.setObject(3, ID);
         statement.executeUpdate();
-        return new Definition(ID, headwordID, order, UT.c(newText), created, Timestamp.from(Instant.now()));
+        return fetch(ID);
     }
     public List<Definition> update(int newOrder) throws SQLException {
         if(newOrder < 1)
             throw new IllegalArgumentException();
         if(newOrder == order)
-            return fetch(headwordID);
+            return fetchFor(headwordID);
         Project.getProject().markSaveNeeded();
         PreparedStatement statement = Project.getProject().getDatabase().sql(UPDATE_ORDER_STR1);
         statement.setInt(1, order);
         statement.setInt(2, newOrder);
-        statement.setObject(3, headwordID);
+        statement.setLong(3, headwordID);
         statement.executeUpdate();
         statement = Project.getProject().getDatabase().sql(UPDATE_ORDER_STR2);
         statement.setInt(1, newOrder);
-        statement.setObject(2, this.ID);
+        statement.setLong(2, ID);
         statement.executeUpdate();
-        return fetch(headwordID);
+        return fetchFor(headwordID);
     }
 
-    public static List<Definition> fetch(Headword word) throws SQLException {
-        if(word == null || word.ID == null)
-            return Collections.emptyList();
-        return fetch(word.ID);
+    private static Definition fetch(long id) throws SQLException {
+        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_SINGLE_STR);
+        statement.setLong(1, id);
+        try(ResultSet resultSet = statement.executeQuery()){
+            if(resultSet.next())
+                return new Definition(resultSet);
+        }
+        return null;
     }
-    private static List<Definition> fetch(UUID wordID) throws SQLException {
+    public static List<Definition> fetch(Headword word) throws SQLException {
+        if(word == null)
+            return Collections.emptyList();
+        return fetchFor(word.ID);
+    }
+    private static List<Definition> fetchFor(long wordID) throws SQLException {
         List<Definition> definitions = new ArrayList<>();
         PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
-        statement.setObject(1, wordID);
+        statement.setLong(1, wordID);
         try(ResultSet resultSet = statement.executeQuery()){
             while(resultSet.next())
                 definitions.add(new Definition(resultSet));
@@ -140,11 +138,8 @@ public class Definition {
     public boolean equals(Object o){
         if(o != null && o instanceof Definition){
             Definition other = (Definition) o;
-            if(UT.nc(ID, other.ID)
-                    && order == other.order
-                    && headwordID.equals(other.headwordID)
-                    && text.equals(other.text)
-                    && created.equals(other.created))
+            if(ID == other.ID && order == other.order && headwordID == other.headwordID
+                    && text.equals(other.text) && created.equals(other.created))
                 return true;
         }
         return false;

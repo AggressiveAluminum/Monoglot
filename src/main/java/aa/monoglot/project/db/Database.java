@@ -1,6 +1,5 @@
 package aa.monoglot.project.db;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -9,12 +8,12 @@ import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Database {
-    private final static String SIMPLE_SEARCH_SQL = "SELECT * FROM entry WHERE word LIKE ? OR stem LIKE ? OR romanization LIKE ? OR pronunciation like ? ORDER BY word ASC";
+    private final static String SIMPLE_SEARCH_SQL = "SELECT * FROM entry WHERE (word LIKE ? OR stem LIKE ? OR romanization LIKE ? OR pronunciation like ?) %s %s ORDER BY word ASC",
+            SEARCH_TYPE_PART = "AND type = ?",
+            SEARCH_CATEGORY_PART = "AND category = ?";
 
     private final DatabaseImpl db;
 
@@ -39,18 +38,28 @@ public class Database {
         return db.getStatement(sql);
     }
 
-    UUID getNextID(){
-        return db.getNextID();
+    Long getNextID(String table) throws SQLException {
+        PreparedStatement statement = sql("SELECT MAX(ID) FROM " + table);
+        try(ResultSet resultSet = statement.executeQuery()){
+            if(resultSet.next())
+                return resultSet.getLong(1) + 1;
+        }
+        return 0L;
     }
 
     public ObservableList<Headword> simpleSearch(String searchText, Type type, Category category, List<Tag> tags) throws SQLException {
         ObservableList<Headword> list = FXCollections.observableArrayList();
-        PreparedStatement statement = db.getStatement(SIMPLE_SEARCH_SQL);
+        PreparedStatement statement = db.getStatement(String.format(SIMPLE_SEARCH_SQL, type == null?"":SEARCH_TYPE_PART, category == null?"":SEARCH_CATEGORY_PART));
         searchText = "%" + searchText + "%";
-        statement.setString(1, searchText);
-        statement.setString(2, searchText);
-        statement.setString(3, searchText);
-        statement.setString(4, searchText);
+        int order = 1;
+        statement.setString(order++, searchText);
+        statement.setString(order++, searchText);
+        statement.setString(order++, searchText);
+        statement.setString(order++, searchText);
+        if(type != null)
+            statement.setObject(order++, type.ID);
+        if(category != null)
+            statement.setObject(order, category.ID);
 
         try(ResultSet resultSet = statement.executeQuery()){
             while(resultSet.next())
