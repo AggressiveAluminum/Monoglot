@@ -14,7 +14,9 @@ public enum AppString implements LocalizationKey {
     HEADWORD_PROMPT_TEXT("dialog.headword-prompt.text"),
     HELP_WINDOW_TITLE("app.help.title"),
     DIALOG_ABOUT_TITLE("dialog.about.title"),
-    SEARCH_RESULT_COUNT("tab.lexicon.search-result-count");
+    SEARCH_RESULT_COUNT("tab.lexicon.search-result-count"),
+    TYPE_FIELD_PROMPT("prompt.lex.type"),
+    CATEGORY_FIELD_PROMPT("prompt.lex.category");
 
     private final String key;
     AppString(String key){

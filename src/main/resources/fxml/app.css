@@ -37,7 +37,7 @@
 }
 
 .content-tabs {-fx-tab-max-height: 0;}
-.content-tabs .tab-header-area {visibility: hidden;}
+.content-tabs .tab-header-area {visibility: hidden;-fx-tab-max-height: 0;}
 
 .cancel-button {
     -fx-font-size: 14px;

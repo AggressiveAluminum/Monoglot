@@ -1,6 +1,6 @@
 package aa.monoglot.ui.history;
 
 interface HistoryAction {
-    boolean doAction();
-    boolean undoAction();
+    boolean doAction(int currentTab);
+    boolean undoAction(int currentTab);
 }

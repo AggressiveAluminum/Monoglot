@@ -10,6 +10,7 @@ import aa.monoglot.ui.component.DefinitionCell;
 import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
+import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,8 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.CheckComboBox;
@@ -28,6 +31,7 @@ import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class LexiconTabController implements GeneralController {
     private static final PseudoClass ERROR_CLASS = PseudoClass.getPseudoClass("invalid-field");
     private static final PseudoClass GREY_ITALICS = PseudoClass.getPseudoClass("grey-italics");
@@ -47,8 +51,10 @@ public class LexiconTabController implements GeneralController {
     @FXML private Button newDefinitionButton;
     private Headword activeWord;
     @FXML private TextField headwordField, pronunciationField, romanizationField, stemField;
-    @FXML private ComboBox<Type> typeField;
-    @FXML private ComboBox<Category> categoryField;
+    //@FXML private JFXComboBox<Type> typeField;
+    @FXML private BorderPane typeFieldContainer;
+    //@FXML private JFXComboBox<Category> categoryField;
+    @FXML private BorderPane categoryFieldContainer;
     @FXML private CheckComboBox<Tag> tagsField;
     @FXML private Label createdLabel, modifiedLabel;
 
@@ -124,23 +130,6 @@ public class LexiconTabController implements GeneralController {
                 }
             } catch(SQLException e){throw new RuntimeException(e);}
         });
-        typeField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
-            try {
-                if(!updatingUIFlag && activeWord != null && verifyFields()){
-                    activeWord = activeWord.updateType(n);
-                    updateWordUI();
-                }
-            } catch(SQLException e){throw new RuntimeException(e);}
-        });
-        categoryField.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
-            try {
-                if(!updatingUIFlag && activeWord != null && verifyFields()) {
-                    activeWord = activeWord.updateCategory(n);
-                    updateWordUI();
-                }
-            } catch(SQLException e){throw new RuntimeException(e);}
-        });
-
         // === DEFINITIONS INIT ===
         definitionsListPane.getChildren().setAll(FXCollections.observableArrayList());
         // don't try this at home, kids.
@@ -154,8 +143,12 @@ public class LexiconTabController implements GeneralController {
         searchField.clear();
         searchType.getSelectionModel().clearSelection();
         searchType.getItems().clear();
+        searchType.setValue(null);
+        searchType.getButtonCell().setText("");
         searchCategory.getSelectionModel().clearSelection();
         searchCategory.getItems().clear();
+        searchCategory.setValue(null);
+        searchCategory.getButtonCell().setText("");
         searchTags.getCheckModel().clearChecks();
         searchTags.getItems().clear();
 
@@ -164,12 +157,9 @@ public class LexiconTabController implements GeneralController {
         pronunciationField.setText("");
         romanizationField.setText("");
         stemField.setText("");
-        typeField.getSelectionModel().clearSelection();
-        typeField.setValue(null);
-        typeField.getButtonCell().setText("");
-        categoryField.getSelectionModel().clearSelection();
-        categoryField.setValue(null);
-        categoryField.getButtonCell().setText("");
+
+        spawnTypeField(FXCollections.observableList(Type.fetchAll()));
+        spawnCategoryField(FXCollections.observableList(Category.fetchAll()));
         tagsField.getCheckModel().clearChecks();
         createdLabel.setText("");
         modifiedLabel.setText("");
@@ -185,8 +175,8 @@ public class LexiconTabController implements GeneralController {
         newDefinitionButton.setDisable(disabled);
     }
 
-    boolean switchActiveWord(Headword newHeadword) throws SQLException, IOException {
-        if(newHeadword == null)
+    public boolean switchActiveWord(Headword newHeadword) throws SQLException, IOException {
+        if(newHeadword == null || newHeadword.equals(activeWord))
             return true;
         if(save()) {
             activeWord = newHeadword;
@@ -230,28 +220,32 @@ public class LexiconTabController implements GeneralController {
             modifiedLabel.setText(activeWord.modified.toLocalDateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         else modifiedLabel.setText("");
 
+        JFXComboBox<Type> typeField = (JFXComboBox<Type>) typeFieldContainer.getCenter();
         typeField.getSelectionModel().clearSelection();
         typeField.setValue(null);
         typeField.getButtonCell().setText("");
+
+        JFXComboBox<Category> categoryField = (JFXComboBox<Category>) categoryFieldContainer.getCenter();
         categoryField.getSelectionModel().clearSelection();
         categoryField.setValue(null);
         categoryField.getButtonCell().setText("");
+
         tagsField.getCheckModel().clearChecks();
         if(activeWord != null){
             if(activeWord.getType() != null)
-                typeField.getSelectionModel().select(activeWord.getType());
+                ((JFXComboBox<Type>) typeFieldContainer.getCenter()).getSelectionModel().select(activeWord.getType());
             if(activeWord.getCategory() != null)
                 categoryField.getSelectionModel().select(activeWord.getCategory());
             for(Tag tag: Tag.fetchFor(activeWord))
                 tagsField.getCheckModel().check(tagsField.getItems().indexOf(tag));
         }
+
         populateDefinitions(Definition.fetch(activeWord));
         loadWordList();
         setWordControlsDisabled(activeWord == null);
         updatingUIFlag = false;
     }
-
-    @SuppressWarnings("unchecked")
+    
     private void populateDefinitions(List<Definition> list) throws SQLException {
         definitionsListPane.getChildren().setAll(FXCollections.observableArrayList());
         // don't try this at home, kids.
@@ -289,7 +283,8 @@ public class LexiconTabController implements GeneralController {
                 if(!verifyFields())
                     return false;
                 activeWord = activeWord.updateAll(headwordField.getText().trim(), romanizationField.getText(), pronunciationField.getText(),
-                        stemField.getText(), typeField.getSelectionModel().getSelectedItem(), categoryField.getSelectionModel().getSelectedItem());
+                        stemField.getText(), ((JFXComboBox<Type>) typeFieldContainer.getCenter()).getSelectionModel().getSelectedItem(),
+                        ((JFXComboBox<Category>) categoryFieldContainer.getCenter()).getSelectionModel().getSelectedItem());
                 for(DefinitionCell cell: definitionsList)
                     cell.save();
                 updateWordUI();
@@ -307,10 +302,10 @@ public class LexiconTabController implements GeneralController {
             if(activeWord != null)
                 activeWord = Headword.fetch(activeWord.ID);
             ObservableList<Type> types = FXCollections.observableList(Type.fetchAll());
-                typeField.setItems(types);
+                spawnTypeField(types);
                 searchType.setItems(types);
             ObservableList<Category> categories = FXCollections.observableList(Category.fetchAll());
-                categoryField.setItems(categories);
+                //categoryField.setItems(categories);
                 searchCategory.setItems(categories);
             ObservableList<Tag> tags = FXCollections.observableList(Tag.fetchAll());
                 tagsField.getItems().setAll(tags);
@@ -349,6 +344,68 @@ public class LexiconTabController implements GeneralController {
                 definitionsList.get(definitionsList.size() - 1).setIsLast(true);
             Log.info(LogString.LEXICON_DEF_ADDED, activeWord.word);
         }
+    }
+
+    @FXML
+    private void clearSearchType(ActionEvent actionEvent) {
+        searchType.getSelectionModel().clearSelection();
+        searchType.setValue(null);
+        searchType.getButtonCell().setText("");
+    }
+
+    @FXML
+    private void clearSearchCategory(ActionEvent actionEvent){
+        searchCategory.getSelectionModel().clearSelection();
+        searchCategory.setValue(null);
+        searchCategory.getButtonCell().setText("");
+    }
+    
+    @FXML
+    private void clearTypeField(ActionEvent actionEvent) {
+        JFXComboBox<Type> box = (JFXComboBox<Type>) typeFieldContainer.getCenter();
+        box.getSelectionModel().clearSelection();
+        box.setValue(null);
+        box.getButtonCell().setText("");
+    }
+
+    @FXML
+    private void clearCategoryField(ActionEvent actionEvent) {
+        JFXComboBox<Category> box = (JFXComboBox<Category>) categoryFieldContainer.getCenter();
+        box.getSelectionModel().clearSelection();
+        box.setValue(null);
+        box.getButtonCell().setText("");
+    }
+
+    private void spawnTypeField(ObservableList<Type> types){
+        JFXComboBox<Type> box = new JFXComboBox<>();
+        box.setPromptText(Monoglot.getMonoglot().getLocalString(AppString.TYPE_FIELD_PROMPT));
+        box.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
+            try {
+                if(!updatingUIFlag && activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateType(n);
+                    updateWordUI();
+                }
+            } catch(SQLException e){throw new RuntimeException(e);}
+        });
+        box.maxWidth(Double.POSITIVE_INFINITY);
+        box.setItems(types);
+        typeFieldContainer.setCenter(box);
+    }
+
+    private void spawnCategoryField(ObservableList<Category> categories) {
+        JFXComboBox<Category> box = new JFXComboBox<>();
+        box.setPromptText(Monoglot.getMonoglot().getLocalString(AppString.CATEGORY_FIELD_PROMPT));
+        box.getSelectionModel().selectedItemProperty().addListener((v, o, n) -> {
+            try {
+                if(!updatingUIFlag && activeWord != null && verifyFields()){
+                    activeWord = activeWord.updateCategory(n);
+                    updateWordUI();
+                }
+            } catch(SQLException e){throw new RuntimeException(e);}
+        });
+        box.maxWidth(Double.POSITIVE_INFINITY);
+        box.setItems(categories);
+        categoryFieldContainer.setCenter(box);
     }
 
     /**

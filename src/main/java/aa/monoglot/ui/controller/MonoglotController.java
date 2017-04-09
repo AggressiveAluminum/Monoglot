@@ -39,8 +39,6 @@ public class MonoglotController implements GeneralController {
     @FXML private Button historyForeButton;
     @FXML private Button historyBackButton;
     @FXML private Label status;
-
-    private History history;
     private int numTabs;
 
     @FXML private void initialize(){
@@ -49,14 +47,14 @@ public class MonoglotController implements GeneralController {
             tabSelector.getItems().add(t.getText());
         tabSelector.getItems().remove(numTabs - 1);
 
-        history = new History(tabSelector, tabs);
-        historyBackButton.disableProperty().bind(history.hasNoHistoryProperty());
-        historyForeButton.disableProperty().bind(history.hasNoFutureProperty());
-        history.silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
+        History.init(tabSelector, tabs);
+        historyBackButton.disableProperty().bind(History.getInstance().hasNoHistoryProperty());
+        historyForeButton.disableProperty().bind(History.getInstance().hasNoFutureProperty());
+        History.getInstance().silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
     }
 
     private void setProjectControlsDisabled(boolean disabled){
-        history.reset();
+        History.getInstance().reset();
 
         tabSelector.setDisable(disabled);
         editMenu.setDisable(disabled);
@@ -65,14 +63,14 @@ public class MonoglotController implements GeneralController {
         closeProjectItem.setDisable(disabled);
 
         if(!disabled){
-            history.silentGoTo(History.LEXICON_TAB_INDEX, History.LEXICON_TAB_INDEX);
+            History.getInstance().silentGoTo(History.LEXICON_TAB_INDEX, History.LEXICON_TAB_INDEX);
             tabs.getSelectionModel().select(History.LEXICON_TAB_INDEX);
             tabSelector.getSelectionModel().select(History.LEXICON_TAB_INDEX);
             ((ControlledTab) tabs.getSelectionModel().getSelectedItem()).controller().onLoad();
         } else {
             for(Tab t: tabs.getTabs())
                 ((ControlledTab) t).controller().onUnload();
-            history.silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
+            History.getInstance().silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
         }
     }
 
@@ -102,10 +100,10 @@ public class MonoglotController implements GeneralController {
 
     // == HISTORY ==
     @FXML private void historyForward(){
-        history.forward();
+        History.getInstance().forward();
     }
     @FXML private void historyBack(){
-        history.back();
+        History.getInstance().back();
     }
 
     // == PROJECT CONTROLS ==
@@ -188,7 +186,7 @@ public class MonoglotController implements GeneralController {
     // == EDIT CONTROLS ==
     @FXML private void createNewWord(ActionEvent event) throws SQLException, IOException {
         if(Project.isOpen()){
-            history.goToTab(History.LEXICON_TAB_INDEX);
+            History.getInstance().goToTab(History.LEXICON_TAB_INDEX);
             ((LexiconTabController) getCurrentTab().controller()).createNewWord(event);
         }
     }

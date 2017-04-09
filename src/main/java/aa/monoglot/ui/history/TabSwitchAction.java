@@ -20,7 +20,7 @@ class TabSwitchAction implements HistoryAction {
         this.to = to;
     }
 
-    public boolean doAction(){
+    public boolean doAction(int currentTab){
         tabSelector.getSelectionModel().select(to);
         ControlledTab from = (ControlledTab) tabs.getSelectionModel().getSelectedItem();
         if(from.controller().save() && from.controller().onUnload()){
@@ -30,7 +30,7 @@ class TabSwitchAction implements HistoryAction {
         } else return false;
     }
 
-    public boolean undoAction(){
+    public boolean undoAction(int currentTab){
         tabSelector.getSelectionModel().select(from);
         ControlledTab fromTab = (ControlledTab) tabs.getSelectionModel().getSelectedItem();
         if (fromTab.controller().save() && fromTab.controller().onUnload()) {

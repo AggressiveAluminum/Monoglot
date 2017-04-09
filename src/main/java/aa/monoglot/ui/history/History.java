@@ -1,5 +1,8 @@
 package aa.monoglot.ui.history;
 
+import aa.monoglot.Monoglot;
+import aa.monoglot.project.db.Headword;
+import aa.monoglot.ui.controller.LexiconTabController;
 import aa.monoglot.util.Log;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -7,10 +10,13 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TabPane;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayDeque;
 
 public class History {
     public static final int LEXICON_TAB_INDEX = 1;
+    private static History instance;
 
     private static final int MAX_HISTORY_SIZE = 32;
     private final ArrayDeque<HistoryAction> history = new ArrayDeque<>();
@@ -22,12 +28,19 @@ public class History {
     private final TabPane tabs;
     private boolean executingHistoryAction = false;
 
-    public History(ComboBox<String> tabSelector, TabPane tabs){
+    private History(ComboBox<String> tabSelector, TabPane tabs){
         this.tabSelector = tabSelector;
         this.tabSelector.setOnAction(this::tabSwitchHandler);
         this.tabs = tabs;
         reset();
     }
+    public static void init(ComboBox<String> tabSelector, TabPane tabs){
+        instance = new History(tabSelector, tabs);
+    }
+    public static History getInstance(){
+        return instance;
+    }
+
     /**
      * Returns if there are any actions in the future list.
      */
@@ -54,18 +67,25 @@ public class History {
      */
     public boolean addAndDo(HistoryAction action){
         executingHistoryAction = true;
-        if(action.doAction()){
-            history.push(action);
-            if(history.size() > MAX_HISTORY_SIZE)
-                history.removeLast();
-            future.clear();
-            hasNoHistory.set(false);
-            hasNoFuture.set(true);
+        if(action.doAction(tabSelector.getSelectionModel().getSelectedIndex())){
+            add(action);
             executingHistoryAction = false;
             return true;
         }
         executingHistoryAction = false;
         return false;
+    }
+
+    /**
+     * Just adds an action to the history. Only use if the action is already handled elsewhere.
+     */
+    public void add(HistoryAction action){
+        history.push(action);
+        if(history.size() > MAX_HISTORY_SIZE)
+            history.removeLast();
+        future.clear();
+        hasNoHistory.set(false);
+        hasNoFuture.set(true);
     }
 
     public void reset() {
@@ -92,7 +112,7 @@ public class History {
         if(future.isEmpty())
             return;
         executingHistoryAction = true;
-        if(future.peek().doAction()){
+        if(future.peek().doAction(tabSelector.getSelectionModel().getSelectedIndex())){
             history.push(future.pop());
             hasNoHistory.set(false);
             hasNoFuture.set(future.isEmpty());
@@ -104,7 +124,7 @@ public class History {
         if(history.isEmpty())
             return;
         executingHistoryAction = true;
-        if(history.peek().undoAction()) {
+        if(history.peek().undoAction(tabSelector.getSelectionModel().getSelectedIndex())) {
             future.push(history.pop());
             hasNoHistory.set(history.isEmpty());
             hasNoFuture.set(false);

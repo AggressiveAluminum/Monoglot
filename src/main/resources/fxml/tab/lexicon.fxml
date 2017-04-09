@@ -6,15 +6,34 @@
 <?import org.controlsfx.control.CheckComboBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <ControlledTab text="%tab.lexicon" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.LexiconTabController">
-    <SplitPane dividerPositions="1">
-        <VBox id="search-section">
-            <JFXTextField fx:id="searchField" promptText="%prompt.search.search"/>
-            <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"/>
-            <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"/>
-            <HBox spacing="3">
-                <Label text="%prompt.search.tags" maxHeight="Infinity"/>
-                <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-            </HBox>
+    <SplitPane dividerPositions="0">
+        <VBox id="search-section" prefWidth="220" minWidth="220">
+            <GridPane vgap="5" hgap="5">
+                <padding><Insets topRightBottomLeft="0"/></padding>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <JFXTextField fx:id="searchField" promptText="%prompt.search.search"
+                              GridPane.columnSpan="2" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <JFXButton onAction="#clearSearchType" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-clear"/>
+                    </graphic>
+                </JFXButton>
+                <JFXComboBox fx:id="searchType" promptText="%prompt.search.type" maxWidth="Infinity"
+                             GridPane.columnIndex="1" GridPane.rowIndex="1" VBox.vgrow="ALWAYS"/>
+                <JFXButton onAction="#clearSearchCategory" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <graphic>
+                        <FontIcon iconLiteral="gmi-clear"/>
+                    </graphic>
+                </JFXButton>
+                <JFXComboBox fx:id="searchCategory" promptText="%prompt.search.category" maxWidth="Infinity"
+                             GridPane.columnIndex="1" GridPane.rowIndex="2" VBox.vgrow="ALWAYS"/>
+                <Label text="%prompt.search.tags" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                               GridPane.columnIndex="1" GridPane.rowIndex="3" VBox.vgrow="ALWAYS"/>
+            </GridPane>
             <Separator/>
             <Label fx:id="searchResultsCount"/>
             <Separator/>
@@ -24,34 +43,51 @@
         </VBox>
         <BorderPane>
             <top>
-                <BorderPane xmlns:fx="http://javafx.com/fxml" minWidth="500">
+                <BorderPane>
                     <padding><Insets top="10" bottom="5"/></padding>
                     <center>
-                        <GridPane vgap="10" hgap="10" fx:id="wordSection">
+                        <GridPane vgap="10" hgap="10" fx:id="wordSection" BorderPane.alignment="TOP_LEFT">
                             <padding><Insets bottom="10" left="10" right="10" /></padding>
-                            <columnConstraints>
-                                <ColumnConstraints minWidth="10" maxWidth="10"/>
-                            </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints valignment="BOTTOM"/>
                             </rowConstraints>
 
                             <!-- Row 0-->
                             <JFXTextField promptText="%prompt.lex.headword" styleClass="large-text" fx:id="headwordField"
-                                          GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+                                          GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="4"/>
                             <JFXTextField promptText="%prompt.lex.pronunciation" style="-fx-font-style: italic" fx:id="pronunciationField"
-                                          GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+                                          GridPane.columnIndex="4" GridPane.rowIndex="0" minWidth="100"/>
 
                             <!-- Row 1-->
-                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="romanizationField"/>
-                            <JFXComboBox promptText="%prompt.lex.type" GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="typeField"/>
-                            <JFXComboBox promptText="%prompt.lex.category" GridPane.columnIndex="3" GridPane.rowIndex="1" fx:id="categoryField"/>
+                            <JFXButton GridPane.columnIndex="0" GridPane.rowIndex="1" onAction="#clearTypeField">
+                                <graphic>
+                                    <FontIcon iconLiteral="gmi-clear"/>
+                                </graphic>
+                            </JFXButton>
+                            <BorderPane fx:id="typeFieldContainer" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"
+                                        maxWidth="120" prefWidth="120" minWidth="120">
+                                <center>
+                                    <JFXComboBox promptText="%prompt.lex.type" maxWidth="Infinity"/>
+                                </center>
+                            </BorderPane>
+                            <JFXButton GridPane.columnIndex="2" GridPane.rowIndex="1" onAction="#clearCategoryField">
+                                <graphic>
+                                    <FontIcon iconLiteral="gmi-clear"/>
+                                </graphic>
+                            </JFXButton>
+                            <BorderPane fx:id="categoryFieldContainer" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS"
+                                        maxWidth="120" prefWidth="120" minWidth="120">
+                                <center>
+                                    <JFXComboBox promptText="%prompt.lex.category" maxWidth="Infinity"/>
+                                </center>
+                            </BorderPane>
+                            <JFXTextField promptText="%prompt.lex.roman" GridPane.columnIndex="4" GridPane.rowIndex="1" fx:id="romanizationField" minWidth="100"/>
 
                             <!-- Row 2 -->
-                            <JFXTextField promptText="base form" GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="stemField">
+                            <CheckComboBox GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="4" fx:id="tagsField" GridPane.vgrow="ALWAYS" maxWidth="Infinity"/>
+                            <JFXTextField promptText="%prompt.lex.base" GridPane.columnIndex="4" GridPane.rowIndex="2" fx:id="stemField" minWidth="100">
                                 <padding><Insets left="10"/></padding>
                             </JFXTextField>
-                            <CheckComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2" maxWidth="Infinity" fx:id="tagsField"/>
                         </GridPane>
                     </center>
                     <right>

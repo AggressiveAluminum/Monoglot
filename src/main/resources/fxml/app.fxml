@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="720" minHeight="400" stylesheets="@app.css">
+            minWidth="1000" minHeight="400" stylesheets="@app.css">
     <top>
         <!-- Menu -->
         <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
@@ -57,12 +57,14 @@
             </top>
             <center>
                 <!-- Content -->
-                <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
-                    <fx:include fx:id="projectTab" source="tab/project.fxml"/>
-                    <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
-                    <!-- keep this last -->
-                    <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
-                </TabPane>
+                <AnchorPane>
+                    <TabPane fx:id="tabs" styleClass="content-tabs" AnchorPane.topAnchor="-5.4" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+                        <fx:include fx:id="projectTab" source="tab/project.fxml"/>
+                        <fx:include fx:id="lexiconTab" source="tab/lexicon.fxml"/>
+                        <!-- keep this last -->
+                        <fx:include fx:id="emptyTab" source="tab/empty.fxml"/>
+                    </TabPane>
+                </AnchorPane>
             </center>
             <bottom>
                 <!-- Status bar -->
