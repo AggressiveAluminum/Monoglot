@@ -1,10 +1,11 @@
 <?import aa.monoglot.ui.ControlledTab?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<ControlledTab text="M_EMPTY_TAB" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.GenericController">
-    <BorderPane>
-        <center>
-            <Label BorderPane.alignment="CENTER" styleClass="grey-italics" text="%app.emptyTabText"/>
-        </center>
-    </BorderPane>
+<ControlledTab text="M_EMPTY_TAB" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.EmptyTabController">
+    <HBox alignment="CENTER" spacing="10">
+        <JFXButton styleClass="blue-button" text="%tab.empty.new-project" onAction="#createProject"/>
+        <Label text="%tab.empty.filler"/>
+        <JFXButton styleClass="blue-button" text="%tab.empty.open-project" onAction="#openProject"/>
+    </HBox>
 </ControlledTab>

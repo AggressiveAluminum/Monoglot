@@ -46,6 +46,7 @@ public class MonoglotController implements GeneralController {
         for(Tab t: tabs.getTabs())
             tabSelector.getItems().add(t.getText());
         tabSelector.getItems().remove(numTabs - 1);
+        ((EmptyTabController) ((ControlledTab) tabs.getTabs().get(tabs.getTabs().size() - 1)).controller()).setMaster(this);
 
         History.init(tabSelector, tabs);
         historyBackButton.disableProperty().bind(History.getInstance().hasNoHistoryProperty());
@@ -127,14 +128,16 @@ public class MonoglotController implements GeneralController {
         return true;
     }
 
-    @FXML private void newProject(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+    @FXML
+    void newProject(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
         if(noOpenProject()){
             Project.newProject();
             setProjectControlsDisabled(false);
         }
     }
 
-    @FXML private void openProject(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+    @FXML
+    void openProject(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
         if(noOpenProject()){
             File file = Dialogs.getChooser().showOpenDialog(Monoglot.getMonoglot().getWindow());
             if(file != null) {

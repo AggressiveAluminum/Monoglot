@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="aa.monoglot.ui.controller.MonoglotController"
-            minWidth="1000" minHeight="400" stylesheets="@app.css">
+            minWidth="1000" minHeight="440" stylesheets="@app.css">
     <top>
         <!-- Menu -->
         <MenuBar fx:id="menuBar" useSystemMenuBar="true" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
@@ -35,9 +35,9 @@
         <BorderPane>
             <top>
                 <!-- Navigation -->
-                <BorderPane id="navigation-bar" fx:id="navigationBar" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                <BorderPane id="navigation-bar" fx:id="navigationBar">
                     <left>
-                        <JFXComboBox fx:id="tabSelector" AnchorPane.leftAnchor="0" BorderPane.alignment="CENTER_LEFT" disable="true"/>
+                        <JFXComboBox fx:id="tabSelector" BorderPane.alignment="CENTER_LEFT" disable="true"/>
                     </left>
                     <right>
                         <HBox BorderPane.alignment="CENTER_RIGHT" spacing="2">
@@ -68,8 +68,7 @@
             </center>
             <bottom>
                 <!-- Status bar -->
-                <AnchorPane id="status-bar" fx:id="statusBar"
-                            AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                <AnchorPane id="status-bar" fx:id="statusBar" minHeight="20" maxHeight="20" prefHeight="20">
                     <Label fx:id="status" AnchorPane.leftAnchor="50"/>
                 </AnchorPane>
             </bottom>

@@ -90,11 +90,13 @@ public class Type {
     }
 
     public static List<Type> fetchAll() throws SQLException {
-        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
         List<Type> types = new ArrayList<>();
-        try(ResultSet resultSet = statement.executeQuery()){
-            while(resultSet.next())
-                types.add(new Type(resultSet));
+        if(Project.isOpen()) {
+            PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    types.add(new Type(resultSet));
+            }
         }
         return types;
     }

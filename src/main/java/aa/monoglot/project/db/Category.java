@@ -123,11 +123,13 @@ public class Category {
     }
 
     public static List<Category> fetchAll() throws SQLException {
-        PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
         List<Category> categories = new ArrayList<>();
-        try(ResultSet resultSet = statement.executeQuery()){
-            while(resultSet.next())
-                categories.add(new Category(resultSet));
+        if(Project.isOpen()) {
+            PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next())
+                    categories.add(new Category(resultSet));
+            }
         }
         return categories;
     }
