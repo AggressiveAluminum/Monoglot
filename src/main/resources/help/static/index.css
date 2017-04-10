@@ -37,6 +37,11 @@ body {
 
 div#content {
     max-width: 600px;
+    text-align: justify;
+}
+
+a:target+span {
+    background-color: #ccee22;
 }
 
 .blue,

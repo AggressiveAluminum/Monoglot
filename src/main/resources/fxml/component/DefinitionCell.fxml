@@ -40,6 +40,9 @@
                 <padding>
                     <Insets topRightBottomLeft="0"/>
                 </padding>
+                <VBox.margin>
+                    <Insets top="6"/>
+                </VBox.margin>
                 <graphic>
                     <FontIcon iconLiteral="gmi-delete-forever" iconColor="whitesmoke"/>
                 </graphic>
