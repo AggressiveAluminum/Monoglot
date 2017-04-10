@@ -15,7 +15,7 @@ public class InflectionTable implements Serializable {
 
     public static void open(String type){
 
-    
+
 
     }
 
