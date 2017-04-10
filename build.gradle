@@ -1,10 +1,17 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'edu.sc.seis.macAppBundle' version '2.1.6'
+    id 'edu.sc.seis.launch4j' version '2.3.0'
 }
 
 apply plugin: 'java'
 apply plugin: 'application'
+
+project.version = '0.0.0a0'
 
 repositories {
     mavenCentral()
@@ -43,4 +50,24 @@ macAppBundle {
     icon = 'src/release/logo.icns'
 }
 
+launch4j {
+    icon = project.projectDir.toPath().resolve('src/release/logo.ico').toAbsolutePath().toString()
+    mainClassName = mcn
+    copyConfigurable = {shadowJar.outputs.files}
+    jar = "lib/${shadowJar.archiveName}"
+}
+
 jar.doLast({shadowJar.execute()})
+
+task release {
+    dependsOn shadowJar
+    dependsOn project.tasks.getByName("createExe")
+
+    doLast {
+        java.nio.file.Path baseDirPath = Paths.get("$buildDir")
+        java.nio.file.Path releaseDir = baseDirPath.resolve("release")
+        if(!Files.isDirectory(releaseDir)) Files.createDirectory(releaseDir)
+        Files.copy(baseDirPath.resolve(launch4j.outputDir).resolve(launch4j.outfile), releaseDir.resolve(launch4j.outfile), StandardCopyOption.REPLACE_EXISTING)
+        Files.copy(shadowJar.archivePath.toPath(), releaseDir.resolve(shadowJar.archiveName), StandardCopyOption.REPLACE_EXISTING)
+    }
+}

@@ -28,4 +28,9 @@ public interface GeneralController {
     default boolean save(){
         return true;
     }
+
+    /**
+     * Called when the project is closed.
+     */
+    default void onProjectClosed(){}
 }

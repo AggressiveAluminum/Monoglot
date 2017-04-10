@@ -10,20 +10,14 @@ organized.
 Build with:
 
 ```
-gradle shadowJar
+gradle release
 ```
 
-The jar will be at `build/lib/Monoglot-all.jar`.
-
-Build and run with:
-
-```
-gradle runShadow
-```
+A universal jar and Windows executable will can then be found in `build/release`
 
 ---
 
-Build for mac with:
+Build for OS X with:
 
 ```
 gradle createDmg

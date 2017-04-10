@@ -144,7 +144,6 @@ public class LexiconTabController implements GeneralController {
         searchTags.getCheckModel().clearChecks();
         searchTags.getItems().clear();
 
-        activeWord = null;
         headwordField.setText("");
         pronunciationField.setText("");
         romanizationField.setText("");
@@ -283,7 +282,7 @@ public class LexiconTabController implements GeneralController {
             }
             return true;
         } catch(SQLException e){
-            //TODO: tell someone
+            //TODO: tell someone?
         }
         return false;
     }
@@ -297,7 +296,7 @@ public class LexiconTabController implements GeneralController {
                 spawnTypeField(types);
                 searchType.setItems(types);
             ObservableList<Category> categories = FXCollections.observableList(Category.fetchAll());
-                //categoryField.setItems(categories);
+                spawnCategoryField(categories);
                 searchCategory.setItems(categories);
             ObservableList<Tag> tags = FXCollections.observableList(Tag.fetchAll());
                 tagsField.getItems().setAll(tags);
@@ -316,11 +315,17 @@ public class LexiconTabController implements GeneralController {
             clearInfo();
         } catch(SQLException | IOException e){
             throw new RuntimeException(e);
-            //TODO: what to do?
         } finally {
             setWordControlsDisabled(true);
         }
         return true;
+    }
+    @Override
+    public void onProjectClosed(){
+        activeWord = null;
+        try {
+            clearInfo();
+        }catch(SQLException | IOException e){throw new RuntimeException(e);}
     }
 
     @FXML

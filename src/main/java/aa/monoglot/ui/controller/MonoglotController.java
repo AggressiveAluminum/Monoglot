@@ -185,10 +185,10 @@ public class MonoglotController implements GeneralController {
     }
 
     @FXML private void closeProject(ActionEvent event) throws SQLException {
-        for(Tab t: tabs.getTabs())
-            ((ControlledTab) t).controller().save();
         if(noOpenProject())
             setProjectControlsDisabled(true);
+        for(Tab t: tabs.getTabs())
+            ((ControlledTab) t).controller().onProjectClosed();
     }
 
     // == EDIT CONTROLS ==
