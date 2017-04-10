@@ -8,6 +8,7 @@ import aa.monoglot.project.db.*;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.component.DefinitionCell;
 import aa.monoglot.ui.dialog.Dialogs;
+import aa.monoglot.ui.history.History;
 import aa.monoglot.util.Log;
 import aa.monoglot.util.UT;
 import com.jfoenix.controls.JFXComboBox;
@@ -18,7 +19,6 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -49,11 +49,8 @@ public class LexiconTabController implements GeneralController {
     @FXML private VBox timestampsSection;
     @FXML private Button deleteWordButton;
     @FXML private Button newDefinitionButton;
-    private Headword activeWord;
     @FXML private TextField headwordField, pronunciationField, romanizationField, stemField;
-    //@FXML private JFXComboBox<Type> typeField;
     @FXML private BorderPane typeFieldContainer;
-    //@FXML private JFXComboBox<Category> categoryField;
     @FXML private BorderPane categoryFieldContainer;
     @FXML private CheckComboBox<Tag> tagsField;
     @FXML private Label createdLabel, modifiedLabel;
@@ -62,6 +59,7 @@ public class LexiconTabController implements GeneralController {
     private ObservableList<DefinitionCell> definitionsList;
 
     private boolean updatingUIFlag = false;
+    private Headword activeWord;
 
     @SuppressWarnings("unchecked")
     @FXML private void initialize(){
@@ -77,13 +75,7 @@ public class LexiconTabController implements GeneralController {
         searchTags.getCheckModel().getCheckedIndices().addListener(searchListener);
         searchType.getSelectionModel().selectedIndexProperty().addListener(searchListener);
         searchCategory.getSelectionModel().selectedIndexProperty().addListener(searchListener);
-        searchResults.setOnMouseClicked(event -> {
-            try {
-                switchActiveWord(searchResults.getSelectionModel().getSelectedItem());
-            } catch (SQLException | IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        searchResults.setOnMouseClicked(event -> History.getInstance().goToWord(searchResults.getSelectionModel().getSelectedItem()));
 
         // === HEADWORD FOCUS ===
         headwordField.focusedProperty().addListener((v, o, n) -> {
@@ -181,6 +173,7 @@ public class LexiconTabController implements GeneralController {
         if(save()) {
             activeWord = newHeadword;
             updateWordUI();
+            headwordField.requestFocus();
             return true;
         }
         return false;
@@ -193,9 +186,7 @@ public class LexiconTabController implements GeneralController {
             Headword headword = Headword.create(word);
             Definition.create(headword, null);
             Log.fine(LogString.LEXICON_NEW_WORD, word);
-            if (!switchActiveWord(headword))
-                Log.warning(LogString.LEXICON_SWITCH_FAILED);
-            else headwordField.requestFocus();
+            History.getInstance().goToWord(headword);
         }
     }
 
@@ -205,6 +196,7 @@ public class LexiconTabController implements GeneralController {
             Log.info(LogString.LEXICON_WORD_DELETED, activeWord.word);
             activeWord = null;
             updateWordUI();
+            History.getInstance().reset();
         }
     }
 
@@ -406,6 +398,10 @@ public class LexiconTabController implements GeneralController {
         box.maxWidth(Double.POSITIVE_INFINITY);
         box.setItems(categories);
         categoryFieldContainer.setCenter(box);
+    }
+
+    public Headword getActiveWord() {
+        return activeWord;
     }
 
     /**

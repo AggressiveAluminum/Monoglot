@@ -1,7 +1,7 @@
 package aa.monoglot.ui.history;
 
-import aa.monoglot.Monoglot;
 import aa.monoglot.project.db.Headword;
+import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.controller.LexiconTabController;
 import aa.monoglot.util.Log;
 import javafx.beans.property.BooleanProperty;
@@ -26,12 +26,14 @@ public class History {
 
     private final ComboBox<String> tabSelector;
     private final TabPane tabs;
+    private final LexiconTabController lexiconTabController;
     private boolean executingHistoryAction = false;
 
     private History(ComboBox<String> tabSelector, TabPane tabs){
         this.tabSelector = tabSelector;
         this.tabSelector.setOnAction(this::tabSwitchHandler);
         this.tabs = tabs;
+        this.lexiconTabController = ((LexiconTabController) ((ControlledTab) tabs.getTabs().get(LEXICON_TAB_INDEX)).controller());
         reset();
     }
     public static void init(ComboBox<String> tabSelector, TabPane tabs){
@@ -39,19 +41,6 @@ public class History {
     }
     public static History getInstance(){
         return instance;
-    }
-
-    /**
-     * Returns if there are any actions in the future list.
-     */
-    public boolean hasFuture(){
-        return !hasNoFuture.get();
-    }
-    /**
-     * Returns if there are any actions in the history list.
-     */
-    public boolean hasHistory(){
-        return !hasNoHistory.get();
     }
 
     public BooleanProperty hasNoHistoryProperty() {
@@ -65,15 +54,11 @@ public class History {
     /**
      * Adds an action to the history and performs it.
      */
-    public boolean addAndDo(HistoryAction action){
+    private void addAndDo(HistoryAction action){
         executingHistoryAction = true;
-        if(action.doAction(tabSelector.getSelectionModel().getSelectedIndex())){
+        if(action.doAction())
             add(action);
-            executingHistoryAction = false;
-            return true;
-        }
         executingHistoryAction = false;
-        return false;
     }
 
     /**
@@ -101,6 +86,15 @@ public class History {
             addAndDo(new TabSwitchAction(tabSelector, tabs, sel, index));
     }
 
+    public void goToWord(Headword newWord){
+        if(lexiconTabController.getActiveWord() == null){
+            try {
+                lexiconTabController.switchActiveWord(newWord);
+            } catch(SQLException |IOException e){throw new RuntimeException(e);}
+        } else if(lexiconTabController.getActiveWord().ID != newWord.ID)
+            addAndDo(new WordSwitchAction(lexiconTabController, lexiconTabController.getActiveWord(), newWord));
+    }
+
     public void silentGoTo(int selector, int tab) {
         executingHistoryAction = true;
         tabSelector.getSelectionModel().select(selector);
@@ -112,7 +106,7 @@ public class History {
         if(future.isEmpty())
             return;
         executingHistoryAction = true;
-        if(future.peek().doAction(tabSelector.getSelectionModel().getSelectedIndex())){
+        if(future.peek().doAction()){
             history.push(future.pop());
             hasNoHistory.set(false);
             hasNoFuture.set(future.isEmpty());
@@ -124,7 +118,7 @@ public class History {
         if(history.isEmpty())
             return;
         executingHistoryAction = true;
-        if(history.peek().undoAction(tabSelector.getSelectionModel().getSelectedIndex())) {
+        if(history.peek().undoAction()) {
             future.push(history.pop());
             hasNoHistory.set(history.isEmpty());
             hasNoFuture.set(false);
@@ -132,7 +126,7 @@ public class History {
         executingHistoryAction = false;
     }
 
-    public void tabSwitchHandler(ActionEvent event) {
+    private void tabSwitchHandler(@SuppressWarnings("unused") ActionEvent event) {
         Log.entering(this.getClass().getName(), "tabSwitchHandler");
         if(!executingHistoryAction) {
             int from = tabs.getSelectionModel().getSelectedIndex();
@@ -140,6 +134,7 @@ public class History {
             if (from != to)
                 addAndDo(new TabSwitchAction(tabSelector, tabs, from, to));
         } else executingHistoryAction = false;
+        Log.exiting(this.getClass().getName(), "tabSwitchHandler");
     }
 }
 
