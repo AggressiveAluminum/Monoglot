@@ -2,11 +2,13 @@ package aa.monoglot.ui.controller;
 
 import aa.monoglot.Monoglot;
 import aa.monoglot.misc.keys.AppString;
+import aa.monoglot.misc.keys.AppWarning;
 import aa.monoglot.project.Project;
 import aa.monoglot.ui.ControlledTab;
 import aa.monoglot.ui.dialog.Dialogs;
 import aa.monoglot.ui.dialog.HelpWindow;
 import aa.monoglot.ui.history.History;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +19,10 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.WindowEvent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -54,7 +59,7 @@ public class MonoglotController implements GeneralController {
         History.getInstance().silentGoTo(History.LEXICON_TAB_INDEX, numTabs - 1);
     }
 
-    private void setProjectControlsDisabled(boolean disabled){
+    public void setProjectControlsDisabled(boolean disabled){
         History.getInstance().reset();
 
         tabSelector.setDisable(disabled);
@@ -201,5 +206,18 @@ public class MonoglotController implements GeneralController {
 
     @FXML private void showHelp(ActionEvent event){
         new HelpWindow().show();
+    }
+
+    public void start(Application.Parameters parameters) {
+        if(!parameters.getRaw().isEmpty()){
+            try {
+                Project.openProject(Paths.get(parameters.getRaw().get(0)));
+                setProjectControlsDisabled(false);
+            } catch (SQLException | IOException | InvalidPathException | ClassNotFoundException e){
+                Dialogs.warning(Monoglot.getMonoglot().getWindow(), Monoglot.getMonoglot().getLocalString(AppWarning.NO_SUCH_PROJECT_TITLE),
+                        Monoglot.getMonoglot().getLocalString(AppWarning.NO_SUCH_PROJECT_HEADER),
+                        Monoglot.getMonoglot().getLocalString(AppWarning.NO_SUCH_PROJECT_TEXT)).show();
+            }
+        }
     }
 }

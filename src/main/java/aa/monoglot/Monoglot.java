@@ -147,15 +147,7 @@ public class Monoglot extends Application {
         primaryStage.requestFocus();
         Log.exiting(Monoglot.class.getName(), "start");
 
-        if(getParameters().getRaw().size() > 0){
-            try {
-                Project.openProject(Paths.get(getParameters().getRaw().get(0)));
-            } catch (FileNotFoundException | InvalidPathException e){
-                Dialogs.warning(window, getLocalString(AppWarning.NO_SUCH_PROJECT_TITLE),
-                        getLocalString(AppWarning.NO_SUCH_PROJECT_HEADER),
-                        getLocalString(AppWarning.NO_SUCH_PROJECT_TEXT)).show();
-            }
-        }
+        uiController.start(getParameters());
     }
 
     @Override
