@@ -2,36 +2,38 @@
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
-        <link rel="stylesheet" href="static/material.brown-blue.min.css"/>
-        <script src="static/material.min.js"></script>
+        <link rel="stylesheet" href="static/index.css"/>
     </head>
     <body>
-        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-            <header class="mdl-layout__header">
-                <div class="mdl-layout__header-row">
-                    <span class="mdl-layout-title mdl-layout--small-screen-only"><script>document.write(jlocal.getString("help.title"));</script></span>
-                    <div class="mdl-layout-spacer"></div>
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
-                        <label class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
-                            <i class="material-icons">search</i>
-                        </label>
-                        <div class="mdl-textfield__expandable-holder">
-                            <input class="mdl-textfield__input" type="text" name="sample" id="fixed-header-drawer-exp">
-                        </div>
-                    </div>
+        <div id="content">
+            <h1><a name="top" title="Top">Monoglot Help</a></h1>
+            <div id="nav">
+                <div style="padding:0;margin:10px 0">
+                    <span id="tocm">TOC</span>
+                    <a href="#top">top of page</a>
                 </div>
-            </header>
-            <div class="mdl-layout__drawer">
-                <span class="mdl-layout-title mdl-layout--large-screen-only"><script>document.write(jlocal.getString("help.title"));</script></span>
-                <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href="#"><script>document.write(jlocal.getString("help.home"));</script></a>
-                </nav>
             </div>
-            <main class="mdl-layout__content">
-                <div class="page-content">
-                    <h1>Under construction</h1>
-                </div>
-            </main>
+            <article>
+                <h2><a name="how-to-use-this"></a>How to use this guide</h2>
+                <p>
+
+                </p>
+            </article>
+            <article>
+                <h2><a name="crash-course"></a>A Crash Course guide to Monoglot</h2>
+            </article>
+            <article>
+                <h2><a name="q-a-help"></a>Individual Questions</h2>
+                <section><!--Project Controls-->
+                    <h3><a name="qa-project"></a>How do I deal with projects?</h3>
+                    <article>
+                        <h4><a name="qa-p-new"></a>How do I create a new project?</h4>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-open"></a></h4>
+                    </article>
+                </section>
+            </article>
         </div>
     </body>
 </html>
