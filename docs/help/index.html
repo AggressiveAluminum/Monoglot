@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="/static/index.css"/>
+    </head>
+    <body>
+        <div id="content">
+            <h1><a name="top" title="Top">Monoglot Help</a></h1>
+            <div id="nav">
+                <div style="padding:0;margin:10px 0">
+                    <span id="tocm">TOC</span>
+                    <a href="#top">top of page</a>
+                    <a href="#how-to-use-this">how to use this guide</a>
+                    <a href="#crash-course">a crash course guide</a>
+                    <a href="#q-a-help">individual questions</a>
+                    <span>
+                        <a href="#qa-ui">how do I navigate the interface?</a>
+                        <span>
+                            <a href="#qa-ui-tabs">how do I change tabs?</a>
+                            <a href="#qa-ui-history">how do I go back to where I was?</a>
+                            <a href="#qa-ui-history">how do I use the history?</a>
+                        </span>
+                        <a href="#qa-project">how do I deal with projects?</a>
+                        <span>
+                            <a href="#qa-p-new">how do I create a new project?</a>
+                            <a href="#qa-p-open">how do I open an existing project?</a>
+                            <a href="#qa-p-save">how do I save my project?</a>
+                            <a href="#qa-p-save">how do I save my project somewhere else?</a>
+                            <a href="#qa-p-close">how do I close an open project?</a>
+                            <a href="#qa-p-recover">how do I recover a project I was working on?</a>
+                        </span>
+                        <a href="#qa-psettings">what can I do from the project tab?</a>
+                        <span>
+                            <a href="#qa-ps-names-notes">how do I change the project name?</a>
+                            <a href="#qa-ps-names-notes">how do I change the project description?</a>
+                        </span>
+                        <a href="#qa-entries">how do I deal with words?</a>
+                        <span>
+                            <a href="#qa-e-add">how do I add a new word?</a>
+                            <a href="#qa-e-delete">how do I remove a word?</a>
+                        </span>
+                        <a href="#qa-defs">how do I deal with definitions?</a>
+                        <span>
+                            <a href="#qa-d-add">how do I add a new definition?</a>
+                            <a href="#qa-d-delete">how do I remove a definition?</a>
+                            <a href="#qa-d-order">how do I re-order definitions?</a>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <article>
+                <h2><a name="how-to-use-this"></a><span>How to use This Guide</span></h2>
+                <p>This help document is a single-page document. You may scroll through it, or click a topic from the
+                    table of contents on the left.</p>
+                <p>To access the table of contents, hover over the grey bar on the left side of the screen with your mouse.</p>
+                <br/>
+                <p>If this document does not satisfy your questions, please contact the developers. We'll find the time
+                    to answer you properly.</p>
+            </article>
+            <hr/>
+            <article>
+                <h2><a name="crash-course"></a><span>A Crash Course guide to Monoglot</span></h2>
+                <!-- TODO -->
+            </article>
+            <hr/>
+            <article>
+                <h2><a name="q-a-help"></a><span>Individual Questions</span></h2>
+                <section><!--General UI-->
+                    <h3><a name="qa-ui"></a><span>How do I navigate the interface?</span></h3>
+                    <article>
+                        <h4><a name="qa-ui-tabs"></a><span>How do I change tabs?</span></h4>
+                        <p>To switch to a different tab, select the tab, by name, from the dropdown selector in the top
+                            left corner of Monoglot.</p>
+                        <img src="static/images/TabChange.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-ui-history"></a><span>How do I go back to where I was?<br/>(How do I use the History?)</span></h4>
+                        <p>Navigation buttons for the history are located in the top right corner of Monoglot. The left button
+                            traverses back through your tabs and words, and the right button goes forward.</p>
+                        <img src="static/images/HistoryButtons.png"/>
+                    </article>
+                </section>
+                <hr/>
+                <section><!--Project Controls-->
+                    <h3><a name="qa-project"></a><span>How do I deal with projects?</span></h3>
+                    <article>
+                        <h4><a name="qa-p-new"></a><span>How do I create a new project?</span></h4>
+                        <p>To create a new project, either:</p>
+                        <ul>
+                            <li>Use the "Create a new project" button from the initial screen.</li>
+                            <li>Use the <code>New project</code> button from the <code>File</code> menu.</li>
+                            <li>Use the Control-Alt-N or Command-Alt-N keyboard shortcut.</li>
+                        </ul>
+                        <p>If you already have a project open, Monoglot will try to save it first, before making a new one.</p>
+                        <img src="static/images/CreateProject.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-open"></a><span>How do I open an existing project?</span></h4>
+                        <p>To open an existing project, either:</p>
+                        <ul>
+                            <li>Use the "Open an existing project" button from the initial screen.</li>
+                            <li>Use the <code>Open project</code> button from the <code>File</code> menu.</li>
+                            <li>Use the Control-O or Command-O keyboard shortcut.</li>
+                        </ul>
+                        <p>If you already have a project open, Monoglot will try to save it first, before opening the other.</p>
+                        <img src="static/images/OpenProject.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-save"></a><span>How do I save my project?</span></h4>
+                        <p>To save your project, select <code>Save</code> from the <code>File</code> menu, or use the
+                            Control-S or Command-S shortcut. If there are any outstanding issues with an item that
+                            prevents it from being saved, it will not be saved.</p>
+                        <p>If you're working on a new project, and haven't told Monoglot where to save your project yet,
+                            it will ask for a location.</p>
+                        <img src="static/images/SaveProject.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-save-as"></a><span>How do I save my project somewhere else?</span></h4>
+                        <p>To save a project somewhere other than where it is currently being saved, use the
+                            <code>Save as</code> button from the <code>File</code> menu.</p>
+                        <img src="static/images/SavingElseWhere1.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-close"></a><span>How do I close an open project?</span></h4>
+                        <p>To close an open project and return to the initial screen, use the <code>Close project</code>
+                            button from the <code>File</code> menu, or use the Control-W or Command-W keyboard shortcut.</p>
+                        <img src="static/images/CloseOpenProj.png"/>
+                    </article>
+                    <article>
+                        <h4><a name="qa-p-recover"></a><span>How do I recover a project I was working on?</span></h4>
+                        <p>If Monoglot crashes unexpectedly, your project may still be safe. From the <code>File</code>
+                            menu, select <code>Advanced</code>, then select <code>Recover a working directory</code>.
+                            Navigate to the path of the project temporary directory in your temporary files folder.</p>
+                        <p>Sadly, if there is no temporary folder, you are out of luck. As always, it is best to save often.</p>
+                    </article>
+                </section>
+                <hr/>
+                <section><!--Project Settings-->
+                    <h3><a name="qa-psettings"></a><span>What can I do from the Project tab?</span></h3>
+                    <article>
+                        <h4><a name="qa-ps-name-notes"></a><span>How do I change the project name or description?</span></h4>
+                        <p>To change the project name or description, simply edit the text in either the project name
+                            field at the top of the Project tab, or the large project notes field below it.</p>
+                        <img src="static/images/ProjectName.png"/>
+                    </article>
+                </section>
+                <hr/>
+                <section><!--Entries-->
+                    <h3><a name="qa-entries"></a><span>How do I deal with words?</span></h3>
+                    <p>Words, like all fields, are saved automatically. However, be aware that you cannot have a blank
+                        word! You can tell if the word is blank by the red underline under the word field. If the word
+                        is blank, no changes you make will be saved until the word is no longer blank.</p>
+                    <video src="static/images/WordEditing1-SD480p.mp4" controls></video>
+                    <article>
+                        <h4><a name="qa-e-add"></a><span>How do I add a new word?</span></h4>
+                        <p>To add a new word, you may either:</p>
+                        <ol>
+                            <li>Click the "New word" button on the word controls bar.</li>
+                            <li>Select <code>New word</code> from the <code>Edit</code> menu.</li>
+                            <li>Use the Control-N or Command-N keyboard shortcut.</li>
+                        </ol>
+                        <p>If there aren't any outstanding issues that prevent the word you're on from being saved,
+                            your new word will appear in the word editing section automatically.</p>
+                    </article>
+                    <article>
+                        <h4><a name="qa-e-delete"></a><span>How do I remove a word?</span></h4>
+                        <p>To remove a word from the lexicon, select the word from the search results, then click the
+                            red delete button in the word controls bar.</p>
+                    </article>
+                </section>
+                <hr/>
+                <section><!--Definitions-->
+                    <h3><a name="qa-defs"></a><span>How do I deal with defintions?</span></h3>
+                    <p>If you are editing a words, you may edit its definitions. If there is no word being edited, it is
+                        not possible to edit any definitions.</p>
+                    <video src="static/images/WordEditing2-SD480p.mp4" controls></video>
+                    <article>
+                        <h4><a name="qa-d-add"></a><span>How do I add a new definition to a word?</span></h4>
+                        <p>To add a new definition to a word, click the "New definition" button in the word controls bar.</p>
+                    </article>
+                    <article>
+                        <h4><a name="qa-d-delete"></a><span>How do I remove a definition from a word?</span></h4>
+                        <p>To remove a definition from the word, click the red "trash" button next to the definition you wish to dispose of.</p>
+                        <p>Removing a definition is final!</p>
+                    </article>
+                    <article>
+                        <h4><a name="qa-d-order"></a><span>How do I re-order the definitions on a word?</span></h4>
+                        <p>The order of definitions is shown to the left side of the definition text. To change the
+                            order of definitions, use the up and down arrows above and below the number indicating
+                            the order of the defition you wish to move.</p>
+                    </article>
+                </section>
+            </article>
+        </div>
+    </body>
+</html>

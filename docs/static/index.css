@@ -35,6 +35,15 @@ body {
     overflow-y: scroll
 }
 
+div#content {
+    max-width: 600px;
+    text-align: justify;
+}
+
+a:target+span {
+    background-color: #ccee22;
+}
+
 .blue,
 a {
     color: #4183C4;
@@ -277,4 +286,8 @@ ol.glossed-samples thead {
 
 :hover>.link-icon {
     visibility: visible
+}
+
+img, video {
+    width: 550px !important
 }
