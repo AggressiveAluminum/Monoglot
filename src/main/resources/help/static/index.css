@@ -287,3 +287,7 @@ ol.glossed-samples thead {
 :hover>.link-icon {
     visibility: visible
 }
+
+img, video {
+    width: 550px !important
+}
