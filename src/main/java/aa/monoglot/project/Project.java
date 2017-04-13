@@ -2,6 +2,7 @@ package aa.monoglot.project;
 
 import aa.monoglot.misc.keys.LocalizationKey;
 import aa.monoglot.misc.keys.LogString;
+import aa.monoglot.project.db.Category;
 import aa.monoglot.project.db.Database;
 import aa.monoglot.project.db.Type;
 import aa.monoglot.project.io.IO;
@@ -99,6 +100,7 @@ public class Project {
 
         if(path == null){
             Type.populateDefaults(database);
+            Category.populateDefaults(database);
         }
 
         Log.info(LogString.PROJECT_PATH, workingPath.toString());

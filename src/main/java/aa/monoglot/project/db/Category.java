@@ -51,6 +51,11 @@ public class Category {
     }
 
     @Override
+    public String toString(){
+        return full_name;
+    }
+
+    @Override
     public boolean equals(Object o){
         if(o == null || !(o instanceof Category))
             return false;
@@ -132,5 +137,9 @@ public class Category {
             }
         }
         return categories;
+    }
+
+    public static void populateDefaults(final Database database) throws SQLException {
+        database.sql("INSERT INTO categories VALUES (1, 'noun', 'noun', NULL, ''),(2, 'verb', 'verb', NULL, ''),(3, 'adjective', 'adjective', NULL, ''),(4, 'preposition', 'preposition', NULL, ''),(5, 'article', 'article', NULL, ''), (6, 'adverb', 'adverb', NULL, '')").executeUpdate();
     }
 }

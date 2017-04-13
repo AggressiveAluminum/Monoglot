@@ -15,7 +15,7 @@
                 <MenuItem text="%menu.file.saveProjectAs" onAction="#saveProjectAs" fx:id="saveProjectAsItem" disable="true"/>
                 <MenuItem text="%menu.file.closeProject" onAction="#closeProject" fx:id="closeProjectItem" accelerator="Shortcut+W" disable="true"/>
                 <SeparatorMenuItem/>
-                <MenuItem text="%menu.file.appSettings"/>
+                <MenuItem text="%menu.file.appSettings" disable="true"/>
                 <Menu text="%menu.file.advanced">
                     <MenuItem text="%menu.file.advanced.openDirectory" onAction="#recoverProject"/>
                 </Menu>
