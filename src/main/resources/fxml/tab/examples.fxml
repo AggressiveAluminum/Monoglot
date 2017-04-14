@@ -1,0 +1,62 @@
+<?import aa.monoglot.ui.ControlledTab?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<ControlledTab text="%tab.example" xmlns:fx="http://javafx.com/fxml" fx:id="tab" fx:controller="aa.monoglot.ui.controller.ExampleTabController">
+    <SplitPane dividerPositions="0">
+        <VBox id="search-section" prefWidth="220" minWidth="220">
+            <GridPane vgap="5" hgap="5">
+                <padding><Insets topRightBottomLeft="0"/></padding>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <JFXTextField fx:id="searchField" promptText="%prompt.search.search"
+                              GridPane.columnSpan="2" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <!--<Label text="%prompt.search.tags" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <CheckComboBox fx:id="searchTags" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                               GridPane.columnIndex="1" GridPane.rowIndex="1" VBox.vgrow="ALWAYS"/>-->
+            </GridPane>
+            <Separator/>
+            <Label fx:id="searchResultsCount"/>
+            <Separator/>
+            <ScrollPane hbarPolicy="NEVER" VBox.vgrow="ALWAYS" fitToHeight="true" fitToWidth="true">
+                <JFXListView fx:id="searchResults" onMouseClicked="#search"/>
+            </ScrollPane>
+        </VBox>
+        <BorderPane>
+            <padding><Insets top="10" bottom="5"/></padding>
+            <center>
+                <HBox spacing="10" fx:id="exampleSection">
+                    <padding><Insets bottom="10" left="10" right="10"/></padding>
+                    <Label fx:id="exampleIDLabel" minWidth="40" style="-fx-font-weight:bold;" styleClass="grey-italics" textAlignment="CENTER"/>
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <JFXTextField fx:id="textField" minWidth="500" promptText="%prompt.example.text"/>
+                        <JFXTextField fx:id="glossField" minWidth="500" promptText="%promp.example.gloss"/>
+                        <TitledPane text="%tab.example.more" expanded="false">
+                            <VBox>
+                                <JFXTextField fx:id="pronunciationField" minWidth="500" promptText="%prompt.example.pronunciation"/>
+                                <JFXTextField fx:id="literalField" minWidth="500" promptText="%prompt.example.literal-translation"/>
+                            </VBox>
+                        </TitledPane>
+                        <JFXTextField fx:id="freeField" minWidth="500" promptText="%prompt.example.free-translation"/>
+                        <JFXTextArea fx:id="explanationField" minWidth="500" promptText="%prompt.example.explanation"/>
+                    </VBox>
+                </HBox>
+            </center>
+            <bottom>
+                <HBox styleClass="controls-bar" spacing="5" style="-fx-font-weight:600">
+                    <JFXButton text="%tab.example.button.newExample" onAction="#create" styleClass="blue-button">
+                    </JFXButton>
+                    <JFXButton text="%tab.example.button.deleteExample" onAction="#delete" styleClass="red-button" fx:id="deleteButton">
+                        <graphic>
+                            <FontIcon iconLiteral="gmi-delete-forever" iconColor="whitesmoke"/>
+                        </graphic>
+                    </JFXButton>
+                </HBox>
+            </bottom>
+        </BorderPane>
+    </SplitPane>
+</ControlledTab>

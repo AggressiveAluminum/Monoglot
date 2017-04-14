@@ -9,7 +9,9 @@ public enum LogString implements LocalizationKey {
     LEXICON_NEW_WORD("log.lexicon.new-word"),
     LEXICON_WORD_DELETED("log.lexicon.deleted-word"),
     LEXICON_DEF_ADDED("log.lexicon.added-definition"),
-    LEXICON_DEF_DELETED("log.lexicon.deleted-definition");
+    LEXICON_DEF_DELETED("log.lexicon.deleted-definition"),
+    EXAMPLE_CREATED("log.example.new-example"),
+    EXAMPLE_DELETED("log.example.deleted");
 
     private final String string;
     LogString(String str){
