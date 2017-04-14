@@ -6,6 +6,8 @@ import java.awt.print.PrinterJob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <kbd>
@@ -88,7 +90,8 @@ public class Example {
         private Example updateStr(String sql, String newValue) throws SQLException {
             PreparedStatement statement = Project.getProject().getDatabase().sql(sql);
             statement.setString(1, newValue);
-            statement.setLong(1, ID);
+            statement.setLong(2, ID);
+            statement.executeUpdate();
             Project.getProject().markSaveNeeded();
             return fetch(ID);
         }
@@ -121,6 +124,19 @@ public class Example {
             }
             return null;
         }
+
+        public static List<Example> fetchAll() throws SQLException{
+            PreparedStatement statement = Project.getProject().getDatabase().sql(SELECT_ALL_STR);
+            try(ResultSet resultSet = statement.executeQuery()){
+                resultSet.next();
+                List<Example> examples = new ArrayList<Example>();
+                do{
+                    examples.add(new Example(resultSet));
+                } while (resultSet.next());
+                return examples;
+            }
+        }
+
         public static void delete(Example example) throws SQLException {
             if(example != null) {
                 PreparedStatement statement = Project.getProject().getDatabase().sql(DELETE_STR);
