@@ -15,16 +15,14 @@ import java.util.UUID;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TagsTest {
 
-    private static UUID id;
-    private static Tag emptyTag;
+    private static long id;
     private static Tag fullTag;
 
         @BeforeClass
         public static void init() throws Exception {
             Project.newProject();
-            id = Project.getProject().getDatabase().getNextID();
-            emptyTag = Tag.create();
-            fullTag = Tag.create();
+            id = Project.getProject().getDatabase().getNextID("tags");
+            fullTag = Tag.create("Fun");
         }
 
         @AfterClass
@@ -35,35 +33,23 @@ public class TagsTest {
 
         @Test
         public void getNull() throws SQLException {
-            Assert.assertNull(Tag.fetch(UUID.randomUUID()));
+            Assert.assertNull(Tag.fetch(Project.getProject().getDatabase().getNextID("tags")));
         }
 
         @Test
-        public void testEmptyTagIsNotNull() throws SQLException{
-            Assert.assertNotNull(emptyTag);
+        public void testEmptyTagIsNotNull() throws SQLException {
+            Assert.assertNotNull(fullTag);
         }
 
         @Test
-        public void testInsertEmptyTag() throws SQLException{
-            Tag.insert(id, emptyTag);
-
-        }
-
-        @Test
-        public void testUpdateEmptyTag() throws SQLException{
-            fullTag = Tag.create();
-            fullTag = Tag.update(id, "Fun", "This tag is for fun words.");
-            Assert.assertTrue("Descriptions are inded the same.",  fullTag.description.toString().equals("This tag is for fun words."));
+        public void testUpdateName() throws SQLException{
+            fullTag = fullTag.updateName("Fun");
+            Assert.assertEquals("Fun", fullTag.toString());
     }
 
         @Test
-        public void testGoodTagToStringAndEqual() throws SQLException{
-            Tag thing = Tag.create();
-            UUID ID = Project.getProject().getDatabase().getNextID();
-            thing = Tag.insert(ID, "Words", "This tag is for words");
-            Assert.assertEquals("Fun", thing
-                    .toString());
-            Tag compare = Tag.fetch(ID);
-            Assert.assertTrue("Tags are the same. ", thing.equals(compare));
+        public void testUpdateDescription() throws SQLException{
+           fullTag = fullTag.updateDescription("This tag is for fun words.");
+           Assert.assertEquals("This tag is for fun words.", fullTag.description);
         }
 }
